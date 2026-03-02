@@ -76,7 +76,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
                         "━━━━━━━━━━━━━━━━━━"
                     )
                     .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-                    .setImage("https://i.imgur.com/8Km9tLL.png") // Ganti dengan banner custom kamu
+                    .setImage("https://imgur.com/a/1nEHYYX") // Ganti dengan banner custom kamu
                     .setFooter({
                         text: "KEJAWEN TEAM • Nickname Enterprise System",
                         iconURL: interaction.guild.iconURL({ dynamic: true })
