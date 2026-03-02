@@ -57,8 +57,8 @@ client.on("messageCreate", async (message) => {
     .setTitle("🛡 Nickname Management System • Enterprise")
     .setDescription(
       "> Secure • Verified • Professional\n\n" +
-      "Sistem perubahan nickname dengan approval resmi.\n\n" +
-      "```━━━━━━━━━━━━━━━━━━━━```"
+      "Sistem perubahan nickname dengan approval resmi.\n" +
+      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     )
     .addFields(
       {
@@ -66,16 +66,7 @@ client.on("messageCreate", async (message) => {
         value:
           "• Maksimal 32 karakter\n" +
           "• Tidak mengandung unsur terlarang\n" +
-          "• Mengikuti peraturan server"
-      },
-      {
-        name: "🛡 System Status",
-        value:
-          "```yaml\n" +
-          "Status: Online\n" +
-          "Approval: Staff Verified\n" +
-          "Security: Enabled\n" +
-          "```"
+          "• Mengikuti peraturan server\n\n"
       },
       {
         name: "📊 Live Statistics",
