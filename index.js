@@ -97,7 +97,7 @@ client.on("messageCreate", async (message) => {
       .setCustomId("open_request_modal")
       .setLabel("Submit Nickname Request")
       .setEmoji("🚀")
-      .setStyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Primary),
 
     new ButtonBuilder()
         .setLabel("Server Rules")
