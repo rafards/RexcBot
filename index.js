@@ -65,26 +65,37 @@ client.on(Events.InteractionCreate, async (interaction) => {
             if (interaction.commandName === "panelnick") {
 
                 const embed = new EmbedBuilder()
-                    .setColor("Blue")
-                    .setTitle("🎮 Request Perubahan Nickname")
-                    .setDescription("Klik tombol di bawah untuk mengajukan perubahan nickname.")
+                    .setColor("#5865F2") // Discord Blurple Premium
+                    .setTitle("🎟 Nickname Management System")
+                    .setDescription(
+                        "━━━━━━━━━━━━━━━━━━\n\n" +
+                        "Ubah nickname server Anda melalui sistem approval resmi.\n\n" +
+                        "• Request akan ditinjau oleh Staff\n" +
+                        "• Maksimal 32 karakter\n" +
+                        "• Gunakan nama sesuai peraturan server\n\n" +
+                        "━━━━━━━━━━━━━━━━━━"
+                    )
+                    .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
+                    .setImage("https://i.imgur.com/8Km9tLL.png") // Ganti dengan banner custom kamu
                     .setFooter({
-                        text: "Nickname System • Premium Edition",
+                        text: "KEJAWEN TEAM • Nickname Enterprise System",
                         iconURL: interaction.guild.iconURL({ dynamic: true })
-                    });
+                    })
+                    .setTimestamp();
 
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId("open_request_modal")
-                        .setLabel("Request Nickname")
-                        .setStyle(ButtonStyle.Primary)
-                );
-
-                return interaction.reply({
-                    embeds: [embed],
-                    components: [row]
-                });
-            }
+            const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId("open_request_modal")
+                    .setLabel("Request Nickname")
+                    .setEmoji("✏️")
+                    .setStyle(ButtonStyle.Primary)
+            );
+        
+            return interaction.reply({
+                embeds: [embed],
+                components: [row]
+            });
+        }
         }
 
         /* ===============================
