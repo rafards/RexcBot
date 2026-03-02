@@ -156,7 +156,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
         });
       }
 
-      activeRequests.set(interaction.user.id, nickname);
+      activeRequests.set(interaction.user.id, {
+        nickname: nickname,
+        requestedAt: Date.now()
+      });
 
       const approvalChannel = await interaction.guild.channels.fetch(
         process.env.APPROVAL_CHANNEL_ID
@@ -197,24 +200,90 @@ client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.member.roles.cache.has(process.env.APPROVER_ROLE_ID)) {
         return interaction.reply({ content: "❌ Tidak memiliki izin.", ephemeral: true });
       }
-
+    
       const userId = interaction.customId.split("_")[1];
-      const nickname = activeRequests.get(userId);
-      if (!nickname) return;
-
-      await interaction.update({ content: "⏳ Processing...", components: [] });
-
+      const requestData = activeRequests.get(userId);
+    
+      if (!requestData) {
+        return interaction.reply({ content: "⚠ Request sudah tidak aktif.", ephemeral: true });
+      }
+    
+      const { nickname, requestedAt } = requestData;
       const member = await interaction.guild.members.fetch(userId);
+    
+      // Hitung waktu proses
+      const processTime = Math.floor((Date.now() - requestedAt) / 1000);
+    
+      // Generate Approval ID
+      const approvalId = `APP-${Date.now().toString().slice(-6)}`;
+    
+      // Ganti nickname
       await member.setNickname(nickname);
-
+    
       activeRequests.delete(userId);
       totalProcessed++;
-
-      await interaction.followUp({
-        content:
-          `🎉 Nickname berhasil diubah menjadi **${nickname}**\n` +
-          `📅 ${new Date().toLocaleString("id-ID")}`,
-        ephemeral: true
+    
+      const now = new Date();
+      const formattedDate = now.toLocaleString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    
+      const ultraEmbed = new EmbedBuilder()
+        .setColor("#16A34A")
+        .setTitle("🏆 NICKNAME APPROVED • ENTERPRISE CONFIRMATION")
+        .setDescription(
+          "> Verified • Logged • Successfully Executed\n\n" +
+          "━━━━━━━━━━━━━━━━━━━━"
+        )
+        .addFields(
+          {
+            name: "👤 Requester",
+            value: `<@${userId}>`,
+            inline: true
+          },
+          {
+            name: "📝 New Nickname",
+            value: `**${nickname}**`,
+            inline: true
+          },
+          {
+            name: "🛡 Approved By",
+            value: `<@${interaction.user.id}>`,
+            inline: true
+          },
+          {
+            name: "🆔 Approval ID",
+            value: `\`${approvalId}\``,
+            inline: true
+          },
+          {
+            name: "⏱ Processing Time",
+            value: `${processTime} seconds`,
+            inline: true
+          },
+          {
+            name: "📅 Updated At",
+            value: formattedDate,
+            inline: false
+          }
+        )
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setFooter({
+          text: "KEJAWEN TEAM • Enterprise Infrastructure System",
+          iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
+        .setTimestamp();
+    
+      await interaction.update({
+        content: null,
+        embeds: [ultraEmbed],
+        components: []
       });
     }
 
