@@ -48,6 +48,7 @@ client.on("messageCreate", async (message) => {
             "• Gunakan nama sesuai peraturan server\n\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         )
+        .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
         .setImage("https://i.imgur.com/b1f3T4V.png") // Ganti banner
         .setFooter({
             text: "KEJAWEN TEAM • Nickname Enterprise System",
