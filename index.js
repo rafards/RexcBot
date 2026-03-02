@@ -58,7 +58,7 @@ client.on("messageCreate", async (message) => {
     .setDescription(
       "> Secure • Verified • Professional\n\n" +
       "Sistem perubahan nickname dengan approval resmi.\n\n" +
-      "━━━━━━━━━━━━━━━━━━━━"
+      "```━━━━━━━━━━━━━━━━━━━━```"
     )
     .addFields(
       {
@@ -88,10 +88,9 @@ client.on("messageCreate", async (message) => {
     .setImage("https://i.imgur.com/b1f3T4V.png")
     .setThumbnail(message.guild.iconURL({ dynamic: true }))
     .setFooter({
-      text: "KEJAWEN TEAM • Premium Trusted Infrastructure",
+      text: "KEJAWEN TEAM -",
       iconURL: message.guild.iconURL({ dynamic: true })
     })
-    .setTimestamp();
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -99,6 +98,11 @@ client.on("messageCreate", async (message) => {
       .setLabel("Submit Nickname Request")
       .setEmoji("🚀")
       .setStyle(ButtonStyle.Primary)
+
+    new ButtonBuilder()
+        .setLabel("Server Rules")
+        .setStyle(ButtonStyle.Link)
+        .setURL("https://discord.com/channels/1309489516641259571/1309514003709562953") // Ganti jika mau link rules
   );
 
   const sent = await message.channel.send({
