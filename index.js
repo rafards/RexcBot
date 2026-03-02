@@ -64,6 +64,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
             if (interaction.commandName === "panelnick") {
 
+                // Kirim respon ephemeral ke user (tidak terlihat publik)
+                await interaction.reply({
+                    content: "✅ Panel berhasil dikirim.",
+                    ephemeral: true
+                });
+
                 const embed = new EmbedBuilder()
                     .setColor("#5865F2") // Discord Blurple Premium
                     .setTitle("🎟 Nickname Management System")
