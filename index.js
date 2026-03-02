@@ -90,7 +90,7 @@ client.on("messageCreate", async (message) => {
     .setFooter({
       text: "KEJAWEN TEAM -",
       iconURL: message.guild.iconURL({ dynamic: true })
-    })
+    });
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
