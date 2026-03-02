@@ -41,14 +41,14 @@ client.on("messageCreate", async (message) => {
         .setColor("#5865F2")
         .setTitle("🎟 Nickname Management System")
         .setDescription(
-            "━━━━━━━━━━━━━━━━━━\n\n" +
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
             "Ubah nickname server Anda melalui sistem approval resmi.\n\n" +
             "• Request akan ditinjau oleh Staff\n" +
             "• Maksimal 32 karakter\n" +
             "• Gunakan nama sesuai peraturan server\n\n" +
-            "━━━━━━━━━━━━━━━━━━"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         )
-        .setImage("https://i.imgur.com/YOUR_BANNER.png") // Ganti banner
+        .setImage("https://i.imgur.com/b1f3T4V.png") // Ganti banner
         .setFooter({
             text: "KEJAWEN TEAM • Nickname Enterprise System",
             iconURL: message.guild.iconURL({ dynamic: true })
