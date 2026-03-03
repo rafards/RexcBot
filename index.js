@@ -10,7 +10,8 @@ const {
   TextInputBuilder,
   TextInputStyle,
   Events,
-  InteractionType
+  InteractionType,
+  MessageFlags
 } = require("discord.js");
 
 const client = new Client({
@@ -104,11 +105,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isButton() && interaction.customId === "open_request_modal") {
 
       if (processingRequests.has(interaction.user.id)) {
-        return interaction.reply({ content: "⏳ Request sedang diproses...", ephemeral: true });
+        return interaction.reply({ content: "⏳ Request sedang diproses...", flags: MessageFlags.Ephemeral });
       }
 
       if (activeRequests.has(interaction.user.id)) {
-        return interaction.reply({ content: "⚠ Kamu masih memiliki request aktif.", ephemeral: true });
+        return interaction.reply({ content: "⚠ Kamu masih memiliki request aktif.", flags: MessageFlags.Ephemeral });
       }
 
       const cooldown = cooldowns.get(interaction.user.id);
@@ -116,7 +117,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const remaining = Math.ceil((cooldown - Date.now()) / (1000 * 60 * 60 * 24));
         return interaction.reply({
           content: `⛔ Kamu bisa mengajukan lagi dalam ${remaining} hari.`,
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       }
 
@@ -146,7 +147,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       await interaction.reply({
         content: "⏳ Processing request...",
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
 
       const nickname = interaction.fields.getTextInputValue("nickname_input");
@@ -208,7 +209,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isButton() && interaction.customId === "cancel_request") {
 
       const data = activeRequests.get(interaction.user.id);
-      if (!data) return interaction.reply({ content: "⚠ Tidak ada request aktif.", ephemeral: true });
+      if (!data) return interaction.reply({ content: "⚠ Tidak ada request aktif.", flags: MessageFlags.Ephemeral });
 
       const approvalChannel = await interaction.guild.channels.fetch(process.env.APPROVAL_CHANNEL_ID);
       const msg = await approvalChannel.messages.fetch(data.approvalMessageId).catch(() => null);
