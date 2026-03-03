@@ -25,6 +25,7 @@ const client = new Client({
 const activeRequests = new Map();
 const processingRequests = new Set();
 const cooldowns = new Map();
+const userReplies = new Map();
 
 let totalProcessed = 0;
 
@@ -197,7 +198,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
         content: "✅ Request berhasil dikirim ke staff.\nMenunggu approval...",
         components: [cancelRow]
       });
-
+      
+      userReplies.set(interaction.user.id, interaction);
       processingRequests.delete(interaction.user.id);
     }
 
@@ -224,33 +226,43 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.isButton() && interaction.customId.startsWith("approve_")) {
 
-      if (processingRequests.has(interaction.customId)) return;
-      processingRequests.add(interaction.customId);
-
       await interaction.deferUpdate();
-
+    
       const userId = interaction.customId.split("_")[1];
       const requestData = activeRequests.get(userId);
       if (!requestData) return;
-
+    
       const member = await interaction.guild.members.fetch(userId);
       await member.setNickname(requestData.nickname);
-
+    
       cooldowns.set(userId, Date.now() + ONE_WEEK);
-
+    
       activeRequests.delete(userId);
       totalProcessed++;
-
+    
       const embed = EmbedBuilder.from(interaction.message.embeds[0])
         .setColor("#22c55e")
         .setTitle("✅ NICKNAME APPROVED");
-
+    
       await interaction.editReply({
         embeds: [embed],
         components: []
       });
-
-      processingRequests.delete(interaction.customId);
+    
+      // ===== UPDATE USER EPHEMERAL =====
+      const userInteraction = userReplies.get(userId);
+      if (userInteraction) {
+        await userInteraction.editReply({
+          content:
+            `✅ **Nickname berhasil di-approve!**\n\n` +
+            `📝 Nama Baru: **${requestData.nickname}**\n` +
+            `🛡 Disetujui oleh: <@${interaction.user.id}>\n` +
+            `📅 ${new Date().toLocaleString()}`,
+          components: []
+        }).catch(() => null);
+    
+        userReplies.delete(userId);
+      }
     }
 
     /* ================= REJECT BUTTON ================= */
@@ -279,11 +291,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
       interaction.type === InteractionType.ModalSubmit &&
       interaction.customId.startsWith("reject_modal_")
     ) {
-
+    
       const userId = interaction.customId.split("_")[2];
+      const reason = interaction.fields.getTextInputValue("reject_reason");
+    
       activeRequests.delete(userId);
       totalProcessed++;
-
+    
       await interaction.update({
         embeds: [
           new EmbedBuilder()
@@ -291,16 +305,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
             .setTitle("❌ NICKNAME REJECTED")
             .addFields(
               { name: "👤 Requester", value: `<@${userId}>`, inline: true },
-              { name: "📄 Reason", value: interaction.fields.getTextInputValue("reject_reason") }
+              { name: "📄 Reason", value: reason }
             )
         ],
         components: []
       });
+    
+      // ===== UPDATE USER EPHEMERAL =====
+      const userInteraction = userReplies.get(userId);
+      if (userInteraction) {
+        await userInteraction.editReply({
+          content:
+            `❌ **Nickname request ditolak**\n\n` +
+            `📄 Alasan: ${reason}\n` +
+            `🛡 Ditolak oleh: <@${interaction.user.id}>\n` +
+            `📅 ${new Date().toLocaleString()}`,
+          components: []
+        }).catch(() => null);
+    
+        userReplies.delete(userId);
+      }
     }
-
-  } catch (err) {
-    console.error("SYSTEM ERROR:", err);
-  }
 });
 
 client.login(process.env.TOKEN);
