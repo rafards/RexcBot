@@ -23,7 +23,12 @@ const client = new Client({
 });
 
 const activeRequests = new Map();
+const processingRequests = new Set();
+const cooldowns = new Map();
+
 let totalProcessed = 0;
+
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /* ================= READY ================= */
 
@@ -31,7 +36,7 @@ client.once("clientReady", () => {
   console.log(`🚀 Enterprise System Online: ${client.user.tag}`);
 });
 
-/* ================= PANEL COMMAND ================= */
+/* ================= PANEL ================= */
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
@@ -68,7 +73,7 @@ client.on("messageCreate", async (message) => {
     .setThumbnail(message.guild.iconURL({ dynamic: true }))
     .setImage("https://i.imgur.com/b1f3T4V.png")
     .setFooter({
-      text: "KEJAWEN TEAM • Enterprise System",
+      text: "KEJAWEN TEAM •",
       iconURL: message.guild.iconURL({ dynamic: true })
     });
 
@@ -97,9 +102,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.isButton() && interaction.customId === "open_request_modal") {
 
+      if (processingRequests.has(interaction.user.id)) {
+        return interaction.reply({ content: "⏳ Request sedang diproses...", ephemeral: true });
+      }
+
       if (activeRequests.has(interaction.user.id)) {
+        return interaction.reply({ content: "⚠ Kamu masih memiliki request aktif.", ephemeral: true });
+      }
+
+      const cooldown = cooldowns.get(interaction.user.id);
+      if (cooldown && Date.now() < cooldown) {
+        const remaining = Math.ceil((cooldown - Date.now()) / (1000 * 60 * 60 * 24));
         return interaction.reply({
-          content: "⚠ Kamu masih memiliki request aktif.",
+          content: `⛔ Kamu bisa mengajukan lagi dalam ${remaining} hari.`,
           ephemeral: true
         });
       }
@@ -115,25 +130,30 @@ client.on(Events.InteractionCreate, async (interaction) => {
         .setMaxLength(32)
         .setRequired(true);
 
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(input)
-      );
-
+      modal.addComponents(new ActionRowBuilder().addComponents(input));
       return interaction.showModal(modal);
     }
 
-    /* ================= SUBMIT REQUEST ================= */
+    /* ================= SUBMIT ================= */
 
     if (
       interaction.type === InteractionType.ModalSubmit &&
       interaction.customId === "nickname_modal"
     ) {
 
+      processingRequests.add(interaction.user.id);
+
+      await interaction.reply({
+        content: "⏳ Processing request...",
+        ephemeral: true
+      });
+
       const nickname = interaction.fields.getTextInputValue("nickname_input");
 
       activeRequests.set(interaction.user.id, {
         nickname,
-        requestedAt: Date.now()
+        requestedAt: Date.now(),
+        approvalMessageId: null
       });
 
       const approvalChannel = await interaction.guild.channels.fetch(
@@ -162,24 +182,80 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .setStyle(ButtonStyle.Danger)
       );
 
-      await approvalChannel.send({ embeds: [embed], components: [row] });
+      const sent = await approvalChannel.send({ embeds: [embed], components: [row] });
 
-      return interaction.reply({
-        content: "✅ Request berhasil dikirim ke staff.",
-        ephemeral: true
+      activeRequests.get(interaction.user.id).approvalMessageId = sent.id;
+
+      const cancelRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId("cancel_request")
+          .setLabel("Cancel Request")
+          .setStyle(ButtonStyle.Secondary)
+      );
+
+      await interaction.editReply({
+        content: "✅ Request berhasil dikirim ke staff.\nMenunggu approval...",
+        components: [cancelRow]
+      });
+
+      processingRequests.delete(interaction.user.id);
+    }
+
+    /* ================= CANCEL ================= */
+
+    if (interaction.isButton() && interaction.customId === "cancel_request") {
+
+      const data = activeRequests.get(interaction.user.id);
+      if (!data) return interaction.reply({ content: "⚠ Tidak ada request aktif.", ephemeral: true });
+
+      const approvalChannel = await interaction.guild.channels.fetch(process.env.APPROVAL_CHANNEL_ID);
+      const msg = await approvalChannel.messages.fetch(data.approvalMessageId).catch(() => null);
+      if (msg) await msg.delete().catch(() => null);
+
+      activeRequests.delete(interaction.user.id);
+
+      return interaction.update({
+        content: "❌ Request berhasil dibatalkan.",
+        components: []
       });
     }
 
-    /* ================= REJECT BUTTON (FIXED) ================= */
+    /* ================= APPROVE ================= */
+
+    if (interaction.isButton() && interaction.customId.startsWith("approve_")) {
+
+      if (processingRequests.has(interaction.customId)) return;
+      processingRequests.add(interaction.customId);
+
+      await interaction.deferUpdate();
+
+      const userId = interaction.customId.split("_")[1];
+      const requestData = activeRequests.get(userId);
+      if (!requestData) return;
+
+      const member = await interaction.guild.members.fetch(userId);
+      await member.setNickname(requestData.nickname);
+
+      cooldowns.set(userId, Date.now() + ONE_WEEK);
+
+      activeRequests.delete(userId);
+      totalProcessed++;
+
+      const embed = EmbedBuilder.from(interaction.message.embeds[0])
+        .setColor("#22c55e")
+        .setTitle("✅ NICKNAME APPROVED");
+
+      await interaction.editReply({
+        embeds: [embed],
+        components: []
+      });
+
+      processingRequests.delete(interaction.customId);
+    }
+
+    /* ================= REJECT BUTTON ================= */
 
     if (interaction.isButton() && interaction.customId.startsWith("reject_")) {
-
-      if (!interaction.member.roles.cache.has(process.env.APPROVER_ROLE_ID)) {
-        return interaction.reply({
-          content: "❌ Tidak memiliki izin.",
-          ephemeral: true
-        });
-      }
 
       const userId = interaction.customId.split("_")[1];
 
@@ -193,62 +269,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
         .setStyle(TextInputStyle.Paragraph)
         .setRequired(true);
 
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(input)
-      );
-
+      modal.addComponents(new ActionRowBuilder().addComponents(input));
       return interaction.showModal(modal);
     }
 
-    /* ================= APPROVE ================= */
-
-    if (interaction.isButton() && interaction.customId.startsWith("approve_")) {
-
-      if (!interaction.member.roles.cache.has(process.env.APPROVER_ROLE_ID)) {
-        return interaction.reply({
-          content: "❌ Tidak memiliki izin.",
-          ephemeral: true
-        });
-      }
-
-      const userId = interaction.customId.split("_")[1];
-      const requestData = activeRequests.get(userId);
-      if (!requestData)
-        return interaction.reply({
-          content: "⚠ Request tidak ditemukan.",
-          ephemeral: true
-        });
-
-      const member = await interaction.guild.members.fetch(userId);
-      const { nickname, requestedAt } = requestData;
-
-      await member.setNickname(nickname);
-
-      activeRequests.delete(userId);
-      totalProcessed++;
-
-      const embed = new EmbedBuilder()
-        .setColor("#22c55e")
-        .setTitle("✅ NICKNAME APPROVED")
-        .setDescription("━━━━━━━━━━━━━━━━━━━━━━━\n🎉 Successfully Updated\n━━━━━━━━━━━━━━━━━━━━━━━")
-        .addFields(
-          { name: "👤 Requester", value: `<@${userId}>`, inline: true },
-          { name: "📝 New Nickname", value: `**${nickname}**`, inline: true },
-          { name: "🛡 Approved By", value: `<@${interaction.user.id}>`, inline: true },
-          { name: "⏱ Process Time", value: `${Math.floor((Date.now() - requestedAt)/1000)}s`, inline: true },
-          { name: "📅 Updated At", value: `<t:${Math.floor(Date.now()/1000)}:F>` }
-        )
-        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-        .setFooter({ text: "KEJAWEN TEAM • Enterprise System" })
-        .setTimestamp();
-
-      return interaction.update({
-        embeds: [embed],
-        components: []
-      });
-    }
-
-    /* ================= REJECT MODAL SUBMIT ================= */
+    /* ================= REJECT SUBMIT ================= */
 
     if (
       interaction.type === InteractionType.ModalSubmit &&
@@ -256,24 +281,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
     ) {
 
       const userId = interaction.customId.split("_")[2];
-      const reason = interaction.fields.getTextInputValue("reject_reason");
-
       activeRequests.delete(userId);
       totalProcessed++;
 
-      const embed = new EmbedBuilder()
-        .setColor("#ef4444")
-        .setTitle("❌ NICKNAME REJECTED")
-        .addFields(
-          { name: "👤 Requester", value: `<@${userId}>`, inline: true },
-          { name: "🛡 Rejected By", value: `<@${interaction.user.id}>`, inline: true },
-          { name: "📄 Reason", value: reason },
-          { name: "📅 Decision Time", value: `<t:${Math.floor(Date.now()/1000)}:F>` }
-        )
-        .setTimestamp();
-
-      return interaction.update({
-        embeds: [embed],
+      await interaction.update({
+        embeds: [
+          new EmbedBuilder()
+            .setColor("#ef4444")
+            .setTitle("❌ NICKNAME REJECTED")
+            .addFields(
+              { name: "👤 Requester", value: `<@${userId}>`, inline: true },
+              { name: "📄 Reason", value: interaction.fields.getTextInputValue("reject_reason") }
+            )
+        ],
         components: []
       });
     }
