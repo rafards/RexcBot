@@ -34,7 +34,7 @@ const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 /* ================= READY ================= */
 
 client.once("clientReady", () => {
-  console.log(`🚀 Enterprise System Online: ${client.user.tag}`);
+  console.log(`🚀 Sistem Manajemen Aktif: ${client.user.tag}`);
 });
 
 /* ================= PANEL ================= */
@@ -44,45 +44,45 @@ client.on("messageCreate", async (message) => {
   if (message.content !== "!panel") return;
 
   if (!message.member.roles.cache.has(process.env.APPROVER_ROLE_ID)) {
-    return message.reply("❌ Tidak memiliki izin.");
+    return message.reply("❌ Anda tidak memiliki izin untuk menggunakan perintah ini.");
   }
 
   const embed = new EmbedBuilder()
     .setColor("#0f172a")
-    .setTitle("🛡 Nickname Management System")
+    .setTitle("🛡 Sistem Manajemen Perubahan Nama")
     .setDescription(
       "━━━━━━━━━━━━━━━━━━━━━━━\n" +
-      "Secure • Verified • Professional\n" +
+      "Aman • Terverifikasi • Profesional\n" +
       "━━━━━━━━━━━━━━━━━━━━━━━"
     )
     .addFields(
       {
-        name: "📜 Rules",
+        name: "📜 Ketentuan",
         value:
           "• Maksimal 32 karakter\n" +
           "• Tidak mengandung unsur terlarang\n" +
-          "• Mengikuti peraturan server\n"
+          "• Wajib mengikuti peraturan server\n"
       },
       {
-        name: "📊 Live Statistics",
+        name: "📊 Statistik Sistem",
         value:
-          `Members: ${message.guild.memberCount}\n` +
-          `Active Requests: ${activeRequests.size}\n` +
-          `Total Processed: ${totalProcessed}`
+          `Jumlah Anggota: ${message.guild.memberCount}\n` +
+          `Permintaan Aktif: ${activeRequests.size}\n` +
+          `Total Diproses: ${totalProcessed}`
       }
     )
     .setThumbnail(message.guild.iconURL({ dynamic: true }))
-    .setImage("https://i.imgur.com/b1f3T4V.png")
     .setFooter({
-      text: "KEJAWEN TEAM •",
+      text: "KEJAWEN TEAM • Sistem Internal",
       iconURL: message.guild.iconURL({ dynamic: true })
-    });
+    })
+    .setTimestamp();
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("open_request_modal")
-      .setLabel("Submit Nickname Request")
-      .setEmoji("🚀")
+      .setLabel("Ajukan Perubahan Nama")
+      .setEmoji("📨")
       .setStyle(ButtonStyle.Primary)
   );
 
@@ -104,29 +104,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isButton() && interaction.customId === "open_request_modal") {
 
       if (processingRequests.has(interaction.user.id)) {
-        return interaction.reply({ content: "⏳ Request sedang diproses...", ephemeral: true });
+        return interaction.reply({ content: "⏳ Permintaan Anda sedang diproses...", ephemeral: true });
       }
 
       if (activeRequests.has(interaction.user.id)) {
-        return interaction.reply({ content: "⚠ Kamu masih memiliki request aktif.", ephemeral: true });
+        return interaction.reply({ content: "⚠ Anda masih memiliki permintaan aktif.", ephemeral: true });
       }
 
       const cooldown = cooldowns.get(interaction.user.id);
       if (cooldown && Date.now() < cooldown) {
         const remaining = Math.ceil((cooldown - Date.now()) / (1000 * 60 * 60 * 24));
         return interaction.reply({
-          content: `⛔ Kamu bisa mengajukan lagi dalam ${remaining} hari.`,
+          content: `⛔ Anda dapat mengajukan kembali dalam ${remaining} hari.`,
           ephemeral: true
         });
       }
 
       const modal = new ModalBuilder()
         .setCustomId("nickname_modal")
-        .setTitle("Nickname Request");
+        .setTitle("Formulir Perubahan Nama");
 
       const input = new TextInputBuilder()
         .setCustomId("nickname_input")
-        .setLabel("Masukkan nickname baru")
+        .setLabel("Masukkan nama baru")
         .setStyle(TextInputStyle.Short)
         .setMaxLength(32)
         .setRequired(true);
@@ -145,7 +145,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       processingRequests.add(interaction.user.id);
 
       await interaction.reply({
-        content: "⏳ Processing request...",
+        content: "⏳ Permintaan sedang dikirim...",
         ephemeral: true
       });
 
@@ -162,24 +162,34 @@ client.on(Events.InteractionCreate, async (interaction) => {
       );
 
       const embed = new EmbedBuilder()
-        .setColor("#facc15")
-        .setTitle("📌 Nickname Approval Request")
+        .setColor("#F1C40F")
+        .setAuthor({
+          name: "📌 PERMINTAAN PERUBAHAN NAMA",
+          iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
+        .setDescription("```yaml\nStatus: MENUNGGU PERSETUJUAN\n```")
         .addFields(
-          { name: "👤 Requester", value: `<@${interaction.user.id}>`, inline: true },
-          { name: "📝 Requested Nickname", value: `**${nickname}**`, inline: true },
-          { name: "📅 Requested At", value: `<t:${Math.floor(Date.now()/1000)}:F>` }
+          { name: "👤 Pemohon", value: `<@${interaction.user.id}>`, inline: true },
+          { name: "📝 Nama yang Diajukan", value: `\`${nickname}\``, inline: true },
+          { name: "📅 Tanggal Pengajuan", value: `<t:${Math.floor(Date.now()/1000)}:F>` }
         )
         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+        .setFooter({
+          text: "KEJAWEN TEAM • Antrian Persetujuan",
+          iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
         .setTimestamp();
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`approve_${interaction.user.id}`)
-          .setLabel("Approve")
+          .setLabel("Setujui")
+          .setEmoji("✅")
           .setStyle(ButtonStyle.Success),
         new ButtonBuilder()
           .setCustomId(`reject_${interaction.user.id}`)
-          .setLabel("Reject")
+          .setLabel("Tolak")
+          .setEmoji("❌")
           .setStyle(ButtonStyle.Danger)
       );
 
@@ -187,39 +197,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       activeRequests.get(interaction.user.id).approvalMessageId = sent.id;
 
-      const cancelRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId("cancel_request")
-          .setLabel("Cancel Request")
-          .setStyle(ButtonStyle.Secondary)
-      );
-
       await interaction.editReply({
-        content: "✅ Request berhasil dikirim ke staff.\nMenunggu approval...",
-        components: [cancelRow]
-      });
-      
-      userReplies.set(interaction.user.id, interaction);
-      processingRequests.delete(interaction.user.id);
-    }
-
-    /* ================= CANCEL ================= */
-
-    if (interaction.isButton() && interaction.customId === "cancel_request") {
-
-      const data = activeRequests.get(interaction.user.id);
-      if (!data) return interaction.reply({ content: "⚠ Tidak ada request aktif.", ephemeral: true });
-
-      const approvalChannel = await interaction.guild.channels.fetch(process.env.APPROVAL_CHANNEL_ID);
-      const msg = await approvalChannel.messages.fetch(data.approvalMessageId).catch(() => null);
-      if (msg) await msg.delete().catch(() => null);
-
-      activeRequests.delete(interaction.user.id);
-
-      return interaction.update({
-        content: "❌ Request berhasil dibatalkan.",
+        content: "✅ Permintaan berhasil dikirim dan sedang menunggu persetujuan staf.",
         components: []
       });
+
+      userReplies.set(interaction.user.id, interaction);
+      processingRequests.delete(interaction.user.id);
     }
 
     /* ================= APPROVE ================= */
@@ -237,55 +221,38 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
       cooldowns.set(userId, Date.now() + ONE_WEEK);
     
+      const processTime = Math.floor((Date.now() - requestData.requestedAt) / 1000);
+
       activeRequests.delete(userId);
       totalProcessed++;
     
-      const embed = EmbedBuilder.from(interaction.message.embeds[0])
-        .setColor("#22c55e")
-        .setTitle("✅ NICKNAME APPROVED");
+      const embed = new EmbedBuilder()
+        .setColor("#2ECC71")
+        .setAuthor({
+          name: "✅ PERMINTAAN DISETUJUI",
+          iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
+        .setDescription("```fix\nPerubahan nama berhasil diterapkan\n```")
+        .addFields(
+          { name: "👤 Pemohon", value: `<@${userId}>`, inline: true },
+          { name: "📝 Nama Baru", value: `\`${requestData.nickname}\``, inline: true },
+          { name: "🛡 Disetujui Oleh", value: `<@${interaction.user.id}>`, inline: true },
+          { name: "⏱ Waktu Proses", value: `${processTime} detik`, inline: true }
+        )
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setFooter({
+          text: "KEJAWEN TEAM • Sistem Internal",
+          iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
+        .setTimestamp();
     
       await interaction.editReply({
         embeds: [embed],
         components: []
       });
-    
-      // ===== UPDATE USER EPHEMERAL =====
-      const userInteraction = userReplies.get(userId);
-      if (userInteraction) {
-        await userInteraction.editReply({
-          content:
-            `✅ **Nickname berhasil di-approve!**\n\n` +
-            `📝 Nama Baru: **${requestData.nickname}**\n` +
-            `🛡 Disetujui oleh: <@${interaction.user.id}>\n` +
-            `📅 ${new Date().toLocaleString()}`,
-          components: []
-        }).catch(() => null);
-    
-        userReplies.delete(userId);
-      }
     }
 
-    /* ================= REJECT BUTTON ================= */
-
-    if (interaction.isButton() && interaction.customId.startsWith("reject_")) {
-
-      const userId = interaction.customId.split("_")[1];
-
-      const modal = new ModalBuilder()
-        .setCustomId(`reject_modal_${userId}`)
-        .setTitle("Reject Reason");
-
-      const input = new TextInputBuilder()
-        .setCustomId("reject_reason")
-        .setLabel("Alasan Penolakan")
-        .setStyle(TextInputStyle.Paragraph)
-        .setRequired(true);
-
-      modal.addComponents(new ActionRowBuilder().addComponents(input));
-      return interaction.showModal(modal);
-    }
-
-    /* ================= REJECT SUBMIT ================= */
+    /* ================= REJECT ================= */
 
     if (
       interaction.type === InteractionType.ModalSubmit &&
@@ -294,42 +261,45 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
       const userId = interaction.customId.split("_")[2];
       const reason = interaction.fields.getTextInputValue("reject_reason");
-    
+
+      const requestData = activeRequests.get(userId);
+      const processTime = requestData
+        ? Math.floor((Date.now() - requestData.requestedAt) / 1000)
+        : 0;
+
       activeRequests.delete(userId);
       totalProcessed++;
+    
+      const member = await interaction.guild.members.fetch(userId).catch(() => null);
     
       await interaction.update({
         embeds: [
           new EmbedBuilder()
-            .setColor("#ef4444")
-            .setTitle("❌ NICKNAME REJECTED")
+            .setColor("#E74C3C")
+            .setAuthor({
+              name: "❌ PERMINTAAN DITOLAK",
+              iconURL: interaction.guild.iconURL({ dynamic: true })
+            })
+            .setDescription("```diff\n- Permintaan perubahan nama ditolak\n```")
             .addFields(
-              { name: "👤 Requester", value: `<@${userId}>`, inline: true },
-              { name: "📄 Reason", value: reason }
+              { name: "👤 Pemohon", value: `<@${userId}>`, inline: true },
+              { name: "🛡 Ditinjau Oleh", value: `<@${interaction.user.id}>`, inline: true },
+              { name: "⏱ Waktu Proses", value: `${processTime} detik`, inline: true },
+              { name: "📄 Alasan Penolakan", value: reason }
             )
+            .setThumbnail(member?.user.displayAvatarURL({ dynamic: true }) || null)
+            .setFooter({
+              text: "KEJAWEN TEAM • Sistem Internal",
+              iconURL: interaction.guild.iconURL({ dynamic: true })
+            })
+            .setTimestamp()
         ],
         components: []
       });
-    
-      // ===== UPDATE USER EPHEMERAL =====
-      const userInteraction = userReplies.get(userId);
-      if (userInteraction) {
-        await userInteraction.editReply({
-          content:
-            `❌ **Nickname request ditolak**\n\n` +
-            `📄 Alasan: ${reason}\n` +
-            `🛡 Ditolak oleh: <@${interaction.user.id}>\n` +
-            `📅 ${new Date().toLocaleString()}`,
-          components: []
-        }).catch(() => null);
-    
-        userReplies.delete(userId);
-      }
     }
 
   } catch (err) {
-    // === INI YANG DITAMBAHKAN ===
-    console.error("Terjadi error di InteractionCreate:", err);
+    console.error("Terjadi kesalahan pada sistem:", err);
   }
 });
 
