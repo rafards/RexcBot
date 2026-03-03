@@ -326,6 +326,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
         userReplies.delete(userId);
       }
     }
+
+  } catch (err) {
+    // === INI YANG DITAMBAHKAN ===
+    console.error("Terjadi error di InteractionCreate:", err);
+  }
 });
 
 client.login(process.env.TOKEN);
