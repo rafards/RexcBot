@@ -4,25 +4,30 @@ const {
   ButtonStyle,
   StringSelectMenuBuilder,
   EmbedBuilder,
-  Events
+  Events,
+  PermissionFlagsBits
 } = require("discord.js");
 
 const { loadState, saveState, resetState } = require("../utils/storage");
 
 let bracket = loadState();
-if (!bracket) bracket = resetState();
+if (!bracket || !bracket.status) bracket = resetState();
 
 function isAuthorized(member) {
   return (
-    member.permissions.has("Administrator") ||
+    member.permissions.has(PermissionFlagsBits.Administrator) ||
     member.roles.cache.has(process.env.ORGANIZER_ROLE_ID)
   );
+}
+
+function pad(str, length) {
+  return str.padEnd(length, " ");
 }
 
 function renderTree() {
   if (!bracket.rounds.length) return "Belum ada bracket.";
 
-  let output = "";
+  let output = "```\n";
 
   bracket.rounds.forEach((round, rIndex) => {
     let title = "";
@@ -31,35 +36,36 @@ function renderTree() {
     else if (rIndex === bracket.rounds.length - 2) title = "SEMIFINAL";
     else title = `ROUND ${rIndex + 1}`;
 
-    output += `━━━━━━━━━━━━━━━━\n${title}\n━━━━━━━━━━━━━━━━\n\n`;
+    output += `==== ${title} ====\n\n`;
 
     round.forEach((match, mIndex) => {
       const p1 = match.p1 ? `<@${match.p1}>` : "BYE";
       const p2 = match.p2 ? `<@${match.p2}>` : "BYE";
       const winner = match.winner ? `<@${match.winner}>` : "?";
 
-      output += `${p1} ─┐\n`;
-      output += `        ├── ${winner}\n`;
-      output += `${p2} ─┘`;
+      const longest = Math.max(p1.length, p2.length, 10);
+
+      output += `${pad(p1, longest)} ─┐\n`;
+      output += `${" ".repeat(longest)}  ├── ${winner}\n`;
+      output += `${pad(p2, longest)} ─┘`;
 
       if (
         bracket.status === "running" &&
         rIndex === bracket.currentRound &&
         mIndex === bracket.currentMatchIndex
       ) {
-        output += "   🏎 SSR HEAT — LIVE";
+        output += "   ← LIVE";
       }
 
       output += "\n\n";
     });
   });
 
+  output += "```";
   return output;
 }
 
 function generateBracket() {
-  const roundCount = Math.log2(bracket.maxSlot);
-
   let players = [...bracket.participants];
 
   while (players.length < bracket.maxSlot) {
@@ -68,30 +74,19 @@ function generateBracket() {
 
   let rounds = [];
 
-  // ROUND 1
   let firstRound = [];
   for (let i = 0; i < players.length; i += 2) {
-    firstRound.push({
-      p1: players[i],
-      p2: players[i + 1],
-      winner: null
-    });
+    firstRound.push({ p1: players[i], p2: players[i + 1], winner: null });
   }
   rounds.push(firstRound);
 
-  // NEXT ROUNDS
-  for (let r = 1; r < roundCount; r++) {
-    const prev = rounds[r - 1];
+  let size = firstRound.length;
+  while (size > 1) {
+    size /= 2;
     let newRound = [];
-
-    for (let i = 0; i < prev.length / 2; i++) {
-      newRound.push({
-        p1: null,
-        p2: null,
-        winner: null
-      });
+    for (let i = 0; i < size; i++) {
+      newRound.push({ p1: null, p2: null, winner: null });
     }
-
     rounds.push(newRound);
   }
 
@@ -99,18 +94,14 @@ function generateBracket() {
   bracket.currentRound = 0;
   bracket.currentMatchIndex = 0;
   bracket.status = "running";
-
   saveState(bracket);
 }
 
 function advanceMatch() {
   bracket.currentMatchIndex++;
 
-  const currentRoundMatches = bracket.rounds[bracket.currentRound];
-
-  if (bracket.currentMatchIndex >= currentRoundMatches.length) {
-    // move to next round
-    const winners = currentRoundMatches.map(m => m.winner);
+  if (bracket.currentMatchIndex >= bracket.rounds[bracket.currentRound].length) {
+    const winners = bracket.rounds[bracket.currentRound].map(m => m.winner);
 
     if (bracket.currentRound === bracket.rounds.length - 1) {
       bracket.status = "finished";
@@ -118,11 +109,11 @@ function advanceMatch() {
       return;
     }
 
-    const nextRound = bracket.rounds[bracket.currentRound + 1];
+    const next = bracket.rounds[bracket.currentRound + 1];
 
-    for (let i = 0; i < nextRound.length; i++) {
-      nextRound[i].p1 = winners[i * 2];
-      nextRound[i].p2 = winners[i * 2 + 1];
+    for (let i = 0; i < next.length; i++) {
+      next[i].p1 = winners[i * 2];
+      next[i].p2 = winners[i * 2 + 1];
     }
 
     bracket.currentRound++;
@@ -139,13 +130,14 @@ module.exports = (client) => {
     if (message.channel.id !== process.env.BRACKET_CHANNEL_ID) return;
 
     if (message.content === "!bracket") {
-      if (bracket.status === "open" || bracket.status === "running") {
-        return message.reply("⚠️ Tournament sedang aktif.");
-      }
+      await message.delete().catch(() => {});
+
+      if (bracket.status !== "idle")
+        return message.channel.send("Tournament masih aktif.");
 
       const select = new StringSelectMenuBuilder()
         .setCustomId("select_slot")
-        .setPlaceholder("Pilih jumlah slot")
+        .setPlaceholder("Pilih slot")
         .addOptions([
           { label: "4 Players", value: "4" },
           { label: "8 Players", value: "8" },
@@ -154,7 +146,7 @@ module.exports = (client) => {
 
       const row = new ActionRowBuilder().addComponents(select);
 
-      await message.reply({
+      await message.channel.send({
         content: "Pilih jumlah slot:",
         components: [row]
       });
@@ -163,20 +155,19 @@ module.exports = (client) => {
 
   client.on(Events.InteractionCreate, async (interaction) => {
 
-    // SLOT SELECT
     if (interaction.isStringSelectMenu()) {
       if (interaction.customId === "select_slot") {
+
+        bracket = resetState();
         bracket.maxSlot = parseInt(interaction.values[0]);
-        bracket.participants = [];
-        bracket.rounds = [];
         bracket.status = "open";
         bracket.channelId = interaction.channel.id;
 
         saveState(bracket);
 
         const embed = new EmbedBuilder()
-          .setTitle("🏁 SSR Championship")
-          .setDescription(`Registration Open\nSlot: 0 / ${bracket.maxSlot}`);
+          .setTitle("🏁 Tournament Registration")
+          .setDescription(`Slot: 0 / ${bracket.maxSlot}`);
 
         const row = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
@@ -201,15 +192,14 @@ module.exports = (client) => {
       }
     }
 
-    // BUTTONS
     if (interaction.isButton()) {
 
       if (interaction.customId === "join") {
         if (bracket.status !== "open")
-          return interaction.reply({ content: "Registration ditutup.", ephemeral: true });
+          return interaction.reply({ content: "Registration tutup.", ephemeral: true });
 
         if (bracket.participants.includes(interaction.user.id))
-          return interaction.reply({ content: "Sudah terdaftar.", ephemeral: true });
+          return interaction.reply({ content: "Sudah join.", ephemeral: true });
 
         if (bracket.participants.length >= bracket.maxSlot)
           return interaction.reply({ content: "Slot penuh.", ephemeral: true });
@@ -218,15 +208,15 @@ module.exports = (client) => {
         saveState(bracket);
 
         const channel = await client.channels.fetch(bracket.channelId);
-        const message = await channel.messages.fetch(bracket.messageId);
+        const msg = await channel.messages.fetch(bracket.messageId);
 
         const embed = new EmbedBuilder()
-          .setTitle("🏁 SSR Championship")
+          .setTitle("🏁 Tournament Registration")
           .setDescription(
-            `Registration Open\nSlot: ${bracket.participants.length} / ${bracket.maxSlot}`
+            `Slot: ${bracket.participants.length} / ${bracket.maxSlot}`
           );
 
-        await message.edit({ embeds: [embed] });
+        await msg.edit({ embeds: [embed] });
 
         return interaction.reply({ content: "Berhasil join.", ephemeral: true });
       }
@@ -235,24 +225,72 @@ module.exports = (client) => {
         if (!isAuthorized(interaction.member))
           return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
 
-        if (bracket.participants.length < 2)
-          return interaction.reply({ content: "Minimal 2 peserta.", ephemeral: true });
-
         generateBracket();
 
         const channel = await client.channels.fetch(bracket.channelId);
-        const message = await channel.messages.fetch(bracket.messageId);
+        const msg = await channel.messages.fetch(bracket.messageId);
 
-        const embed = new EmbedBuilder()
-          .setTitle("🏎 SSR Championship")
-          .setDescription(renderTree());
+        const winnerRow = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("win_p1")
+            .setLabel("P1 WIN")
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId("win_p2")
+            .setLabel("P2 WIN")
+            .setStyle(ButtonStyle.Danger),
+          new ButtonBuilder()
+            .setCustomId("reset")
+            .setLabel("RESET")
+            .setStyle(ButtonStyle.Secondary)
+        );
 
-        await message.edit({ embeds: [embed], components: [] });
+        await msg.edit({
+          content: renderTree(),
+          embeds: [],
+          components: [winnerRow]
+        });
 
         return interaction.reply({ content: "Tournament dimulai.", ephemeral: true });
       }
+
+      if (interaction.customId === "win_p1" || interaction.customId === "win_p2") {
+
+        if (!isAuthorized(interaction.member))
+          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+
+        const match = bracket.rounds[bracket.currentRound][bracket.currentMatchIndex];
+
+        const winner =
+          interaction.customId === "win_p1" ? match.p1 : match.p2;
+
+        if (!winner)
+          return interaction.reply({ content: "Match tidak valid.", ephemeral: true });
+
+        match.winner = winner;
+        saveState(bracket);
+
+        advanceMatch();
+
+        const channel = await client.channels.fetch(bracket.channelId);
+        const msg = await channel.messages.fetch(bracket.messageId);
+
+        await msg.edit({
+          content: renderTree()
+        });
+
+        return interaction.reply({ content: "Winner ditetapkan.", ephemeral: true });
+      }
+
+      if (interaction.customId === "reset") {
+        if (!isAuthorized(interaction.member))
+          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+
+        bracket = resetState();
+        saveState(bracket);
+
+        return interaction.reply({ content: "Tournament direset.", ephemeral: true });
+      }
     }
-
   });
-
 };
