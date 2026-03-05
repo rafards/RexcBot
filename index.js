@@ -11,11 +11,13 @@ const client = new Client({
 });
 
 client.once("clientReady", () => {
-  console.log(`🚀 Bot Online: ${client.user.tag}`);
+  console.log(`🚀 Enterprise System Online: ${client.user.tag}`);
 });
 
-/* LOAD SYSTEMS */
+/* ================= LOAD SYSTEMS ================= */
+
 require("./systems/nicknameSystem")(client);
-// nanti tambah bracketSystem di sini
+
+/* ================================================= */
 
 client.login(process.env.TOKEN);
