@@ -5,7 +5,8 @@ const {
   StringSelectMenuBuilder,
   EmbedBuilder,
   Events,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  MessageFlags
 } = require("discord.js");
 
 const { loadState, saveState, resetState } = require("../utils/storage");
@@ -25,7 +26,7 @@ function pad(str, length) {
 }
 
 function renderTree() {
-  if (!bracket.rounds.length) return "Belum ada bracket.";
+  if (!bracket.rounds || !bracket.rounds.length) return "Belum ada bracket.";
 
   let output = "```\n";
 
@@ -100,8 +101,11 @@ function generateBracket() {
 function advanceMatch() {
   bracket.currentMatchIndex++;
 
-  if (bracket.currentMatchIndex >= bracket.rounds[bracket.currentRound].length) {
-    const winners = bracket.rounds[bracket.currentRound].map(m => m.winner);
+  const currentRoundMatches = bracket.rounds?.[bracket.currentRound];
+  if (!currentRoundMatches) return;
+
+  if (bracket.currentMatchIndex >= currentRoundMatches.length) {
+    const winners = currentRoundMatches.map(m => m.winner);
 
     if (bracket.currentRound === bracket.rounds.length - 1) {
       bracket.status = "finished";
@@ -188,7 +192,7 @@ module.exports = (client) => {
         bracket.messageId = msg.id;
         saveState(bracket);
 
-        return interaction.reply({ content: "Slot ditetapkan.", ephemeral: true });
+        return interaction.reply({ content: "Slot ditetapkan.", flags: MessageFlags.Ephemeral });
       }
     }
 
@@ -196,13 +200,13 @@ module.exports = (client) => {
 
       if (interaction.customId === "join") {
         if (bracket.status !== "open")
-          return interaction.reply({ content: "Registration tutup.", ephemeral: true });
+          return interaction.reply({ content: "Registration tutup.", flags: MessageFlags.Ephemeral });
 
         if (bracket.participants.includes(interaction.user.id))
-          return interaction.reply({ content: "Sudah join.", ephemeral: true });
+          return interaction.reply({ content: "Sudah join.", flags: MessageFlags.Ephemeral });
 
         if (bracket.participants.length >= bracket.maxSlot)
-          return interaction.reply({ content: "Slot penuh.", ephemeral: true });
+          return interaction.reply({ content: "Slot penuh.", flags: MessageFlags.Ephemeral });
 
         bracket.participants.push(interaction.user.id);
         saveState(bracket);
@@ -218,12 +222,12 @@ module.exports = (client) => {
 
         await msg.edit({ embeds: [embed] });
 
-        return interaction.reply({ content: "Berhasil join.", ephemeral: true });
+        return interaction.reply({ content: "Berhasil join.", flags: MessageFlags.Ephemeral });
       }
 
       if (interaction.customId === "start") {
         if (!isAuthorized(interaction.member))
-          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+          return interaction.reply({ content: "Tidak punya izin.", flags: MessageFlags.Ephemeral });
 
         generateBracket();
 
@@ -251,21 +255,25 @@ module.exports = (client) => {
           components: [winnerRow]
         });
 
-        return interaction.reply({ content: "Tournament dimulai.", ephemeral: true });
+        return interaction.reply({ content: "Tournament dimulai.", flags: MessageFlags.Ephemeral });
       }
 
       if (interaction.customId === "win_p1" || interaction.customId === "win_p2") {
 
         if (!isAuthorized(interaction.member))
-          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+          return interaction.reply({ content: "Tidak punya izin.", flags: MessageFlags.Ephemeral });
 
-        const match = bracket.rounds[bracket.currentRound][bracket.currentMatchIndex];
+        const currentRoundMatches = bracket.rounds?.[bracket.currentRound];
+        if (!currentRoundMatches)
+          return interaction.reply({ content: "❌ Tidak ada match aktif.", flags: MessageFlags.Ephemeral });
 
-        const winner =
-          interaction.customId === "win_p1" ? match.p1 : match.p2;
+        const match = currentRoundMatches[bracket.currentMatchIndex];
+        if (!match)
+          return interaction.reply({ content: "❌ Match tidak valid.", flags: MessageFlags.Ephemeral });
 
+        const winner = interaction.customId === "win_p1" ? match.p1 : match.p2;
         if (!winner)
-          return interaction.reply({ content: "Match tidak valid.", ephemeral: true });
+          return interaction.reply({ content: "❌ Peserta tidak valid.", flags: MessageFlags.Ephemeral });
 
         match.winner = winner;
         saveState(bracket);
@@ -275,21 +283,19 @@ module.exports = (client) => {
         const channel = await client.channels.fetch(bracket.channelId);
         const msg = await channel.messages.fetch(bracket.messageId);
 
-        await msg.edit({
-          content: renderTree()
-        });
+        await msg.edit({ content: renderTree() });
 
-        return interaction.reply({ content: "Winner ditetapkan.", ephemeral: true });
+        return interaction.reply({ content: "✅ Winner ditetapkan.", flags: MessageFlags.Ephemeral });
       }
 
       if (interaction.customId === "reset") {
         if (!isAuthorized(interaction.member))
-          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+          return interaction.reply({ content: "Tidak punya izin.", flags: MessageFlags.Ephemeral });
 
         bracket = resetState();
         saveState(bracket);
 
-        return interaction.reply({ content: "Tournament direset.", ephemeral: true });
+        return interaction.reply({ content: "Tournament direset.", flags: MessageFlags.Ephemeral });
       }
     }
   });
