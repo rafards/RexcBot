@@ -1,300 +1,258 @@
 const {
-  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
-  Events,
-  MessageFlags,
-  PermissionFlagsBits
+  EmbedBuilder,
+  Events
 } = require("discord.js");
 
-module.exports = (client) => {
+const { loadState, saveState, resetState } = require("../utils/storage");
 
-  /* ================= STATE ================= */
+let bracket = loadState();
+if (!bracket) bracket = resetState();
 
-  let bracket = {
-    status: "idle",
-    maxSlot: 8,
-    participants: [],
-    round: 1,
-    matches: [],
-    channelId: null,
-    messageId: null
-  };
+function isAuthorized(member) {
+  return (
+    member.permissions.has("Administrator") ||
+    member.roles.cache.has(process.env.ORGANIZER_ROLE_ID)
+  );
+}
 
-  /* ================ UTIL =================== */
+function renderTree() {
+  if (!bracket.rounds.length) return "Belum ada bracket.";
 
-  function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-  }
+  let output = "";
 
-  function generateMatches() {
-    bracket.matches = [];
-    let players = [...bracket.participants];
-    let matchId = 1;
+  bracket.rounds.forEach((round, rIndex) => {
+    let title = "";
 
-    while (players.length > 1) {
-      const p1 = players.shift();
-      const p2 = players.shift();
+    if (rIndex === bracket.rounds.length - 1) title = "GRAND FINAL";
+    else if (rIndex === bracket.rounds.length - 2) title = "SEMIFINAL";
+    else title = `ROUND ${rIndex + 1}`;
 
-      bracket.matches.push({
-        id: matchId++,
-        p1,
-        p2,
-        winner: null,
-        completed: false,
-        isBye: false
-      });
-    }
+    output += `━━━━━━━━━━━━━━━━\n${title}\n━━━━━━━━━━━━━━━━\n\n`;
 
-    // Bye case
-    if (players.length === 1) {
-      bracket.matches.push({
-        id: matchId,
-        p1: players[0],
-        p2: null,
-        winner: players[0],
-        completed: true,
-        isBye: true
-      });
-    }
-  }
+    round.forEach((match, mIndex) => {
+      const p1 = match.p1 ? `<@${match.p1}>` : "BYE";
+      const p2 = match.p2 ? `<@${match.p2}>` : "BYE";
+      const winner = match.winner ? `<@${match.winner}>` : "?";
 
-  function buildEmbed() {
-    const embed = new EmbedBuilder()
-      .setColor("#22c55e")
-      .setTitle("🏁 STATIC SHIFT RACING TOURNAMENT");
+      output += `${p1} ─┐\n`;
+      output += `        ├── ${winner}\n`;
+      output += `${p2} ─┘`;
 
-    if (bracket.status === "open") {
-      embed.setDescription(
-        `Status: Registration Open\n\n` +
-        `Slot: ${bracket.participants.length} / ${bracket.maxSlot}\n\n` +
-        (bracket.participants.length
-          ? bracket.participants.map((id, i) => `${i + 1}. <@${id}>`).join("\n")
-          : "Belum ada peserta.")
-      );
-    }
+      if (
+        bracket.status === "running" &&
+        rIndex === bracket.currentRound &&
+        mIndex === bracket.currentMatchIndex
+      ) {
+        output += "   🏎 SSR HEAT — LIVE";
+      }
 
-    if (bracket.status === "running") {
-      let desc = `Status: Running\nRound: ${bracket.round}\n\n━━━━━━━━━━━━━━━━━━\n\n`;
-
-      bracket.matches.forEach(match => {
-        if (match.isBye) {
-          desc += `Match ${match.id}\n<@${match.p1}> mendapat bye 🎟\n\n`;
-        } else {
-          desc += `Match ${match.id}\n<@${match.p1}> 🆚 <@${match.p2}>\n`;
-          desc += `Winner: ${match.winner ? `<@${match.winner}> ✅` : "-"}\n\n`;
-        }
-      });
-
-      desc += "━━━━━━━━━━━━━━━━━━";
-
-      embed.setDescription(desc);
-    }
-
-    if (bracket.status === "finished") {
-      embed.setDescription(`🏆 CHAMPION\n\n<@${bracket.participants[0]}>`);
-    }
-
-    embed.setFooter({ text: "Static Shift Racing • Casual Mode" });
-
-    return embed;
-  }
-
-  async function updateMessage() {
-    const channel = await client.channels.fetch(bracket.channelId);
-    const message = await channel.messages.fetch(bracket.messageId);
-
-    let components = [];
-
-    if (bracket.status === "open") {
-      components.push(
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("join_bracket")
-            .setLabel("JOIN")
-            .setStyle(ButtonStyle.Success),
-          new ButtonBuilder()
-            .setCustomId("leave_bracket")
-            .setLabel("LEAVE")
-            .setStyle(ButtonStyle.Danger)
-        )
-      );
-    }
-
-    if (bracket.status === "running") {
-      components.push(
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("set_winner")
-            .setLabel("Set Winner")
-            .setStyle(ButtonStyle.Primary)
-        )
-      );
-    }
-
-    await message.edit({
-      embeds: [buildEmbed()],
-      components
-    });
-  }
-
-  /* ================ COMMAND ================= */
-
-  client.on("messageCreate", async (message) => {
-    if (message.author.bot) return;
-    if (message.content !== "!bracket") return;
-
-    if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
-      return message.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-    }
-
-    if (bracket.status !== "idle") {
-      return message.reply("❌ Tournament masih berjalan.");
-    }
-
-    bracket.status = "open";
-    bracket.participants = [];
-    bracket.round = 1;
-    bracket.channelId = message.channel.id;
-
-    const msg = await message.channel.send({
-      embeds: [buildEmbed()],
-      components: [
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("join_bracket")
-            .setLabel("JOIN")
-            .setStyle(ButtonStyle.Success),
-          new ButtonBuilder()
-            .setCustomId("leave_bracket")
-            .setLabel("LEAVE")
-            .setStyle(ButtonStyle.Danger)
-        )
-      ]
-    });
-
-    bracket.messageId = msg.id;
-
-    await message.reply({
-      content: "Panel tournament dibuka. Gunakan tombol untuk kontrol.",
-      flags: MessageFlags.Ephemeral
+      output += "\n\n";
     });
   });
 
-  /* ================ INTERACTIONS ================= */
+  return output;
+}
+
+function generateBracket() {
+  const roundCount = Math.log2(bracket.maxSlot);
+
+  let players = [...bracket.participants];
+
+  while (players.length < bracket.maxSlot) {
+    players.push(null);
+  }
+
+  let rounds = [];
+
+  // ROUND 1
+  let firstRound = [];
+  for (let i = 0; i < players.length; i += 2) {
+    firstRound.push({
+      p1: players[i],
+      p2: players[i + 1],
+      winner: null
+    });
+  }
+  rounds.push(firstRound);
+
+  // NEXT ROUNDS
+  for (let r = 1; r < roundCount; r++) {
+    const prev = rounds[r - 1];
+    let newRound = [];
+
+    for (let i = 0; i < prev.length / 2; i++) {
+      newRound.push({
+        p1: null,
+        p2: null,
+        winner: null
+      });
+    }
+
+    rounds.push(newRound);
+  }
+
+  bracket.rounds = rounds;
+  bracket.currentRound = 0;
+  bracket.currentMatchIndex = 0;
+  bracket.status = "running";
+
+  saveState(bracket);
+}
+
+function advanceMatch() {
+  bracket.currentMatchIndex++;
+
+  const currentRoundMatches = bracket.rounds[bracket.currentRound];
+
+  if (bracket.currentMatchIndex >= currentRoundMatches.length) {
+    // move to next round
+    const winners = currentRoundMatches.map(m => m.winner);
+
+    if (bracket.currentRound === bracket.rounds.length - 1) {
+      bracket.status = "finished";
+      saveState(bracket);
+      return;
+    }
+
+    const nextRound = bracket.rounds[bracket.currentRound + 1];
+
+    for (let i = 0; i < nextRound.length; i++) {
+      nextRound[i].p1 = winners[i * 2];
+      nextRound[i].p2 = winners[i * 2 + 1];
+    }
+
+    bracket.currentRound++;
+    bracket.currentMatchIndex = 0;
+  }
+
+  saveState(bracket);
+}
+
+module.exports = (client) => {
+
+  client.on(Events.MessageCreate, async (message) => {
+    if (message.author.bot) return;
+    if (message.channel.id !== process.env.BRACKET_CHANNEL_ID) return;
+
+    if (message.content === "!bracket") {
+      if (bracket.status === "open" || bracket.status === "running") {
+        return message.reply("⚠️ Tournament sedang aktif.");
+      }
+
+      const select = new StringSelectMenuBuilder()
+        .setCustomId("select_slot")
+        .setPlaceholder("Pilih jumlah slot")
+        .addOptions([
+          { label: "4 Players", value: "4" },
+          { label: "8 Players", value: "8" },
+          { label: "16 Players", value: "16" }
+        ]);
+
+      const row = new ActionRowBuilder().addComponents(select);
+
+      await message.reply({
+        content: "Pilih jumlah slot:",
+        components: [row]
+      });
+    }
+  });
 
   client.on(Events.InteractionCreate, async (interaction) => {
 
-    if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
+    // SLOT SELECT
+    if (interaction.isStringSelectMenu()) {
+      if (interaction.customId === "select_slot") {
+        bracket.maxSlot = parseInt(interaction.values[0]);
+        bracket.participants = [];
+        bracket.rounds = [];
+        bracket.status = "open";
+        bracket.channelId = interaction.channel.id;
 
-    /* JOIN */
-    if (interaction.customId === "join_bracket") {
-      if (bracket.status !== "open") return;
+        saveState(bracket);
 
-      if (bracket.participants.includes(interaction.user.id)) {
-        return interaction.reply({ content: "⚠ Kamu sudah terdaftar.", flags: MessageFlags.Ephemeral });
-      }
+        const embed = new EmbedBuilder()
+          .setTitle("🏁 SSR Championship")
+          .setDescription(`Registration Open\nSlot: 0 / ${bracket.maxSlot}`);
 
-      if (bracket.participants.length >= bracket.maxSlot) {
-        return interaction.reply({ content: "❌ Slot penuh.", flags: MessageFlags.Ephemeral });
-      }
-
-      bracket.participants.push(interaction.user.id);
-      await updateMessage();
-
-      return interaction.reply({ content: "✅ Berhasil join!", flags: MessageFlags.Ephemeral });
-    }
-
-    /* LEAVE */
-    if (interaction.customId === "leave_bracket") {
-      if (bracket.status !== "open") return;
-
-      bracket.participants = bracket.participants.filter(id => id !== interaction.user.id);
-      await updateMessage();
-
-      return interaction.reply({ content: "Keluar dari bracket.", flags: MessageFlags.Ephemeral });
-    }
-
-    /* SET WINNER BUTTON */
-    if (interaction.customId === "set_winner") {
-      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator))
-        return interaction.reply({ content: "❌ Admin only.", flags: MessageFlags.Ephemeral });
-
-      if (bracket.status !== "running")
-        return interaction.reply({ content: "❌ Tournament belum berjalan.", flags: MessageFlags.Ephemeral });
-
-      const unfinished = bracket.matches.filter(m => !m.completed && !m.isBye);
-
-      if (!unfinished.length)
-        return interaction.reply({ content: "Semua match sudah selesai.", flags: MessageFlags.Ephemeral });
-
-      const menu = new StringSelectMenuBuilder()
-        .setCustomId("select_match")
-        .setPlaceholder("Pilih Match")
-        .addOptions(
-          unfinished.map(m => ({
-            label: `Match ${m.id}`,
-            value: `${m.id}`
-          }))
+        const row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("join")
+            .setLabel("JOIN")
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId("start")
+            .setLabel("START")
+            .setStyle(ButtonStyle.Primary)
         );
 
-      return interaction.reply({
-        content: "Pilih match:",
-        components: [new ActionRowBuilder().addComponents(menu)],
-        flags: MessageFlags.Ephemeral
-      });
-    }
+        const msg = await interaction.channel.send({
+          embeds: [embed],
+          components: [row]
+        });
 
-    /* SELECT MATCH */
-    if (interaction.customId === "select_match") {
-      const matchId = parseInt(interaction.values[0]);
-      const match = bracket.matches.find(m => m.id === matchId);
+        bracket.messageId = msg.id;
+        saveState(bracket);
 
-      const menu = new StringSelectMenuBuilder()
-        .setCustomId(`select_winner_${match.id}`)
-        .setPlaceholder("Pilih Pemenang")
-        .addOptions([
-          { label: `Player 1`, value: match.p1 },
-          { label: `Player 2`, value: match.p2 }
-        ]);
-
-      return interaction.update({
-        content: "Pilih pemenang:",
-        components: [new ActionRowBuilder().addComponents(menu)]
-      });
-    }
-
-    /* SELECT WINNER */
-    if (interaction.customId.startsWith("select_winner_")) {
-      const matchId = parseInt(interaction.customId.split("_")[2]);
-      const match = bracket.matches.find(m => m.id === matchId);
-
-      match.winner = interaction.values[0];
-      match.completed = true;
-
-      await interaction.update({ content: "Winner diset!", components: [] });
-
-      await updateMessage();
-
-      const allDone = bracket.matches.every(m => m.completed);
-
-      if (allDone) {
-        const winners = bracket.matches.map(m => m.winner);
-        bracket.participants = winners;
-
-        if (winners.length === 1) {
-          bracket.status = "finished";
-          await updateMessage();
-          return;
-        }
-
-        bracket.round++;
-        generateMatches();
-        await updateMessage();
+        return interaction.reply({ content: "Slot ditetapkan.", ephemeral: true });
       }
     }
+
+    // BUTTONS
+    if (interaction.isButton()) {
+
+      if (interaction.customId === "join") {
+        if (bracket.status !== "open")
+          return interaction.reply({ content: "Registration ditutup.", ephemeral: true });
+
+        if (bracket.participants.includes(interaction.user.id))
+          return interaction.reply({ content: "Sudah terdaftar.", ephemeral: true });
+
+        if (bracket.participants.length >= bracket.maxSlot)
+          return interaction.reply({ content: "Slot penuh.", ephemeral: true });
+
+        bracket.participants.push(interaction.user.id);
+        saveState(bracket);
+
+        const channel = await client.channels.fetch(bracket.channelId);
+        const message = await channel.messages.fetch(bracket.messageId);
+
+        const embed = new EmbedBuilder()
+          .setTitle("🏁 SSR Championship")
+          .setDescription(
+            `Registration Open\nSlot: ${bracket.participants.length} / ${bracket.maxSlot}`
+          );
+
+        await message.edit({ embeds: [embed] });
+
+        return interaction.reply({ content: "Berhasil join.", ephemeral: true });
+      }
+
+      if (interaction.customId === "start") {
+        if (!isAuthorized(interaction.member))
+          return interaction.reply({ content: "Tidak punya izin.", ephemeral: true });
+
+        if (bracket.participants.length < 2)
+          return interaction.reply({ content: "Minimal 2 peserta.", ephemeral: true });
+
+        generateBracket();
+
+        const channel = await client.channels.fetch(bracket.channelId);
+        const message = await channel.messages.fetch(bracket.messageId);
+
+        const embed = new EmbedBuilder()
+          .setTitle("🏎 SSR Championship")
+          .setDescription(renderTree());
+
+        await message.edit({ embeds: [embed], components: [] });
+
+        return interaction.reply({ content: "Tournament dimulai.", ephemeral: true });
+      }
+    }
+
   });
 
 };
