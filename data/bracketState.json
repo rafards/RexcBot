@@ -1,0 +1,10 @@
+{
+  "maxSlot": null,
+  "participants": [],
+  "rounds": [],
+  "currentRound": 0,
+  "currentMatchIndex": 0,
+  "status": "idle",
+  "messageId": null,
+  "channelId": null
+}
