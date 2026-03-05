@@ -17,6 +17,7 @@ client.once("clientReady", () => {
 /* ================= LOAD SYSTEMS ================= */
 
 require("./systems/nicknameSystem")(client);
+require("./systems/bracketSystem")(client);
 
 /* ================================================= */
 
