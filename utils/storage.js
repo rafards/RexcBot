@@ -1,39 +1,29 @@
 const fs = require("fs");
 const path = require("path");
 
-const statePath = path.join(__dirname, "../data/bracketState.json");
+const filePath = path.join(__dirname, "../data/bracket.json");
 
 function loadState() {
-  if (!fs.existsSync(statePath)) {
-    return null;
-  }
-
-  const data = fs.readFileSync(statePath, "utf8");
+  if (!fs.existsSync(filePath)) return null;
+  const data = fs.readFileSync(filePath);
   return JSON.parse(data);
 }
 
 function saveState(state) {
-  fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+  fs.writeFileSync(filePath, JSON.stringify(state, null, 2));
 }
 
 function resetState() {
-  const defaultState = {
-    maxSlot: null,
+  return {
+    status: "idle",
+    maxSlot: 0,
     participants: [],
     rounds: [],
     currentRound: 0,
     currentMatchIndex: 0,
-    status: "idle",
     messageId: null,
     channelId: null
   };
-
-  saveState(defaultState);
-  return defaultState;
 }
 
-module.exports = {
-  loadState,
-  saveState,
-  resetState
-};
+module.exports = { loadState, saveState, resetState };
