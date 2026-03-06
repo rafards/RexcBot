@@ -1,1 +1,8 @@
-
+{
+  "tournamentName": null,
+  "registrationType": "free",
+  "entryFee": 0,
+  "laps": 0,
+  "slots": 0,
+  "status": "idle"
+}
