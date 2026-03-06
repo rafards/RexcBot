@@ -1,6 +1,6 @@
 module.exports = (client) => {
 
-  client.once("ready", () => {
+  client.once("clientready", () => {
     console.log(`Logged in as ${client.user.tag}`);
   });
 
