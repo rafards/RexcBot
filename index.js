@@ -1,22 +1,15 @@
-const createBot = require("./src/core/bot");
-const config = require("./src/core/config");
+const { Client, GatewayIntentBits } = require("discord.js");
 
-const messageEvent = require("./src/events/messageCreate");
-const interactionEvent = require("./src/events/interactionCreate");
-
-const nicknameFeature = require("./src/features/nickname");
-
-const client = createBot();
-
-messageEvent(client);
-interactionEvent(client);
-
-nicknameFeature(client);
-
-client.once("ready", () => {
-
-  console.log(`Bot Online: ${client.user.tag}`);
-
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
 });
 
-client.login(config.TOKEN);
+const loadEvents = require("./src/core/eventLoader");
+
+loadEvents(client);
+
+client.login(process.env.TOKEN);
