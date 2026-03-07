@@ -8,6 +8,7 @@ const { createBracketEmbed } = require("../utils/embeds")
 const { getSetupButton } = require("../utils/bracketButtons")
 const { deployRegistrationButton } = require("../interactions/buttons/deployRegistrationButton")
 const { playerButton } = require("../interactions/buttons/playerButton")
+const { fillTestPlayersButton } = require("../interactions/buttons/fillTestPlayersButton")
 
 client.on("interactionCreate", async interaction => {
 
@@ -24,6 +25,8 @@ client.on("interactionCreate", async interaction => {
  if(interaction.customId === "join_race" || interaction.customId === "leave_race"){
   return playerButton(interaction)
  }
+
+ await fillTestPlayersButton(interaction)
 
  if(interaction.customId.startsWith("winner_")){
   return winnerButton(interaction)
