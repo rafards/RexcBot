@@ -72,7 +72,7 @@ async function handleBracketModals(interaction){
 
  await interaction.reply({
   content:`🏁 Race name set to **${raceName}**`,
-  ephemeral:true
+  
  })
 
 }
@@ -91,7 +91,7 @@ async function handleBracketModals(interaction){
 
  await interaction.reply({
   content:`📋 Registration set: ${price === "0" ? "Gratis" : "Rp"+Number(price).toLocaleString("id-ID")}`,
-  ephemeral:true
+  
  })
 
 }
@@ -110,7 +110,7 @@ async function handleBracketModals(interaction){
 
  await interaction.reply({
   content:`🏎️ Lap set to **${lap}**`,
-  ephemeral:true
+  
  })
 
 }
@@ -129,7 +129,7 @@ async function handleBracketModals(interaction){
 
  await interaction.reply({
   content:`👥 Player slot set to **${slot}**`,
-  ephemeral:true
+  
  })
 
 }
@@ -148,7 +148,7 @@ async function handleBracketModals(interaction){
 
  await interaction.reply({
   content:`⏰ Race time set to **${time}**`,
-  ephemeral:true
+  
  })
 
 }
@@ -166,7 +166,7 @@ if(interaction.customId === "ign_modal"){
 
   return interaction.reply({
    content:"❌ You already joined",
-   ephemeral:true
+   
   })
 
  }
@@ -183,7 +183,7 @@ if(interaction.customId === "ign_modal"){
 
  await interaction.reply({
   content:`✅ Joined as ${ign}`,
-  ephemeral:true
+  
  })
 
 }
