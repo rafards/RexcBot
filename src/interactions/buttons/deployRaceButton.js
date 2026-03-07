@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js")
+const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js")
 const { raceState } = require("../../data/raceState")
 const { generateBracket } = require("../../utils/bracketGenerator")
 
@@ -34,12 +34,12 @@ async function deployRaceButton(interaction){
 
  let bracketText = ""
 
- raceState.matches.forEach((match,index)=>{
+raceState.matches.forEach((match,index)=>{
 
-  bracketText += `Match ${index+1}\n`
-  bracketText += `${match.player1.name} vs ${match.player2.name}\n\n`
+ bracketText += `Match ${index+1}\n`
+ bracketText += `${match.player1.name} vs ${match.player2.name}\n\n`
 
- })
+})
 
  // =========================
  // CREATE EMBED
@@ -56,12 +56,37 @@ async function deployRaceButton(interaction){
   )
 
  // =========================
+ // SET WINNER
+ // =========================
+ 
+ const rows = []
+
+ raceState.matches.forEach((match,index)=>{
+
+ const button1 = new ButtonBuilder()
+  .setCustomId(`winner_${index}_1`)
+  .setLabel(match.player1.name)
+  .setStyle(ButtonStyle.Primary)
+
+ const button2 = new ButtonBuilder()
+  .setCustomId(`winner_${index}_2`)
+  .setLabel(match.player2.name)
+  .setStyle(ButtonStyle.Danger)
+
+ const row = new ActionRowBuilder().addComponents(button1,button2)
+
+ rows.push(row)
+
+})
+
+ // =========================
  // SEND TO CHANNEL
  // =========================
 
  await interaction.reply({
-  embeds:[embed]
- })
+ embeds:[embed],
+ components: rows
+})
 
 }
 
