@@ -169,17 +169,15 @@ if(interaction.customId === "ign_modal"){
 
  // UPDATE PLAYER PANEL
 
- const playerChannel = interaction.guild.channels.cache.find(
-  c => c.name === "info-race"
- )
+ const playerChannel = interaction.guild.channels.cache.find(c=>c.name==="info-race")
 
  const panel = await playerChannel.messages.fetch(raceState.playerPanelId)
 
- const embed = panel.embeds[0]
+ const embed = panel.embeds[0].data
 
  embed.description = `Players\n${playerCount} / ${raceState.slot}`
 
- await panel.edit({ embeds:[embed] })
+ await panel.edit({embeds:[embed]})
 
  // UPDATE ADMIN LIST
 
