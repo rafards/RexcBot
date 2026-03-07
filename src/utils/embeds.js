@@ -4,23 +4,28 @@ function createBracketEmbed(data){
 
  return new EmbedBuilder()
   .setTitle("🏁 SSR BRACKET RACE")
-  .setColor("#ff2b2b")
-  .setDescription(`
-**Race Name**
-${data.name || "Not Set"}
-
-**Registration**
-${data.type || "Not Set"}
-
-**Lap**
-${data.lap || "Not Set"}
-
-**Slots**
-${data.slots || "Not Set"}
-
-**Race Start**
-${data.time || "Not Set"}
-`)
+  .addFields(
+   {
+    name:"Race Name",
+    value: data.raceName ? data.raceName : "Not Set"
+   },
+   {
+    name:"Registration",
+    value: data.raceType ? `${data.raceType} | ${data.racePrice || 0}` : "Not Set"
+   },
+   {
+    name:"Lap",
+    value: data.lap ? String(data.lap) : "Not Set"
+   },
+   {
+    name:"Slots",
+    value: data.slot ? String(data.slot) : "Not Set"
+   },
+   {
+    name:"Race Start",
+    value: data.time ? data.time : "Not Set"
+   }
+  )
 
 }
 
