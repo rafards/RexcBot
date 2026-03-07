@@ -10,6 +10,8 @@ const raceState = {
 
  players: [],
 
+ registrationOpen:true,
+
  deployed: false
 
 }
