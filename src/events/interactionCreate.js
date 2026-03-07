@@ -35,29 +35,6 @@ client.on("interactionCreate", async interaction => {
  }
 
  // ===============================
- // SELECT MENU
- // ===============================
-
- if(interaction.isStringSelectMenu()){
-
- if(interaction.customId === "lap_select"){
-
-  raceState.lap = Number(interaction.values[0])
-
-  const embed = createBracketEmbed(raceState)
-
-  const row = getSetupButton("slot")
-
-  await interaction.update({
-   embeds:[embed],
-   components:[row]
-  })
-
- }
-
-}
-
- // ===============================
  // MODAL
  // ===============================
 
