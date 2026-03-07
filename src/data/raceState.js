@@ -1,7 +1,6 @@
 const raceState = {
 
  raceName:null,
-
  racePrice:null,
 
  lap:null,
@@ -11,13 +10,15 @@ const raceState = {
  players:[],
 
  matches:[],
-
  currentRound:1,
 
- registrationOpen:true,
+ registrationOpen:false,
 
  panelMessageId:null,
- panelChannelId:null
+ panelChannelId:null,
+
+ playerPanelId:null,
+ adminListPanelId:null
 
 }
 
