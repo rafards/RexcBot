@@ -42,9 +42,11 @@ async function winnerButton(interaction){
   embeds:[buildBracketEmbed()]
  })
 
- const finished = raceState.matches.every(m=>m.winner)
+ const finished = raceState.matches.every(m => m && m.winner !== null)
 
- if(!finished) return
+ if(!finished){
+  return
+ }
  
  // ==========================
  // DOUBLE MODE ENGINE
