@@ -15,16 +15,8 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.isButton()){
 
-  if(interaction.customId === "register_player"){
-   return registrationButton(interaction)
-  }
-
   if(interaction.customId.startsWith("winner_")){
    return winnerButton(interaction)
-  }
-
-  if(interaction.customId === "deploy_race"){
-   return deployRaceButton(interaction)
   }
 
   return bracketButtons(interaction)
