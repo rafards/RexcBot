@@ -9,6 +9,7 @@ const { getSetupButton } = require("../utils/bracketButtons")
 const { deployRegistrationButton } = require("../interactions/buttons/deployRegistrationButton")
 const { playerButton } = require("../interactions/buttons/playerButton")
 const { fillTestPlayersButton } = require("../interactions/buttons/fillTestPlayersButton")
+const { resetTournamentButton } = require("../interactions/buttons/resetTournamentButton")
 
 client.on("interactionCreate", async interaction => {
 
@@ -26,6 +27,7 @@ client.on("interactionCreate", async interaction => {
   return playerButton(interaction)
  }
 
+ await resetTournamentButton(interaction)
  await fillTestPlayersButton(interaction)
 
  if(interaction.customId.startsWith("winner_")){
