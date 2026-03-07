@@ -15,6 +15,13 @@ async function winnerButton(interaction){
 
  const match = raceState.matches[matchIndex]
 
+ if(!match){
+  return interaction.reply({
+   content:"Match tidak ditemukan",
+   ephemeral:true
+  })
+ }
+ 
  if(match.winner){
 
   return interaction.reply({
