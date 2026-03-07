@@ -22,21 +22,46 @@ async function deployRaceButton(interaction){
  if(raceState.players.length < 2)
   return interaction.reply({content:"❌ Need at least 2 players", ephemeral:true})
 
+ // LOCK REGISTER
+ raceState.registrationOpen = false
+
+ // GENERATE BRACKET
  raceState.matches = generateBracket(raceState.players)
 
- raceState.registrationOpen = false
+ // =========================
+ // BUILD BRACKET TEXT
+ // =========================
+
+ let bracketText = ""
+
+ raceState.matches.forEach((match,index)=>{
+
+  bracketText += `Match ${index+1}\n`
+  bracketText += `${match.player1.name} vs ${match.player2.name}\n\n`
+
+ })
+
+ // =========================
+ // CREATE EMBED
+ // =========================
 
  const embed = new EmbedBuilder()
   .setTitle(`🏁 ${raceState.raceName}`)
-  .setDescription("Race successfully deployed!")
+  .setDescription("Race Bracket Generated")
   .addFields(
+   {name:"Round", value:`${raceState.currentRound}`, inline:true},
    {name:"Laps", value:`${raceState.lap}`, inline:true},
-   {name:"Slots", value:`${raceState.slot}`, inline:true},
-   {name:"Race Time", value:`${raceState.time}`, inline:true},
-   {name:"Players", value:`${raceState.players.length}`, inline:true}
+   {name:"Players", value:`${raceState.players.length}`, inline:true},
+   {name:"Matches", value:bracketText}
   )
 
- await interaction.reply({embeds:[embed]})
+ // =========================
+ // SEND TO CHANNEL
+ // =========================
+
+ await interaction.reply({
+  embeds:[embed]
+ })
 
 }
 
