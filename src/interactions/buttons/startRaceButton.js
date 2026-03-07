@@ -15,7 +15,16 @@ async function startRaceButton(interaction){
 
  }
 
- raceState.matches = generateBracket(raceState.players)
+ const result = generateBracket(raceState.players)
+
+ raceState.matches = result.matches
+ raceState.oddPlayer = result.oddPlayer
+
+ if(raceState.oddPlayer){
+
+ text += `Waiting Player\n${raceState.oddPlayer.ign}\n\n`
+
+}
 
  let text=""
 
