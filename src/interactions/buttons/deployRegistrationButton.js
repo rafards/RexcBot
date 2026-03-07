@@ -15,35 +15,32 @@ async function deployRegistrationButton(interaction){
   return
  }
 
- raceState.registrationOpen = true
-
  if(!raceState.raceName || !raceState.slot){
-  return interaction.reply({
-   content:"❌ Setup race belum lengkap",
-   ephemeral:true
-  })
+  return
  }
+
+ // buka pendaftaran
+ raceState.registrationOpen = true
 
  // ================= PLAYER PANEL =================
 
  const playerEmbed = new EmbedBuilder()
   .setTitle(`🏁 ${raceState.raceName}`)
-  .setDescription(`Players\n0 / ${raceState.slot}`)
+  .setDescription(`Players\n0/${raceState.slot}`)
+
+ const disabled = !raceState.registrationOpen
 
  const joinButton = new ButtonBuilder()
   .setCustomId("join_race")
   .setLabel("Join")
   .setStyle(ButtonStyle.Success)
+  .setDisabled(disabled)
 
  const leaveButton = new ButtonBuilder()
   .setCustomId("leave_race")
   .setLabel("Leave")
   .setStyle(ButtonStyle.Danger)
-
- const disabled = !raceState.registrationOpen
-
- joinButton.setDisabled(disabled)
- leaveButton.setDisabled(disabled)
+  .setDisabled(disabled)
 
  const row = new ActionRowBuilder().addComponents(joinButton,leaveButton)
 
@@ -53,6 +50,7 @@ async function deployRegistrationButton(interaction){
  })
 
  raceState.playerPanelId = playerPanel.id
+ raceState.playerPanelChannelId = playerChannel.id
 
  // ================= ADMIN PANEL =================
 
@@ -71,6 +69,7 @@ async function deployRegistrationButton(interaction){
  })
 
  raceState.adminListPanelId = adminPanel.id
+ raceState.adminListChannelId = interaction.channel.id
 
 }
 
