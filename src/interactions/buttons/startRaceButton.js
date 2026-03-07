@@ -1,6 +1,7 @@
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const { raceState } = require("../../data/raceState")
 const { generateBracket } = require("../../utils/bracketGenerator")
+const { buildBracketEmbed } = require("../../utils/bracketPanelBuilder")
 
 async function startRaceButton(interaction){
 
@@ -24,7 +25,7 @@ async function startRaceButton(interaction){
 
  text += `Waiting Player\n${raceState.oddPlayer.ign}\n\n`
 
-}
+ }
 
  let text=""
 
@@ -37,6 +38,16 @@ async function startRaceButton(interaction){
   text += `${p1} vs ${p2}\n\n`
 
  })
+
+ const embed = buildBracketEmbed()
+
+ const msg = await interaction.reply({
+  embeds:[embed],
+  components:rows,
+  fetchReply:true
+ })
+ 
+ raceState.bracketPanelId = msg.id
 
  const embed = new EmbedBuilder()
   .setTitle(`🏁 ${raceState.raceName}`)
