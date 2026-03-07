@@ -1,22 +1,24 @@
 function generateNextRound(matches){
 
- const winners = matches.map(m => m.winner)
+ const winners = matches.map(m=>m.winner).filter(Boolean)
 
- const nextMatches = []
+ const next=[]
 
  for(let i=0;i<winners.length;i+=2){
 
-  nextMatches.push({
+  next.push({
 
    player1:winners[i],
-   player2:winners[i+1],
-   winner:null
+   player2:winners[i+1] || null,
+
+   winner:null,
+   loser:null
 
   })
 
  }
 
- return nextMatches
+ return next
 
 }
 
