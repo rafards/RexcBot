@@ -6,6 +6,8 @@ const { winnerButton } = require("../interactions/buttons/winnerButton")
 const { raceState } = require("../data/raceState")
 const { createBracketEmbed } = require("../utils/embeds")
 const { getSetupButton } = require("../utils/bracketButtons")
+const { deployRegistrationButton } = require("../interactions/buttons/deployRegistrationButton")
+const { joinButton } = require("../interactions/buttons/joinButton")
 
 client.on("interactionCreate", async interaction => {
 
