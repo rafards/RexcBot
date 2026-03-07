@@ -5,19 +5,18 @@ async function deployRegistrationButton(interaction){
 
  if(interaction.customId !== "deploy_registration") return
 
+ await interaction.deferReply()
+
  const playerChannel = interaction.guild.channels.cache.find(
   c => c.name === "info-race"
  )
 
  if(!playerChannel){
-  return interaction.reply({
-   content:"❌ Channel info-race tidak ditemukan",
-   ephemeral:true
+  return interaction.editReply({
+   content:"❌ Channel info-race tidak ditemukan"
   })
  }
 
  raceState.registrationOpen = true
-
-}
 
 module.exports = { deployRegistrationButton }
