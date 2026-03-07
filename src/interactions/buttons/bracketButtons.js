@@ -1,6 +1,4 @@
 const {
- ButtonBuilder,
- ButtonStyle,
  ModalBuilder,
  TextInputBuilder,
  TextInputStyle,
@@ -128,16 +126,5 @@ async function bracketButtons(interaction){
   await interaction.showModal(modal)
 
  }
-
- // ===============================
- // RESET BRACKET
- // ===============================
-
- const resetButton = new ButtonBuilder()
- .setCustomId("reset_tournament")
- .setLabel("Reset Tournament")
- .setStyle(ButtonStyle.Danger)
-
-}
 
 module.exports = { bracketButtons }
