@@ -6,6 +6,8 @@ async function winnerButton(interaction){
 
  if(!interaction.customId.startsWith("winner_")) return
 
+ const channel = interaction.channel
+
  const parts = interaction.customId.split("_")
 
  const matchIndex = parseInt(parts[1])
@@ -96,7 +98,9 @@ async function winnerButton(interaction){
  
  }
 
- const winners = raceState.matches.map(m=>m.winner)
+ const winners = raceState.matches
+  .filter(m=>m.winner)
+  .map(m=>m.winner)
 
  if(raceState.oddPlayer){
  
@@ -141,6 +145,12 @@ async function winnerButton(interaction){
   text += `Match ${i+1}\n${p1} vs ${p2}\n\n`
 
  })
+
+ const nextPanel = await interaction.channel.send({
+  embeds:[buildBracketEmbed()]
+ })
+
+ raceState.bracketPanelId = nextPanel.id
 
 }
 
