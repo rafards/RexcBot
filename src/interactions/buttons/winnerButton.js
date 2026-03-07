@@ -47,18 +47,16 @@ async function winnerButton(interaction){
   content:`🏆 Winner: ${winner.ign}`
  })
 
- // update panel
+ // update panel setelah winner dipilih
  await updateBracketPanel(interaction.client)
 
  // ==========================
  // CHECK ROUND FINISHED
  // ==========================
 
- const finished = raceState.matches.every(m => m && m.winner !== null)
+ const finished = raceState.matches.every(m => m && m.winner)
 
- if(!finished){
-  return
- }
+ if(!finished) return
 
  // ==========================
  // DOUBLE MODE ENGINE
@@ -153,8 +151,14 @@ async function winnerButton(interaction){
  // NEXT ROUND
  // ==========================
 
- raceState.matches = generateNextRound(raceState.matches)
+ const nextMatches = generateNextRound(raceState.matches)
 
+ // proteksi jika generator gagal
+ if(!nextMatches || nextMatches.length === 0){
+  return
+ }
+
+ raceState.matches = nextMatches
  raceState.currentRound++
 
  await updateBracketPanel(interaction.client)
