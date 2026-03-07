@@ -127,4 +127,5 @@ async function bracketButtons(interaction){
 
  }
 
+}
 module.exports = { bracketButtons }
