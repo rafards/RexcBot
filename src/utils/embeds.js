@@ -1,5 +1,13 @@
 const { EmbedBuilder } = require("discord.js")
 
+function formatRupiah(value){
+
+ if(!value || value === 0) return "Gratis"
+
+ return "Rp" + value.toLocaleString("id-ID")
+
+}
+
 function createBracketEmbed(data){
 
  return new EmbedBuilder()
@@ -11,7 +19,7 @@ function createBracketEmbed(data){
    },
    {
     name:"Registration",
-    value: data.raceType ? `${data.raceType} | ${data.racePrice || 0}` : "Not Set"
+    value: data.racePrice !== undefined ? formatRupiah(data.racePrice) : "Not Set"
    },
    {
     name:"Lap",
