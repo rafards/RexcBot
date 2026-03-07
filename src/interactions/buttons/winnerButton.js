@@ -1,6 +1,8 @@
 const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+
 
 async function winnerButton(interaction){
 
@@ -140,12 +142,19 @@ async function winnerButton(interaction){
 
  if(winners.length === 1){
 
+  const resetButton = new ButtonBuilder()
+   .setCustomId("reset_tournament")
+   .setLabel("Reset Tournament")
+   .setStyle(ButtonStyle.Danger)
+
+  const row = new ActionRowBuilder().addComponents(resetButton)
+
   await interaction.channel.send({
-  content:`🏆 TOURNAMENT WINNER: ${winners[0].ign}`
+   content:`🏆 TOURNAMENT WINNER: ${winners[0].ign}`,
+   components:[row]
   })
 
   return
-
  }
 
  // ==========================
