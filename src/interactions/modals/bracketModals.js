@@ -165,6 +165,17 @@ if(interaction.customId === "ign_modal"){
 
  await updateRegistrationPanels(interaction)
 
+ // cek jika slot penuh
+ if(raceState.players.length >= raceState.slot){
+
+  raceState.registrationOpen = false
+
+  const { generateBracket } = require("../../systems/bracketEngine")
+
+  await generateBracket(interaction)
+
+ }
+
  await interaction.reply({
   content:`✅ Joined as ${ign}`,
   ephemeral:true
