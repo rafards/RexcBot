@@ -1,41 +1,44 @@
-const { EmbedBuilder } = require("discord.js")
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const { raceState } = require("../data/raceState")
 
-function buildBracketText(){
+async function sendBracketPanel(interaction){
 
- let text=""
+ let description = ""
 
- raceState.matches.forEach((m,i)=>{
+ const rows = []
 
-  const p1 = m.player1?.ign || "BYE"
-  const p2 = m.player2?.ign || "BYE"
+ raceState.matches.forEach((match,i)=>{
 
-  let status=""
+  description += `Match ${i+1}\n`
+  description += `${match.player1.ign} vs ${match.player2.ign}\n\n`
 
-  if(m.winner){
-   status=`🏆 Winner: ${m.winner.ign}`
-  }
+  const btn1 = new ButtonBuilder()
+   .setCustomId(`winner_${i}_1`)
+   .setLabel(match.player1.ign)
+   .setStyle(ButtonStyle.Primary)
 
-  text += `Match ${i+1}\n`
-  text += `${p1} vs ${p2}\n`
-  text += `${status}\n\n`
+  const btn2 = new ButtonBuilder()
+   .setCustomId(`winner_${i}_2`)
+   .setLabel(match.player2.ign)
+   .setStyle(ButtonStyle.Danger)
+
+  const row = new ActionRowBuilder().addComponents(btn1,btn2)
+
+  rows.push(row)
 
  })
 
- return text
+ const embed = new EmbedBuilder()
+  .setTitle(`🏁 ROUND ${raceState.currentRound}`)
+  .setDescription(description)
+
+ const panel = await interaction.channel.send({
+  embeds:[embed],
+  components:rows
+ })
+
+ raceState.bracketPanelId = panel.id
 
 }
 
-function buildBracketEmbed(){
-
- return new EmbedBuilder()
-  .setTitle(`🏁 ${raceState.raceName}`)
-  .setDescription(`ROUND ${raceState.currentRound}`)
-  .addFields({
-   name:"Matches",
-   value:buildBracketText()
-  })
-
-}
-
-module.exports = { buildBracketEmbed }
+module.exports = { sendBracketPanel }
