@@ -39,6 +39,30 @@ async function winnerButton(interaction){
 
  const winners = raceState.matches.map(m=>m.winner)
 
+ const winners = raceState.matches.map(m=>m.winner)
+
+ if(raceState.oddPlayer){
+ 
+  const firstLoser = raceState.losers.shift()
+ 
+  if(firstLoser){
+ 
+   raceState.matches.push({
+ 
+    player1:firstLoser,
+    player2:raceState.oddPlayer,
+ 
+    winner:null,
+    loser:null
+ 
+   })
+ 
+  }
+ 
+  raceState.oddPlayer=null
+ 
+ }
+
  if(winners.length === 1){
 
   return interaction.followUp({
