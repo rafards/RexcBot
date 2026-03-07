@@ -38,30 +38,23 @@ async function bracketButtons(interaction){
 
  if(interaction.customId === "set_registration"){
 
-  const modal = new ModalBuilder()
-   .setCustomId("registration_modal")
-   .setTitle("Registration Setup")
+ const modal = new ModalBuilder()
+  .setCustomId("registration_modal")
+  .setTitle("Registration Price")
 
-  const typeInput = new TextInputBuilder()
-   .setCustomId("race_type_input")
-   .setLabel("Type (Gratis / Berbayar)")
-   .setStyle(TextInputStyle.Short)
-   .setRequired(true)
+ const priceInput = new TextInputBuilder()
+  .setCustomId("race_price_input")
+  .setLabel("Registration Price (0 = Gratis)")
+  .setStyle(TextInputStyle.Short)
+  .setRequired(true)
 
-  const priceInput = new TextInputBuilder()
-   .setCustomId("race_price_input")
-   .setLabel("Price (Isi 0 jika Gratis)")
-   .setStyle(TextInputStyle.Short)
-   .setRequired(true)
+ const row = new ActionRowBuilder().addComponents(priceInput)
 
-  const row1 = new ActionRowBuilder().addComponents(typeInput)
-  const row2 = new ActionRowBuilder().addComponents(priceInput)
+ modal.addComponents(row)
 
-  modal.addComponents(row1,row2)
+ await interaction.showModal(modal)
 
-  await interaction.showModal(modal)
-
- }
+}
 
  // ===============================
  // SET LAP
