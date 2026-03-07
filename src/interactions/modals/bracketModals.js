@@ -6,23 +6,10 @@ const { EmbedBuilder } = require("discord.js")
 
 async function updatePanel(interaction){
 
- // pastikan panel tersimpan
- if(!raceState.panelChannelId || !raceState.panelMessageId){
-  console.log("Panel message not registered yet")
-  return
- }
-
- const channel = interaction.client.channels.cache.get(raceState.panelChannelId)
-
- if(!channel){
-  console.log("Channel not found")
-  return
- }
-
- const message = await channel.messages.fetch(raceState.panelMessageId).catch(()=>null)
+ const message = interaction.message
 
  if(!message){
-  console.log("Panel message not found")
+  console.log("Panel message not found from interaction")
   return
  }
 
@@ -37,12 +24,11 @@ async function updatePanel(interaction){
  const row = getSetupButton(nextStep)
 
  await message.edit({
-  embeds:[embed],
-  components:[row]
+  embeds: [embed],
+  components: [row]
  })
 
 }
-
 async function handleBracketModals(interaction){
 
  // ===============================
