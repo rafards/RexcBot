@@ -34,8 +34,6 @@ async function winnerButton(interaction){
   content:`🏆 Winner: ${winner.ign}`
  })
 
- const channel = interaction.channel
-
  const panel = await channel.messages.fetch(raceState.bracketPanelId)
  
  await panel.edit({
@@ -143,8 +141,6 @@ async function winnerButton(interaction){
   text += `Match ${i+1}\n${p1} vs ${p2}\n\n`
 
  })
-
- const channel = interaction.channel
 
  const panel = await channel.messages.fetch(raceState.bracketPanelId)
  
