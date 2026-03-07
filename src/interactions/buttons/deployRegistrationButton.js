@@ -40,6 +40,11 @@ async function deployRegistrationButton(interaction){
   .setLabel("Leave")
   .setStyle(ButtonStyle.Danger)
 
+ const disabled = !raceState.registrationOpen
+
+ joinButton.setDisabled(disabled)
+ leaveButton.setDisabled(disabled)
+
  const row = new ActionRowBuilder().addComponents(joinButton,leaveButton)
 
  const playerPanel = await playerChannel.send({
