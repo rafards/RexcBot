@@ -15,36 +15,36 @@ async function updatePanel(interaction){
 
  let nextStep
 
- if(!raceState.raceName){
+if(!raceState.raceName){
 
-  nextStep = "race_name"
+ nextStep = "race_name"
 
- }
- else if(!raceState.raceType){
+}
+else if(raceState.racePrice === null){
 
-  nextStep = "registration"
+ nextStep = "registration"
 
- }
- else if(!raceState.lap){
+}
+else if(!raceState.lap){
 
-  nextStep = "lap"
+ nextStep = "lap"
 
- }
- else if(!raceState.slot){
+}
+else if(!raceState.slot){
 
-  nextStep = "slot"
+ nextStep = "slot"
 
- }
- else if(!raceState.time){
+}
+else if(!raceState.time){
 
-  nextStep = "race_time"
+ nextStep = "race_time"
 
- }
- else{
+}
+else{
 
-  nextStep = "deploy"
+ nextStep = "deploy"
 
- }
+}
 
  const row = getSetupButton(nextStep)
 
