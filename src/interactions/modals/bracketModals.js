@@ -96,6 +96,25 @@ async function handleBracketModals(interaction){
 }
 
  // ===============================
+ // LAPS
+ // ===============================
+
+ if(interaction.customId === "lap_modal"){
+
+ const lap = interaction.fields.getTextInputValue("lap_input")
+
+ raceState.lap = Number(lap)
+
+ await updatePanel(interaction)
+
+ await interaction.reply({
+  content:`🏎️ Lap set to **${lap}**`,
+  ephemeral:true
+ })
+
+}
+
+ // ===============================
  // SLOT
  // ===============================
 
