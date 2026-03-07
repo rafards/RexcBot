@@ -118,7 +118,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.deferUpdate())
+ await interaction.deferUpdate()
 
 }
 
