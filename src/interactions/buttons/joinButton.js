@@ -1,5 +1,6 @@
 const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require("discord.js")
 const { raceState } = require("../../data/raceState")
+const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
 
 async function joinButton(interaction){
 
@@ -49,6 +50,8 @@ if(index === -1){
 }
 
 raceState.players.splice(index,1)
+
+await updateRegistrationPanels(interaction)
 
 await interaction.reply({
  content:"👋 You left the race",
