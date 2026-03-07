@@ -21,6 +21,9 @@ client.on("interactionCreate", async interaction => {
    return winnerButton(interaction)
   }
 
+  await deployRegistrationButton(interaction)
+  await joinButton(interaction)
+
   return bracketButtons(interaction)
 
  }
