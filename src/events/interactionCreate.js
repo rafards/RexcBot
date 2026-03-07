@@ -3,9 +3,11 @@ const { client } = require("../index")
 const { registrationButton } = require("../interactions/buttons/registrationButton")
 const { bracketButtons } = require("../interactions/buttons/bracketButtons")
 const { handleBracketModals } = require("../interactions/modals/bracketModals")
-const { raceState } = require("../data/raceState")
 const { deployRaceButton } = require("../interactions/buttons/deployRaceButton")
 const { winnerButton } = require("../interactions/buttons/winnerButton")
+const { raceState } = require("../data/raceState")
+const { createBracketEmbed } = require("../utils/embeds")
+const { getSetupButton } = require("../utils/bracketButtons")
 
 client.on("interactionCreate", async interaction => {
 
@@ -17,6 +19,14 @@ client.on("interactionCreate", async interaction => {
 
   if(interaction.customId === "register_player"){
    return registrationButton(interaction)
+  }
+
+  if(interaction.customId.startsWith("winner_")){
+   return winnerButton(interaction)
+  }
+
+  if(interaction.customId === "deploy_race"){
+   return deployRaceButton(interaction)
   }
 
   return bracketButtons(interaction)
@@ -33,9 +43,13 @@ client.on("interactionCreate", async interaction => {
 
    raceState.lap = Number(interaction.values[0])
 
-   await interaction.reply({
-    content:`🏎️ Race lap set to **${raceState.lap}**`,
-    ephemeral:true
+   const embed = createBracketEmbed(raceState)
+
+   const row = getSetupButton("slot")
+
+   await interaction.update({
+    embeds:[embed],
+    components:[row]
    })
 
   }
@@ -48,20 +62,8 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.isModalSubmit()){
 
-  handleBracketModals(interaction)
+  return handleBracketModals(interaction)
 
  }
-
- // ===============================
- // DEPLOY RACE
- // ===============================
-
- if(interaction.isButton()){
-
- registrationButton(interaction)
- deployRaceButton(interaction)
- winnerButton(interaction)
-
-}
 
 })
