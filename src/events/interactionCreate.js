@@ -44,11 +44,13 @@ client.on("interactionCreate", async interaction => {
 
   raceState.lap = Number(interaction.values[0])
 
-  await updatePanel(interaction)
+  const embed = createBracketEmbed(raceState)
 
-  await interaction.followUp({
-   content:`🏎️ Race lap set to **${raceState.lap}**`,
-   ephemeral:true
+  const row = getSetupButton("slot")
+
+  await interaction.update({
+   embeds:[embed],
+   components:[row]
   })
 
  }
