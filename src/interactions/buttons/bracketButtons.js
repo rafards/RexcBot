@@ -2,8 +2,7 @@ const {
  ModalBuilder,
  TextInputBuilder,
  TextInputStyle,
- ActionRowBuilder,
- StringSelectMenuBuilder
+ ActionRowBuilder
 } = require("discord.js")
 
 async function bracketButtons(interaction){
@@ -18,13 +17,13 @@ async function bracketButtons(interaction){
    .setCustomId("race_name_modal")
    .setTitle("Set Race Name")
 
-  const raceInput = new TextInputBuilder()
+  const input = new TextInputBuilder()
    .setCustomId("race_name_input")
    .setLabel("Race Name")
    .setStyle(TextInputStyle.Short)
    .setRequired(true)
 
-  const row = new ActionRowBuilder().addComponents(raceInput)
+  const row = new ActionRowBuilder().addComponents(input)
 
   modal.addComponents(row)
 
@@ -33,28 +32,28 @@ async function bracketButtons(interaction){
  }
 
  // ===============================
- // SET REGISTRATION
+ // SET REGISTRATION PRICE
  // ===============================
 
  if(interaction.customId === "set_registration"){
 
- const modal = new ModalBuilder()
-  .setCustomId("registration_modal")
-  .setTitle("Registration Price")
+  const modal = new ModalBuilder()
+   .setCustomId("registration_modal")
+   .setTitle("Registration Price")
 
- const priceInput = new TextInputBuilder()
-  .setCustomId("race_price_input")
-  .setLabel("Registration Price (0 = Gratis)")
-  .setStyle(TextInputStyle.Short)
-  .setRequired(true)
+  const input = new TextInputBuilder()
+   .setCustomId("race_price_input")
+   .setLabel("Price (0 = Gratis)")
+   .setStyle(TextInputStyle.Short)
+   .setRequired(true)
 
- const row = new ActionRowBuilder().addComponents(priceInput)
+  const row = new ActionRowBuilder().addComponents(input)
 
- modal.addComponents(row)
+  modal.addComponents(row)
 
- await interaction.showModal(modal)
+  await interaction.showModal(modal)
 
-}
+ }
 
  // ===============================
  // SET LAP
@@ -62,26 +61,26 @@ async function bracketButtons(interaction){
 
  if(interaction.customId === "set_lap"){
 
- const modal = new ModalBuilder()
-  .setCustomId("lap_modal")
-  .setTitle("Set Lap")
+  const modal = new ModalBuilder()
+   .setCustomId("lap_modal")
+   .setTitle("Set Lap")
 
- const lapInput = new TextInputBuilder()
-  .setCustomId("lap_input")
-  .setLabel("Total Lap (1 / 2 / 3)")
-  .setStyle(TextInputStyle.Short)
-  .setRequired(true)
+  const input = new TextInputBuilder()
+   .setCustomId("lap_input")
+   .setLabel("Lap (1 / 2 / 3)")
+   .setStyle(TextInputStyle.Short)
+   .setRequired(true)
 
- const row = new ActionRowBuilder().addComponents(lapInput)
+  const row = new ActionRowBuilder().addComponents(input)
 
- modal.addComponents(row)
+  modal.addComponents(row)
 
- await interaction.showModal(modal)
+  await interaction.showModal(modal)
 
-}
+ }
 
  // ===============================
- // SET PLAYER SLOT
+ // SET SLOT
  // ===============================
 
  if(interaction.customId === "set_slot"){
@@ -90,14 +89,13 @@ async function bracketButtons(interaction){
    .setCustomId("slot_modal")
    .setTitle("Set Player Slot")
 
-  const slotInput = new TextInputBuilder()
+  const input = new TextInputBuilder()
    .setCustomId("slot_input")
-   .setLabel("Total Player Slot")
+   .setLabel("Total Player")
    .setStyle(TextInputStyle.Short)
-   .setPlaceholder("Example: 8 / 16")
    .setRequired(true)
 
-  const row = new ActionRowBuilder().addComponents(slotInput)
+  const row = new ActionRowBuilder().addComponents(input)
 
   modal.addComponents(row)
 
@@ -106,7 +104,7 @@ async function bracketButtons(interaction){
  }
 
  // ===============================
- // SET RACE TIME
+ // SET TIME
  // ===============================
 
  if(interaction.customId === "set_race_time"){
@@ -115,31 +113,17 @@ async function bracketButtons(interaction){
    .setCustomId("race_time_modal")
    .setTitle("Set Race Time")
 
-  const timeInput = new TextInputBuilder()
+  const input = new TextInputBuilder()
    .setCustomId("race_time_input")
-   .setLabel("Race Time")
+   .setLabel("Race Time (Example: 20:00)")
    .setStyle(TextInputStyle.Short)
-   .setPlaceholder("Example: 20:00")
    .setRequired(true)
 
-  const row = new ActionRowBuilder().addComponents(timeInput)
+  const row = new ActionRowBuilder().addComponents(input)
 
   modal.addComponents(row)
 
   await interaction.showModal(modal)
-
- }
-
- // ===============================
- // DEPLOY RACE
- // ===============================
-
- if(interaction.customId === "deploy_race"){
-
-  await interaction.reply({
-   content:"🚀 Race system deployed.\nBracket will be generated after players filled.",
-   ephemeral:true
-  })
 
  }
 
