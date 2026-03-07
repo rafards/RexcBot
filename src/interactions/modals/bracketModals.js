@@ -156,6 +156,15 @@ if(interaction.customId === "ign_modal"){
  }
 
  // simpan player
+ const already = raceState.players.find(p=>p.id===interaction.user.id)
+
+ if(already){
+  return interaction.reply({
+  content:"❌ Kamu sudah terdaftar",
+  ephemeral:true
+  })
+ }
+
  raceState.players.push({
   id: interaction.user.id,
   ign
