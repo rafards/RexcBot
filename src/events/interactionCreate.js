@@ -17,19 +17,20 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.isButton()){
 
-  await deployRegistrationButton(interaction)
-
-  if(interaction.customId === "join_race" || interaction.customId === "leave_race"){
-   return playerButton(interaction)
-  }
-
-  if(interaction.customId.startsWith("winner_")){
-   return winnerButton(interaction)
-  }
-
-  return bracketButtons(interaction)
-
+ if(interaction.customId === "deploy_registration"){
+  return deployRegistrationButton(interaction)
  }
+
+ if(interaction.customId === "join_race" || interaction.customId === "leave_race"){
+  return playerButton(interaction)
+ }
+
+ if(interaction.customId.startsWith("winner_")){
+  return winnerButton(interaction)
+ }
+
+ return bracketButtons(interaction)
+}
 
  // ===============================
  // MODAL
