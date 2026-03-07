@@ -75,6 +75,29 @@ async function handleBracketModals(interaction){
 
  }
 
+ // ===============================
+// PLAYER REGISTER
+// ===============================
+
+if(interaction.customId === "player_register_modal"){
+
+ const name = interaction.fields.getTextInputValue("player_name")
+ const ign = interaction.fields.getTextInputValue("player_ign")
+
+ raceState.players.push({
+  id: interaction.user.id,
+  username: interaction.user.username,
+  name,
+  ign
+ })
+
+ await interaction.reply({
+  content:`✅ Registered as **${name}** (${ign})`,
+  ephemeral:true
+ })
+
+}
+
 }
 
 module.exports = { handleBracketModals }
