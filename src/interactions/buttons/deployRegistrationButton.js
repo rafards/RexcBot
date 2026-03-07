@@ -69,11 +69,11 @@ async function deployRegistrationButton(interaction){
  .setLabel("Fill Test Players")
  .setStyle(ButtonStyle.Secondary)
 
- const row = new ActionRowBuilder().addComponents(fillButton)
+ const fill = new ActionRowBuilder().addComponents(fillButton)
 
  const adminPanel = await interaction.channel.send({
   embeds:[adminEmbed],
-  components:[row]
+  components:[fill]
  })
 
  raceState.adminListPanelId = adminPanel.id
