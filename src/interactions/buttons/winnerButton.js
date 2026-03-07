@@ -140,9 +140,11 @@ async function winnerButton(interaction){
 
  if(winners.length === 1){
 
-  return interaction.followUp({
-   content:`🏆 TOURNAMENT WINNER: ${winners[0].ign}`
+  await interaction.channel.send({
+  content:`🏆 TOURNAMENT WINNER: ${winners[0].ign}`
   })
+
+  return
 
  }
 
