@@ -1,6 +1,6 @@
-const { raceState } = require("../../../data/raceState")
-const { updateRegistrationPanels } = require("../../../utils/updateRegistrationPanels")
-const { generateBracket } = require("../../../systems/bracketEngine")
+const { raceState } = require("../../data/raceState")
+const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
+const { generateBracket } = require("../../systems/bracketEngine")
 
 async function fillTestPlayersButton(interaction){
 
