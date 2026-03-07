@@ -1,6 +1,6 @@
 const { client } = require("../index")
 
-client.on("clientready", () => {
+client.once("clientready", () => {
 
  console.log(`Bot aktif sebagai ${client.user.tag}`)
 
