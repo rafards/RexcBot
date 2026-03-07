@@ -27,3 +27,5 @@ const raceState = {
  bracketPanelId:null
 
 }
+
+module.exports = { raceState }
