@@ -18,5 +18,6 @@ async function deployRegistrationButton(interaction){
  }
 
  raceState.registrationOpen = true
-
+ 
+}
 module.exports = { deployRegistrationButton }
