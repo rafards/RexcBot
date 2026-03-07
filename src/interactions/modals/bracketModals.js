@@ -70,10 +70,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.reply({
-  content:`🏁 Race name set to **${raceName}**`,
-  
- })
+ await interaction.deferUpdate()
 
 }
 
@@ -89,10 +86,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.reply({
-  content:`📋 Registration set: ${price === "0" ? "Gratis" : "Rp"+Number(price).toLocaleString("id-ID")}`,
-  
- })
+ await interaction.deferUpdate()
 
 }
 
@@ -108,10 +102,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.reply({
-  content:`🏎️ Lap set to **${lap}**`,
-  
- })
+ await interaction.deferUpdate()
 
 }
 
@@ -127,10 +118,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.reply({
-  content:`👥 Player slot set to **${slot}**`,
-  
- })
+ await interaction.deferUpdate())
 
 }
 
@@ -146,10 +134,7 @@ async function handleBracketModals(interaction){
 
  await updatePanel(interaction)
 
- await interaction.reply({
-  content:`⏰ Race time set to **${time}**`,
-  
- })
+ await interaction.deferUpdate()
 
 }
 
