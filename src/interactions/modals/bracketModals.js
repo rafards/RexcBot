@@ -160,9 +160,20 @@ if(interaction.customId === "ign_modal"){
 
  const ign = interaction.fields.getTextInputValue("ign_input")
 
+ // cek kalau sudah join
+ if(raceState.players.find(p => p.id === interaction.user.id)){
+
+  return interaction.reply({
+   content:"❌ You already joined",
+   ephemeral:true
+  })
+
+ }
+
+ // simpan player
  raceState.players.push({
   id: interaction.user.id,
-  ign: ign
+  ign
  })
 
  const playerCount = raceState.players.length
