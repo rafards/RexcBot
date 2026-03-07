@@ -7,6 +7,8 @@ const raceState = {
  slot:null,
  time:null,
 
+ raceMode:"single",
+
  players:[],
 
  matches:[],
@@ -21,5 +23,3 @@ const raceState = {
  adminListPanelId:null
 
 }
-
-module.exports = { raceState }
