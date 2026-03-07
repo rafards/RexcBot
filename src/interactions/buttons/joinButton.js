@@ -55,4 +55,11 @@ await interaction.reply({
  ephemeral:true
 })
 
+const panel = await interaction.channel.messages.fetch(raceState.playerPanelId)
+
+await panel.edit({
+ embeds:[buildPlayerPanel()],
+ components:[buttons]
+})
+
 module.exports = { joinButton, leaveButton }
