@@ -27,6 +27,8 @@ async function winnerButton(interaction){
  match.winner = winner
  match.loser = loser
 
+ raceState.losers.push(loser)
+
  await interaction.reply({
   content:`🏆 Winner: ${winner.ign}`
  })
