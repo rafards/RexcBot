@@ -127,6 +127,15 @@ async function bracketButtons(interaction){
 
  }
 
+ // ===============================
+ // RESET BRACKET
+ // ===============================
+
+ const resetButton = new ButtonBuilder()
+ .setCustomId("reset_tournament")
+ .setLabel("Reset Tournament")
+ .setStyle(ButtonStyle.Danger)
+
 }
 
 module.exports = { bracketButtons }
