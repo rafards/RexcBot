@@ -74,6 +74,14 @@ async function startRaceButton(interaction){
 
  })
 
+ const channel = interaction.channel
+
+ const panel = await channel.messages.fetch(raceState.bracketPanelId)
+
+ await panel.edit({
+  embeds:[buildBracketEmbed()]
+ })
+
  await interaction.reply({
   embeds:[embed],
   components:rows
