@@ -62,24 +62,23 @@ async function bracketButtons(interaction){
 
  if(interaction.customId === "set_lap"){
 
-  const menu = new StringSelectMenuBuilder()
-   .setCustomId("lap_select")
-   .setPlaceholder("Select Lap")
-   .addOptions([
-    { label:"1 Lap", value:"1" },
-    { label:"2 Lap", value:"2" },
-    { label:"3 Lap", value:"3" }
-   ])
+ const modal = new ModalBuilder()
+  .setCustomId("lap_modal")
+  .setTitle("Set Lap")
 
-  const row = new ActionRowBuilder().addComponents(menu)
+ const lapInput = new TextInputBuilder()
+  .setCustomId("lap_input")
+  .setLabel("Total Lap (1 / 2 / 3)")
+  .setStyle(TextInputStyle.Short)
+  .setRequired(true)
 
-  await interaction.reply({
-   content:"Select race lap",
-   components:[row],
-   ephemeral:true
-  })
+ const row = new ActionRowBuilder().addComponents(lapInput)
 
- }
+ modal.addComponents(row)
+
+ await interaction.showModal(modal)
+
+}
 
  // ===============================
  // SET PLAYER SLOT
