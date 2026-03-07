@@ -37,23 +37,22 @@ async function joinButton(interaction){
 
 }
 
-async function leaveButton(interaction){
+const index = raceState.players.findIndex(p => p.id === interaction.user.id)
 
- if(interaction.customId !== "leave_race") return
+if(index === -1){
 
- const index = raceState.players.findIndex(p=>p.id===interaction.user.id)
-
- if(index === -1){
-  return interaction.reply({content:"❌ You are not registered",ephemeral:true})
- }
-
- raceState.players.splice(index,1)
-
- await interaction.reply({
-  content:"✅ You left the race",
+ return interaction.reply({
+  content:"❌ You are not registered",
   ephemeral:true
  })
 
 }
+
+raceState.players.splice(index,1)
+
+await interaction.reply({
+ content:"👋 You left the race",
+ ephemeral:true
+})
 
 module.exports = { joinButton, leaveButton }
