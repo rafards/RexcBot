@@ -36,6 +36,60 @@ async function winnerButton(interaction){
  const finished = raceState.matches.every(m=>m.winner)
 
  if(!finished) return
+ 
+ // ==========================
+ // DOUBLE MODE ENGINE
+ // ==========================
+ 
+ if(raceState.raceMode === "double"){
+ 
+  const winners=[]
+  const losers=[]
+ 
+  raceState.matches.forEach(m=>{
+ 
+   winners.push(m.winner)
+   losers.push(m.loser)
+ 
+  })
+ 
+  raceState.matches=[]
+ 
+  // winner vs winner
+  for(let i=0;i<winners.length;i+=2){
+ 
+   if(winners[i+1]){
+ 
+    raceState.matches.push({
+     player1:winners[i],
+     player2:winners[i+1],
+     winner:null,
+     loser:null
+    })
+ 
+   }
+ 
+  }
+ 
+  // loser vs loser
+  for(let i=0;i<losers.length;i+=2){
+ 
+   if(losers[i+1]){
+ 
+    raceState.matches.push({
+     player1:losers[i],
+     player2:losers[i+1],
+     winner:null,
+     loser:null
+    })
+ 
+   }
+ 
+  }
+ 
+ }
+
+ if(!finished) return
 
  const winners = raceState.matches.map(m=>m.winner)
 
