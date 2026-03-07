@@ -51,12 +51,12 @@ function getSetupButton(step){
 
  else if(step === "deploy"){
 
-  button = new ButtonBuilder()
-   .setCustomId("deploy_race")
-   .setLabel("Deploy Race")
-   .setStyle(ButtonStyle.Success)
+ button = new ButtonBuilder()
+  .setCustomId("deploy_registration")
+  .setLabel("Deploy Registration")
+  .setStyle(ButtonStyle.Success)
 
- }
+}
 
  return new ActionRowBuilder().addComponents(button)
 
