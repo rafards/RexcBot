@@ -142,12 +142,6 @@ async function winnerButton(interaction){
 
  })
 
- const panel = await channel.messages.fetch(raceState.bracketPanelId)
- 
- await panel.edit({
-  embeds:[buildBracketEmbed()]
- })
-
 }
 
 module.exports = { winnerButton }
