@@ -150,7 +150,7 @@ if(interaction.customId === "ign_modal"){
 
   return interaction.reply({
    content:"❌ You already joined",
-   
+   ephemeral:true
   })
 
  }
@@ -167,7 +167,7 @@ if(interaction.customId === "ign_modal"){
 
  await interaction.reply({
   content:`✅ Joined as ${ign}`,
-  
+  ephemeral:true
  })
 
 }
