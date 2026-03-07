@@ -1,19 +1,20 @@
 const { client } = require("../index")
-const { handleBracketButtons } = require("../interactions/buttons/bracketButtons")
+
+const { registrationButton } = require("../interactions/buttons/registrationButton")
 const { handleBracketModals } = require("../interactions/modals/bracketModals")
 
 client.on("interactionCreate", async interaction => {
 
  if(interaction.isButton()){
 
-  handleBracketButtons(interaction)
+  if(interaction.customId === "set_registration"){
+   registrationButton(interaction)
+  }
 
  }
 
  if(interaction.isModalSubmit()){
-
   handleBracketModals(interaction)
-
  }
 
 })
