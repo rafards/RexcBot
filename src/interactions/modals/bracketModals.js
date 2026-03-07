@@ -3,6 +3,7 @@ const { bracketData } = require("../../systems/bracketSystem")
 const { getSetupButton } = require("../../utils/bracketButtons")
 const { raceState } = require("../../data/raceState")
 const { EmbedBuilder } = require("discord.js")
+const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
 
 async function updatePanel(interaction){
 
@@ -178,40 +179,7 @@ if(interaction.customId === "ign_modal"){
 
  const playerCount = raceState.players.length
 
- // UPDATE PLAYER PANEL
-
- const playerChannel = interaction.guild.channels.cache.find(c=>c.name==="info-race")
-
- const panel = await playerChannel.messages.fetch(raceState.playerPanelId)
-
- const embed = panel.embeds[0].data
-
- embed.description = `Players\n${playerCount} / ${raceState.slot}`
-
- await panel.edit({embeds:[embed]})
-
- // UPDATE ADMIN LIST
-
- const adminChannel = interaction.guild.channels.cache.find(
-  c => c.name === "setup-bot"
- )
-
- const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId)
-
- let list = ""
-
- raceState.players.forEach((p,i)=>{
-  list += `${i+1}. ${p.ign}\n`
- })
-
- for(let i=raceState.players.length+1;i<=raceState.slot;i++){
-  list += `${i}.\n`
- }
-
- const adminEmbed = adminPanel.embeds[0]
- adminEmbed.description = list
-
- await adminPanel.edit({ embeds:[adminEmbed] })
+ await updateRegistrationPanels(interaction)
 
  await interaction.reply({
   content:`✅ Joined as ${ign}`,
