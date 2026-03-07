@@ -144,8 +144,12 @@ async function winnerButton(interaction){
 
  })
 
- await interaction.followUp({
-  content:`⚔️ ROUND ${raceState.currentRound}\n\n${text}`
+ const channel = interaction.channel
+
+ const panel = await channel.messages.fetch(raceState.bracketPanelId)
+ 
+ await panel.edit({
+  embeds:[buildBracketEmbed()]
  })
 
 }
