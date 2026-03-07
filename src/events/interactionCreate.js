@@ -40,22 +40,20 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.isStringSelectMenu()){
 
-  if(interaction.customId === "lap_select"){
+ if(interaction.customId === "lap_select"){
 
-   raceState.lap = Number(interaction.values[0])
+  raceState.lap = Number(interaction.values[0])
 
-   const embed = createBracketEmbed(raceState)
+  await updatePanel(interaction)
 
-   const row = getSetupButton("slot")
-
-   await interaction.update({
-    embeds:[embed],
-    components:[row]
-   })
-
-  }
+  await interaction.followUp({
+   content:`🏎️ Race lap set to **${raceState.lap}**`,
+   ephemeral:true
+  })
 
  }
+
+}
 
  // ===============================
  // MODAL
