@@ -82,16 +82,14 @@ async function handleBracketModals(interaction){
 
  if(interaction.customId === "registration_modal"){
 
- const type = interaction.fields.getTextInputValue("race_type_input")
  const price = interaction.fields.getTextInputValue("race_price_input")
 
- raceState.raceType = type
  raceState.racePrice = Number(price)
 
  await updatePanel(interaction)
 
  await interaction.reply({
-  content:`📋 Registration set: **${type}** | Price: **${price}**`,
+  content:`📋 Registration set: ${price === "0" ? "Gratis" : "Rp"+Number(price).toLocaleString("id-ID")}`,
   ephemeral:true
  })
 
