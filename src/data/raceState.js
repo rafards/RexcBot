@@ -7,11 +7,14 @@ const raceState = {
 
  players:[],
 
- matches:[], // bracket
+ matches:[],
 
  currentRound:1,
 
- registrationOpen:true
+ registrationOpen:true,
+
+ panelMessageId:null,
+ panelChannelId:null
 
 }
 
