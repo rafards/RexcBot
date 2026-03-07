@@ -6,8 +6,6 @@ async function winnerButton(interaction){
 
  if(!interaction.customId.startsWith("winner_")) return
 
- const channel = interaction.channel
-
  const parts = interaction.customId.split("_")
 
  const matchIndex = parseInt(parts[1])
@@ -15,21 +13,27 @@ async function winnerButton(interaction){
 
  const match = raceState.matches[matchIndex]
 
+ // ==========================
+ // MATCH CHECK
+ // ==========================
+
  if(!match){
   return interaction.reply({
    content:"Match tidak ditemukan",
    ephemeral:true
   })
  }
- 
- if(match.winner){
 
+ if(match.winner){
   return interaction.reply({
    content:"Winner already set",
    ephemeral:true
   })
-
  }
+
+ // ==========================
+ // SET WINNER
+ // ==========================
 
  const winner = playerIndex===1 ? match.player1 : match.player2
  const loser  = playerIndex===1 ? match.player2 : match.player1
@@ -43,95 +47,99 @@ async function winnerButton(interaction){
   content:`🏆 Winner: ${winner.ign}`
  })
 
+ // update panel
  await updateBracketPanel(interaction.client)
- 
- await panel.edit({
-  embeds:[buildBracketEmbed()]
- })
+
+ // ==========================
+ // CHECK ROUND FINISHED
+ // ==========================
 
  const finished = raceState.matches.every(m => m && m.winner !== null)
 
  if(!finished){
   return
  }
- 
+
  // ==========================
  // DOUBLE MODE ENGINE
  // ==========================
- 
+
  if(raceState.raceMode === "double"){
- 
+
   const winners=[]
   const losers=[]
- 
+
   raceState.matches.forEach(m=>{
- 
    winners.push(m.winner)
    losers.push(m.loser)
- 
   })
- 
+
   raceState.matches=[]
- 
+
   // winner vs winner
   for(let i=0;i<winners.length;i+=2){
- 
+
    if(winners[i+1]){
- 
+
     raceState.matches.push({
      player1:winners[i],
      player2:winners[i+1],
      winner:null,
      loser:null
     })
- 
+
    }
- 
+
   }
- 
+
   // loser vs loser
   for(let i=0;i<losers.length;i+=2){
- 
+
    if(losers[i+1]){
- 
+
     raceState.matches.push({
      player1:losers[i],
      player2:losers[i+1],
      winner:null,
      loser:null
     })
- 
+
    }
- 
+
   }
- 
+
  }
 
- const winners = raceState.matches
-  .filter(m=>m.winner)
-  .map(m=>m.winner)
+ // ==========================
+ // ODD PLAYER SYSTEM
+ // ==========================
 
  if(raceState.oddPlayer){
- 
+
   const firstLoser = raceState.losers.shift()
- 
+
   if(firstLoser){
- 
+
    raceState.matches.push({
- 
     player1:firstLoser,
     player2:raceState.oddPlayer,
- 
     winner:null,
     loser:null
- 
    })
- 
+
   }
- 
+
   raceState.oddPlayer=null
- 
+
  }
+
+ // ==========================
+ // CHECK TOURNAMENT WINNER
+ // ==========================
+
+ const winners = raceState.matches
+  .filter(m => m && m.winner)
+  .map(m => m.winner)
 
  if(winners.length === 1){
 
@@ -141,19 +149,13 @@ async function winnerButton(interaction){
 
  }
 
+ // ==========================
+ // NEXT ROUND
+ // ==========================
+
  raceState.matches = generateNextRound(raceState.matches)
+
  raceState.currentRound++
-
- let text=""
-
- raceState.matches.forEach((m,i)=>{
-
-  const p1 = m.player1?.ign || "BYE"
-  const p2 = m.player2?.ign || "BYE"
-
-  text += `Match ${i+1}\n${p1} vs ${p2}\n\n`
-
- })
 
  await updateBracketPanel(interaction.client)
 
