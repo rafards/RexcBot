@@ -23,7 +23,6 @@ client.on("interactionCreate", async interaction => {
 
   await deployRegistrationButton(interaction)
   await playerButton(interaction)
-  await leaveButton(interaction)
 
   return bracketButtons(interaction)
 
