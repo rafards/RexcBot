@@ -1,6 +1,7 @@
 const { createBracketEmbed } = require("../../utils/embeds")
 const { bracketData } = require("../../systems/bracketSystem")
 const { getSetupButton } = require("../../utils/bracketButtons")
+const { raceState } = require("../../data/raceState")
 
 async function handleBracketModals(interaction){
 
