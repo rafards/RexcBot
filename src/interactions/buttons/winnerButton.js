@@ -1,4 +1,5 @@
 const { raceState } = require("../../data/raceState")
+const { generateNextRound } = require("../../utils/nextRoundGenerator")
 
 async function winnerButton(interaction){
 
@@ -22,44 +23,47 @@ async function winnerButton(interaction){
 
  match.winner = winner
 
+ await interaction.reply({
+  content:`🏆 Winner: **${winner.name}**`
+ })
+
  // cek apakah semua match selesai
+ const finished = raceState.matches.every(m => m.winner)
 
-const finished = raceState.matches.every(m => m.winner)
+ if(finished){
 
-if(finished){
+  const winners = raceState.matches.map(m => m.winner)
 
- const winners = raceState.matches.map(m => m.winner)
+  // jika tinggal 1 → tournament selesai
+  if(winners.length === 1){
 
- // jika tinggal 1 → tournament selesai
- if(winners.length === 1){
+   return interaction.followUp({
+    content:`🏆 TOURNAMENT WINNER: **${winners[0].name}**`
+   })
 
-  return interaction.followUp({
-   content:`🏆 TOURNAMENT WINNER: **${winners[0].name}**`
+  }
+
+  // generate round berikutnya
+  raceState.matches = generateNextRound(raceState.matches)
+
+  raceState.currentRound++
+
+  let text = ""
+
+  raceState.matches.forEach((m,i)=>{
+
+   text += `Match ${i+1}\n`
+   text += `${m.player1.name} vs ${m.player2.name}\n\n`
+
+  })
+
+  await interaction.followUp({
+
+   content:`⚔️ ROUND ${raceState.currentRound}\n\n${text}`
+
   })
 
  }
-
- // generate round berikutnya
- raceState.matches = generateNextRound(raceState.matches)
-
- raceState.currentRound++
-
- let text = ""
-
- raceState.matches.forEach((m,i)=>{
-
-  text += `Match ${i+1}\n`
-  text += `${m.player1.name} vs ${m.player2.name}\n\n`
-
- })
-
- await interaction.followUp({
-
-  content:`⚔️ ROUND ${raceState.currentRound}\n\n${text}`
-
- })
-
-}
 
 }
 
