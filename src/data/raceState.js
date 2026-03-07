@@ -2,8 +2,7 @@ const raceState = {
 
  raceName:null,
 
- raceType:null,
- racePrice:0,
+ racePrice:null,
 
  lap:null,
  slot:null,
