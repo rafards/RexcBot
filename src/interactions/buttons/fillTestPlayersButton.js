@@ -23,7 +23,7 @@ async function fillTestPlayersButton(interaction){
 
  }
 
- await updateRegistrationPanels(interaction.client)
+ await updateRegistrationPanels(interaction)
 
  // jika slot penuh → auto start bracket
  if(raceState.players.length >= raceState.slot){
