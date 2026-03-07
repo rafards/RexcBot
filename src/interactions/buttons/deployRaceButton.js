@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js")
 const { raceState } = require("../../data/raceState")
+const { generateBracket } = require("../../utils/bracketGenerator")
 
 async function deployRaceButton(interaction){
 
@@ -21,6 +22,7 @@ async function deployRaceButton(interaction){
  if(raceState.players.length < 2)
   return interaction.reply({content:"❌ Need at least 2 players", ephemeral:true})
 
+ raceState.matches = generateBracket(raceState.players)
 
  raceState.registrationOpen = false
 
