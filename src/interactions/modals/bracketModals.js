@@ -156,20 +156,56 @@ async function handleBracketModals(interaction){
 // PLAYER REGISTER
 // ===============================
 
-if(interaction.customId === "player_register_modal"){
+if(interaction.customId === "ign_modal"){
 
- const name = interaction.fields.getTextInputValue("player_name")
- const ign = interaction.fields.getTextInputValue("player_ign")
+ const ign = interaction.fields.getTextInputValue("ign_input")
 
  raceState.players.push({
   id: interaction.user.id,
-  username: interaction.user.username,
-  name,
-  ign
+  ign: ign
  })
 
+ const playerCount = raceState.players.length
+
+ // UPDATE PLAYER PANEL
+
+ const playerChannel = interaction.guild.channels.cache.find(
+  c => c.name === "info-race"
+ )
+
+ const panel = await playerChannel.messages.fetch(raceState.playerPanelId)
+
+ const embed = panel.embeds[0]
+
+ embed.description = `Players\n${playerCount} / ${raceState.slot}`
+
+ await panel.edit({ embeds:[embed] })
+
+ // UPDATE ADMIN LIST
+
+ const adminChannel = interaction.guild.channels.cache.find(
+  c => c.name === "setup-bot"
+ )
+
+ const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId)
+
+ let list = ""
+
+ raceState.players.forEach((p,i)=>{
+  list += `${i+1}. ${p.ign}\n`
+ })
+
+ for(let i=raceState.players.length+1;i<=raceState.slot;i++){
+  list += `${i}.\n`
+ }
+
+ const adminEmbed = adminPanel.embeds[0]
+ adminEmbed.description = list
+
+ await adminPanel.edit({ embeds:[adminEmbed] })
+
  await interaction.reply({
-  content:`✅ Registered as **${name}** (${ign})`,
+  content:`✅ Joined as ${ign}`,
   ephemeral:true
  })
 
