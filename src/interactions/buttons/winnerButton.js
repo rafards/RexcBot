@@ -43,9 +43,8 @@ async function winnerButton(interaction){
 
  raceState.losers.push(loser)
 
- await interaction.reply({
-  content:`🏆 Winner: ${winner.ign}`
- })
+ // 🔧 DIGANTI (agar interaction stabil)
+ await interaction.deferUpdate()
 
  // update panel setelah winner dipilih
  await updateBracketPanel(interaction.client)
