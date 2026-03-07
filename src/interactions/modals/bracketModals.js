@@ -8,27 +8,47 @@ async function updatePanel(interaction){
 
  const message = interaction.message
 
- if(!message){
-  console.log("Panel message not found from interaction")
-  return
- }
+ if(!message) return
 
  const embed = createBracketEmbed(raceState)
 
- let nextStep = "race_name"
+ let nextStep
 
- if(raceState.raceName && !raceState.raceType) nextStep = "registration"
- else if(raceState.raceType && !raceState.slot) nextStep = "slot"
- else if(raceState.slot && !raceState.time) nextStep = "race_time"
+ if(!raceState.raceName){
+
+  nextStep = "race_name"
+
+ }
+ else if(!raceState.raceType){
+
+  nextStep = "registration"
+
+ }
+ else if(!raceState.slot){
+
+  nextStep = "slot"
+
+ }
+ else if(!raceState.time){
+
+  nextStep = "race_time"
+
+ }
+ else{
+
+  nextStep = "deploy"
+
+ }
 
  const row = getSetupButton(nextStep)
 
  await message.edit({
-  embeds: [embed],
-  components: [row]
+  embeds:[embed],
+  components:[row]
  })
 
 }
+
 async function handleBracketModals(interaction){
 
  // ===============================
