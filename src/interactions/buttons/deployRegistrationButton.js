@@ -18,11 +18,13 @@ async function deployRegistrationButton(interaction){
 
  raceState.registrationOpen = true
 
- // PLAYER PANEL
+ // ======================
+ // UPDATE PLAYER PANEL
+ // ======================
 
  const playerEmbed = new EmbedBuilder()
   .setTitle(`🏁 ${raceState.raceName}`)
-  .setDescription(`Players\n0 / ${raceState.slot}`)
+  .setDescription(`Players\n${raceState.players.length} / ${raceState.slot}`)
 
  const joinButton = new ButtonBuilder()
   .setCustomId("join_race")
@@ -36,35 +38,31 @@ async function deployRegistrationButton(interaction){
 
  const row = new ActionRowBuilder().addComponents(joinButton,leaveButton)
 
- const playerPanel = await playerChannel.send({
+ await playerPanel.edit({
   embeds:[playerEmbed],
   components:[row]
  })
 
- raceState.playerPanelId = playerPanel.id
+ // ======================
+ // UPDATE ADMIN PANEL
+ // ======================
 
- // ADMIN PANEL
-
- const adminEmbed = new EmbedBuilder()
-  .setTitle("📋 Player List")
+ const adminPanel = await interaction.channel.messages.fetch(raceState.adminListPanelId)
 
  let list = ""
 
- for(let i=1;i<=raceState.slot;i++){
-  list += `${i}.\n`
- }
-
- adminEmbed.setDescription(list)
-
- const adminPanel = await interaction.channel.send({
-  embeds:[adminEmbed]
+ raceState.players.forEach((p,i)=>{
+  list += `${i+1}. ${p.ign}\n`
  })
 
- raceState.adminListPanelId = adminPanel.id
+ if(list === "") list = "No players yet"
 
- await interaction.reply({
-  content:"✅ Registration deployed",
-  ephemeral:true
+ const adminEmbed = new EmbedBuilder()
+  .setTitle("📋 Player List")
+  .setDescription(list)
+
+ await adminPanel.edit({
+  embeds:[adminEmbed]
  })
 
 }
