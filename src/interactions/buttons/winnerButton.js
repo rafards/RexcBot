@@ -1,6 +1,6 @@
 const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
-const { buildBracketEmbed } = require("../../utils/bracketPanelBuilder")
+const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 
 async function winnerButton(interaction){
 
@@ -36,7 +36,7 @@ async function winnerButton(interaction){
   content:`🏆 Winner: ${winner.ign}`
  })
 
- const panel = await channel.messages.fetch(raceState.bracketPanelId)
+ await updateBracketPanel(interaction.client)
  
  await panel.edit({
   embeds:[buildBracketEmbed()]
@@ -146,11 +146,7 @@ async function winnerButton(interaction){
 
  })
 
- const nextPanel = await interaction.channel.send({
-  embeds:[buildBracketEmbed()]
- })
-
- raceState.bracketPanelId = nextPanel.id
+ await updateBracketPanel(interaction.client)
 
 }
 
