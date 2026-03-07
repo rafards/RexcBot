@@ -1,36 +1,34 @@
-function shufflePlayers(players){
+function shuffle(array){
 
- for(let i = players.length - 1; i > 0; i--){
+ for(let i=array.length-1;i>0;i--){
 
-  const j = Math.floor(Math.random() * (i + 1))
+  const j = Math.floor(Math.random()*(i+1))
 
-  const temp = players[i]
-  players[i] = players[j]
-  players[j] = temp
+  ;[array[i],array[j]]=[array[j],array[i]]
 
  }
 
- return players
+ return array
 
 }
 
-
-
 function generateBracket(players){
 
- const shuffled = shufflePlayers([...players])
+ const shuffled = shuffle([...players])
 
  const matches = []
 
- for(let i = 0; i < shuffled.length; i += 2){
+ for(let i=0;i<shuffled.length;i+=2){
 
-  const p1 = shuffled[i]
-  const p2 = shuffled[i + 1]
+  const player1 = shuffled[i]
+  const player2 = shuffled[i+1] || null
 
   matches.push({
-   player1: p1,
-   player2: p2,
-   winner: null
+   player1,
+   player2,
+   winner:null,
+   loser:null,
+   round:1
   })
 
  }
