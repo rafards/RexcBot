@@ -1,18 +1,17 @@
 const raceState = {
 
- raceName: null,
- raceType: null,
- racePrice: 0,
+ raceName:null,
+ lap:null,
+ slot:null,
+ time:null,
 
- lap: null,
- slot: null,
- time: null,
+ players:[],
 
- players: [],
+ matches:[], // bracket
 
- registrationOpen:true,
+ currentRound:1,
 
- deployed: false
+ registrationOpen:true
 
 }
 
