@@ -1,5 +1,6 @@
 const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
+const { buildBracketEmbed } = require("../../utils/bracketPanelBuilder")
 
 async function winnerButton(interaction){
 
@@ -31,6 +32,14 @@ async function winnerButton(interaction){
 
  await interaction.reply({
   content:`🏆 Winner: ${winner.ign}`
+ })
+
+ const channel = interaction.channel
+
+ const panel = await channel.messages.fetch(raceState.bracketPanelId)
+ 
+ await panel.edit({
+  embeds:[buildBracketEmbed()]
  })
 
  const finished = raceState.matches.every(m=>m.winner)
