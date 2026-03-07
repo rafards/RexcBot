@@ -161,6 +161,20 @@ if(interaction.customId === "ign_modal"){
   ign
  })
 
+ // ===============================
+// AUTO START BRACKET
+// ===============================
+
+ if(raceState.players.length >= raceState.slot){
+
+  raceState.registrationOpen = false
+
+  const { generateBracket } = require("../../systems/bracketEngine")
+
+  await generateBracket(interaction)
+
+ }
+
  const playerCount = raceState.players.length
 
  await updateRegistrationPanels(interaction)
