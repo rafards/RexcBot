@@ -89,10 +89,6 @@ async function winnerButton(interaction){
  
  }
 
- if(!finished) return
-
- const winners = raceState.matches.map(m=>m.winner)
-
  const winners = raceState.matches.map(m=>m.winner)
 
  if(raceState.oddPlayer){
