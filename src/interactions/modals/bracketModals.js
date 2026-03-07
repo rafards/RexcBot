@@ -6,9 +6,25 @@ const { EmbedBuilder } = require("discord.js")
 
 async function updatePanel(interaction){
 
+ // pastikan panel tersimpan
+ if(!raceState.panelChannelId || !raceState.panelMessageId){
+  console.log("Panel message not registered yet")
+  return
+ }
+
  const channel = interaction.client.channels.cache.get(raceState.panelChannelId)
 
- const message = await channel.messages.fetch(raceState.panelMessageId)
+ if(!channel){
+  console.log("Channel not found")
+  return
+ }
+
+ const message = await channel.messages.fetch(raceState.panelMessageId).catch(()=>null)
+
+ if(!message){
+  console.log("Panel message not found")
+  return
+ }
 
  const embed = createBracketEmbed(raceState)
 
