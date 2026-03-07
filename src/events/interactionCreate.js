@@ -1,9 +1,7 @@
 const { client } = require("../index")
 
-const { registrationButton } = require("../interactions/buttons/registrationButton")
 const { bracketButtons } = require("../interactions/buttons/bracketButtons")
 const { handleBracketModals } = require("../interactions/modals/bracketModals")
-const { deployRaceButton } = require("../interactions/buttons/deployRaceButton")
 const { winnerButton } = require("../interactions/buttons/winnerButton")
 const { raceState } = require("../data/raceState")
 const { createBracketEmbed } = require("../utils/embeds")
