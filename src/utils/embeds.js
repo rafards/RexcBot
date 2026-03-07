@@ -4,7 +4,7 @@ function formatRupiah(value){
 
  if(!value || value === 0) return "Gratis"
 
- return "Rp" + value.toLocaleString("id-ID")
+ return "Rp" + Number(value).toLocaleString("id-ID")
 
 }
 
@@ -19,7 +19,7 @@ function createBracketEmbed(data){
    },
    {
     name:"Registration",
-    value: data.racePrice !== undefined ? formatRupiah(data.racePrice) : "Not Set"
+    value: data.racePrice !== null ? formatRupiah(data.racePrice) : "Not Set"
    },
    {
     name:"Lap",
