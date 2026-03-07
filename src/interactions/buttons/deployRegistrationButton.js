@@ -17,6 +17,13 @@ async function deployRegistrationButton(interaction){
 
  raceState.registrationOpen = true
 
+ if(!raceState.raceName || !raceState.slot){
+  return interaction.reply({
+   content:"❌ Setup race belum lengkap",
+   ephemeral:true
+  })
+ }
+
  // ================= PLAYER PANEL =================
 
  const playerEmbed = new EmbedBuilder()
