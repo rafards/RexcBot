@@ -4,16 +4,18 @@ const { raceState } = require("../../data/raceState")
 
 async function deployBracket(message){
 
+ // hapus command
+ await message.delete().catch(()=>{})
+
  const embed = createBracketEmbed(raceState)
 
  const row = getSetupButton("race_name")
 
  const msg = await message.channel.send({
-  embeds: [embed],
-  components: [row]
+  embeds:[embed],
+  components:[row]
  })
 
- // simpan panel message supaya bisa diedit
  raceState.panelMessageId = msg.id
  raceState.panelChannelId = message.channel.id
 
