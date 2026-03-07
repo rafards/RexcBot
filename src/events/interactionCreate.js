@@ -7,7 +7,7 @@ const { raceState } = require("../data/raceState")
 const { createBracketEmbed } = require("../utils/embeds")
 const { getSetupButton } = require("../utils/bracketButtons")
 const { deployRegistrationButton } = require("../interactions/buttons/deployRegistrationButton")
-const { joinButton, leaveButton } = require("../interactions/buttons/playerButton")
+const { playerButton } = require("../interactions/buttons/playerButton")
 
 client.on("interactionCreate", async interaction => {
 
