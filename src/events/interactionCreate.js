@@ -5,6 +5,7 @@ const { bracketButtons } = require("../interactions/buttons/bracketButtons")
 const { handleBracketModals } = require("../interactions/modals/bracketModals")
 const { raceState } = require("../data/raceState")
 const { deployRaceButton } = require("../interactions/buttons/deployRaceButton")
+const { winnerButton } = require("../interactions/buttons/winnerButton")
 
 client.on("interactionCreate", async interaction => {
 
@@ -57,7 +58,9 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.isButton()){
 
+ registrationButton(interaction)
  deployRaceButton(interaction)
+ winnerButton(interaction)
 
 }
 
