@@ -1,43 +1,64 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js")
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js")
 
 function getSetupButton(step){
 
- let label = "Set Race Name"
- let id = "set_race_name"
+ let button
 
- if(step === "registration"){
-  label = "Set Registration Type"
-  id = "set_registration"
- }
+ if(step === "race_name"){
 
- if(step === "lap"){
-  label = "Set Lap"
-  id = "set_lap"
- }
-
- if(step === "slots"){
-  label = "Set Player Slots"
-  id = "set_slots"
- }
-
- if(step === "time"){
-  label = "Set Race Time"
-  id = "set_time"
- }
-
- if(step === "deploy"){
-  label = "Deploy Race"
-  id = "deploy_race"
- }
-
- const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-   .setCustomId(id)
-   .setLabel(label)
+  button = new ButtonBuilder()
+   .setCustomId("set_race_name")
+   .setLabel("Set Race Name")
    .setStyle(ButtonStyle.Primary)
- )
 
- return row
+ }
+
+ else if(step === "registration"){
+
+  button = new ButtonBuilder()
+   .setCustomId("set_registration")
+   .setLabel("Set Registration")
+   .setStyle(ButtonStyle.Primary)
+
+ }
+
+ else if(step === "lap"){
+
+  button = new ButtonBuilder()
+   .setCustomId("set_lap")
+   .setLabel("Set Lap")
+   .setStyle(ButtonStyle.Primary)
+
+ }
+
+ else if(step === "slot"){
+
+  button = new ButtonBuilder()
+   .setCustomId("set_slot")
+   .setLabel("Set Player Slot")
+   .setStyle(ButtonStyle.Primary)
+
+ }
+
+ else if(step === "race_time"){
+
+  button = new ButtonBuilder()
+   .setCustomId("set_race_time")
+   .setLabel("Set Race Time")
+   .setStyle(ButtonStyle.Primary)
+
+ }
+
+ else if(step === "deploy"){
+
+  button = new ButtonBuilder()
+   .setCustomId("deploy_race")
+   .setLabel("Deploy Race")
+   .setStyle(ButtonStyle.Success)
+
+ }
+
+ return new ActionRowBuilder().addComponents(button)
 
 }
 
