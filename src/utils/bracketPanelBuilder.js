@@ -31,6 +31,21 @@ function buildPlayerBracket(){
 
  })
 
+
+ // ===============================
+ // SHOW BYE MATCH (PLAYER GANJIL)
+ // ===============================
+
+ if(raceState.oddPlayer){
+
+  const matchNumber = raceState.matches.length + 1
+
+  description += `Match ${matchNumber}\n`
+  description += `${raceState.oddPlayer.ign} vs TBD\n`
+  description += `(wait loser Match 1)\n\n`
+
+ }
+
  return new EmbedBuilder()
   .setTitle(`🏁 ROUND ${raceState.currentRound}`)
   .setDescription(description || "Waiting match...")
