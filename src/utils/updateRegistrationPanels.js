@@ -5,30 +5,31 @@ async function updateRegistrationPanels(interaction){
 
  const guild = interaction.guild
 
- const playerChannel = guild.channels.cache.find(c => c.name === "info-race")
- const adminChannel = guild.channels.cache.find(c => c.name === "setup-bot")
+ const playerChannel = guild.channels.cache.find(c=>c.name==="info-race")
+ const adminChannel = guild.channels.cache.find(c=>c.name==="setup-bot")
 
- const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId)
- const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId)
+ const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId).catch(()=>null)
+ const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId).catch(()=>null)
 
  // =========================
- // SLOT FULL → HIDE PANEL
+ // UPDATE PLAYER PANEL
  // =========================
 
- if(raceState.players.length >= raceState.slot){
+ if(playerPanel){
 
-  await playerPanel.delete().catch(()=>{})
+  const playerEmbed = new EmbedBuilder()
+   .setTitle(`🏁 ${raceState.raceName}`)
+   .setDescription(`Players\n${raceState.players.length}/${raceState.slot}`)
 
-  return
+  await playerPanel.edit({
+   embeds:[playerEmbed]
+  })
+
  }
 
- const playerEmbed = new EmbedBuilder()
-  .setTitle(`🏁 ${raceState.raceName}`)
-  .setDescription(`Players\n${raceState.players.length}/${raceState.slot}`)
-
- await playerPanel.edit({
-  embeds:[playerEmbed]
- })
+ // =========================
+ // BUILD PLAYER LIST
+ // =========================
 
  let text=""
 
@@ -36,15 +37,42 @@ async function updateRegistrationPanels(interaction){
   text += `${i+1}. ${p.ign}\n`
  })
 
- if(text === "") text="No players yet"
+ // jika belum ada player
+ if(text===""){
 
- const adminEmbed = new EmbedBuilder()
-  .setTitle("📋 Player List")
-  .setDescription(text)
+  for(let i=1;i<=raceState.slot;i++){
+   text += `${i}.\n`
+  }
 
- await adminPanel.edit({
-  embeds:[adminEmbed]
- })
+ }
+
+ // =========================
+ // UPDATE ADMIN PLAYER LIST
+ // =========================
+
+ if(adminPanel){
+
+  const adminEmbed = new EmbedBuilder()
+   .setTitle("📋 Player List")
+   .setDescription(text)
+
+  await adminPanel.edit({
+   embeds:[adminEmbed]
+  })
+
+ }
+
+ // =========================
+ // SLOT FULL → DELETE JOIN PANEL
+ // =========================
+
+ if(raceState.players.length >= raceState.slot){
+
+  if(playerPanel){
+   await playerPanel.delete().catch(()=>{})
+  }
+
+ }
 
 }
 
