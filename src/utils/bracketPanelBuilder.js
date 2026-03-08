@@ -34,43 +34,38 @@ function buildBracketEmbed(){
 
 
 // ===============================
-// BUILD BUTTONS
+// BUILD BUTTONS (ONLY ACTIVE MATCH)
 // ===============================
 
 function buildMatchButtons(){
 
- const rows = []
+ const matchIndex = raceState.currentMatchIndex
+ const match = raceState.matches[matchIndex]
 
- raceState.matches.forEach((match,i)=>{
+ if(!match) return []
 
-  const p1 = match.player1?.ign || "BYE"
-  const p2 = match.player2?.ign || "BYE"
+ const p1 = match.player1?.ign || "BYE"
+ const p2 = match.player2?.ign || "BYE"
 
-  const btn1 = new ButtonBuilder()
-   .setCustomId(`winner_${i}_1`)
-   .setLabel(p1)
-   .setStyle(ButtonStyle.Primary)
-   .setDisabled(match.winner !== null)
+ const btn1 = new ButtonBuilder()
+  .setCustomId(`winner_${matchIndex}_1`)
+  .setLabel(p1)
+  .setStyle(ButtonStyle.Primary)
 
-  const btn2 = new ButtonBuilder()
-   .setCustomId(`winner_${i}_2`)
-   .setLabel(p2)
-   .setStyle(ButtonStyle.Danger)
-   .setDisabled(match.winner !== null)
+ const btn2 = new ButtonBuilder()
+  .setCustomId(`winner_${matchIndex}_2`)
+  .setLabel(p2)
+  .setStyle(ButtonStyle.Danger)
 
-  const row = new ActionRowBuilder().addComponents(btn1,btn2)
+ const row = new ActionRowBuilder().addComponents(btn1,btn2)
 
-  rows.push(row)
-
- })
-
- return rows
+ return [row]
 
 }
 
 
 // ===============================
-// SEND PANEL (ROUND 1)
+// SEND PANEL
 // ===============================
 
 async function sendBracketPanel(interaction){
@@ -90,7 +85,7 @@ async function sendBracketPanel(interaction){
 
 
 // ===============================
-// UPDATE PANEL (ROUND UPDATE)
+// UPDATE PANEL
 // ===============================
 
 async function updateBracketPanel(client){
