@@ -9,18 +9,22 @@ function buildPlayerBracket(){
 
  let description = ""
 
+ const activeIndex = raceState.matches.findIndex(m => !m.winner)
+
  raceState.matches.forEach((match,i)=>{
 
   const p1 = match.player1?.ign || "BYE"
   const p2 = match.player2?.ign || "BYE"
 
-  const active = !match.winner && raceState.matches.findIndex(m=>!m.winner) === i
+  const isLive = i === activeIndex && !match.winner
 
-  const arrow = active ? "➡ " : ""
+  const label = isLive
+   ? `➡ Match ${i+1} 🔴 LIVE`
+   : `Match ${i+1}`
 
   const winner = match.winner ? `🏆 ${match.winner.ign}` : ""
 
-  description += `${arrow}Match ${i+1}\n`
+  description += `${label}\n`
   description += `${p1} vs ${p2}\n`
 
   if(winner){
@@ -30,6 +34,27 @@ function buildPlayerBracket(){
   description += `\n`
 
  })
+
+
+ // ===============================
+ // SHOW BYE MATCH
+ // ===============================
+
+ if(raceState.oddPlayer){
+
+  const matchNumber = raceState.matches.length + 1
+
+  description += `Match ${matchNumber}\n`
+  description += `${raceState.oddPlayer.ign} vs TBD\n`
+  description += `(wait loser Match 1)\n\n`
+
+ }
+
+ return new EmbedBuilder()
+  .setTitle(`🏁 ROUND ${raceState.currentRound}`)
+  .setDescription(description || "Waiting match...")
+
+}
 
 
  // ===============================
