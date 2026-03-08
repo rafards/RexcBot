@@ -4,9 +4,10 @@ async function resetTournamentButton(interaction){
 
  if(interaction.customId !== "reset_tournament") return
 
- await interaction.deferUpdate()
-
+ const channel = interaction.channel
  const client = interaction.client
+
+ await interaction.deferUpdate()
 
  try{
 
@@ -16,10 +17,12 @@ async function resetTournamentButton(interaction){
 
   if(raceState.panelMessageId && raceState.panelChannelId){
 
-   const channel = await client.channels.fetch(raceState.panelChannelId)
-   const message = await channel.messages.fetch(raceState.panelMessageId)
+   const panelChannel = await client.channels.fetch(raceState.panelChannelId).catch(()=>null)
 
-   await message.delete().catch(()=>{})
+   if(panelChannel){
+    const message = await panelChannel.messages.fetch(raceState.panelMessageId).catch(()=>null)
+    if(message) await message.delete().catch(()=>{})
+   }
 
   }
 
@@ -29,14 +32,11 @@ async function resetTournamentButton(interaction){
 
   if(raceState.playerPanelId){
 
-   const channel = interaction.guild.channels.cache.find(c=>c.name==="info-race")
+   const playerChannel = interaction.guild.channels.cache.find(c=>c.name==="info-race")
 
-   if(channel){
-
-    const msg = await channel.messages.fetch(raceState.playerPanelId).catch(()=>null)
-
+   if(playerChannel){
+    const msg = await playerChannel.messages.fetch(raceState.playerPanelId).catch(()=>null)
     if(msg) await msg.delete().catch(()=>{})
-
    }
 
   }
@@ -47,7 +47,7 @@ async function resetTournamentButton(interaction){
 
   if(raceState.adminListPanelId){
 
-   const msg = await interaction.channel.messages.fetch(raceState.adminListPanelId).catch(()=>null)
+   const msg = await channel.messages.fetch(raceState.adminListPanelId).catch(()=>null)
 
    if(msg) await msg.delete().catch(()=>{})
 
@@ -59,12 +59,21 @@ async function resetTournamentButton(interaction){
 
   if(raceState.bracketPanelId && raceState.bracketChannelId){
 
-   const channel = await client.channels.fetch(raceState.bracketChannelId)
-   const msg = await channel.messages.fetch(raceState.bracketPanelId).catch(()=>null)
+   const bracketChannel = await client.channels.fetch(raceState.bracketChannelId).catch(()=>null)
 
-   if(msg) await msg.delete().catch(()=>{})
+   if(bracketChannel){
+    const msg = await bracketChannel.messages.fetch(raceState.bracketPanelId).catch(()=>null)
+    if(msg) await msg.delete().catch(()=>{})
+   }
 
   }
+
+  // ==========================
+  // CLEAN ALL CHANNEL MESSAGES
+  // ==========================
+
+  const messages = await channel.messages.fetch({ limit:100 })
+  await channel.bulkDelete(messages, true).catch(()=>{})
 
  }catch(err){
   console.log("Reset cleanup error:", err)
@@ -95,13 +104,10 @@ async function resetTournamentButton(interaction){
  raceState.adminListPanelId=null
 
  raceState.bracketPanelId=null
+ raceState.bracketChannelId=null
 
  raceState.panelMessageId=null
  raceState.panelChannelId=null
-
- await interaction.channel.send({
-  content:"🔄 Tournament reset. All panels cleared."
- })
 
 }
 
