@@ -9,7 +9,8 @@ async function deployBracket(message){
 
  const embed = createBracketEmbed(raceState)
 
- const row = getSetupButton("race_name")
+ // tombol setup race
+ const row = getSetupButton("setup_race")
 
  const msg = await message.channel.send({
   embeds:[embed],
