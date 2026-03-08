@@ -40,8 +40,23 @@ async function winnerButton(interaction){
  match.winner = winner
  match.loser = loser
 
- if(winner) winner.result = "win"
- if(loser) loser.result = "lose"
+ // =========================
+// COUNT WIN / LOSE
+// =========================
+
+if(winner){
+
+ if(!winner.winCount) winner.winCount = 0
+ winner.winCount++
+
+}
+
+if(loser){
+
+ if(!loser.loseCount) loser.loseCount = 0
+ loser.loseCount++
+
+}
 
  if(loser){
   raceState.losers.push(loser)
