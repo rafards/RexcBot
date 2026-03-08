@@ -63,12 +63,25 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
-  return {
+ const champion = raceState.matches[0]?.winner
+
+ if(champion){
+
+  return{
    embed:new EmbedBuilder()
-    .setTitle("Match Finished")
-    .setDescription("Waiting next round"),
+    .setTitle("🏆 TOURNAMENT FINISHED")
+    .setDescription(`Winner: ${champion.ign}`),
    components:[]
   }
+
+ }
+
+ return{
+  embed:new EmbedBuilder()
+   .setTitle("Match Finished")
+   .setDescription("Waiting next round"),
+  components:[]
+ }
 
  }
 
