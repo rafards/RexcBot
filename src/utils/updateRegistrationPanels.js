@@ -11,6 +11,17 @@ async function updateRegistrationPanels(interaction){
  const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId)
  const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId)
 
+ // =========================
+ // SLOT FULL → HIDE PANEL
+ // =========================
+
+ if(raceState.players.length >= raceState.slot){
+
+  await playerPanel.delete().catch(()=>{})
+
+  return
+ }
+
  const playerEmbed = new EmbedBuilder()
   .setTitle(`🏁 ${raceState.raceName}`)
   .setDescription(`Players\n${raceState.players.length}/${raceState.slot}`)
