@@ -3,7 +3,6 @@ const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 
-
 async function winnerButton(interaction){
 
  if(!interaction.customId.startsWith("winner_")) return
@@ -14,10 +13,6 @@ async function winnerButton(interaction){
  const playerIndex = parseInt(parts[2])
 
  const match = raceState.matches[matchIndex]
-
- // ==========================
- // MATCH CHECK
- // ==========================
 
  if(!match){
   return interaction.reply({
@@ -33,10 +28,6 @@ async function winnerButton(interaction){
   })
  }
 
- // ==========================
- // SET WINNER
- // ==========================
-
  const winner = playerIndex===1 ? match.player1 : match.player2
  const loser  = playerIndex===1 ? match.player2 : match.player1
 
@@ -45,102 +36,28 @@ async function winnerButton(interaction){
 
  raceState.losers.push(loser)
 
- // 🔧 DIGANTI (agar interaction stabil)
  await interaction.deferUpdate()
 
- // update panel setelah winner dipilih
+ // pindah ke match berikutnya
+ raceState.currentMatchIndex++
+
+ // update panel
  await updateBracketPanel(interaction.client)
 
- // ==========================
- // CHECK ROUND FINISHED
- // ==========================
-
- const finished = raceState.matches.every(m => m && m.winner)
+ const finished = raceState.currentMatchIndex >= raceState.matches.length
 
  if(!finished) return
 
- // ==========================
- // DOUBLE MODE ENGINE
- // ==========================
 
- if(raceState.raceMode === "double"){
+ // ===============================
+ // ROUND FINISHED
+ // ===============================
 
-  const winners=[]
-  const losers=[]
+ const nextMatches = generateNextRound(raceState.matches)
 
-  raceState.matches.forEach(m=>{
-   winners.push(m.winner)
-   losers.push(m.loser)
-  })
+ if(!nextMatches || nextMatches.length === 0){
 
-  raceState.matches=[]
-
-  // winner vs winner
-  for(let i=0;i<winners.length;i+=2){
-
-   if(winners[i+1]){
-
-    raceState.matches.push({
-     player1:winners[i],
-     player2:winners[i+1],
-     winner:null,
-     loser:null
-    })
-
-   }
-
-  }
-
-  // loser vs loser
-  for(let i=0;i<losers.length;i+=2){
-
-   if(losers[i+1]){
-
-    raceState.matches.push({
-     player1:losers[i],
-     player2:losers[i+1],
-     winner:null,
-     loser:null
-    })
-
-   }
-
-  }
-
- }
-
- // ==========================
- // ODD PLAYER SYSTEM
- // ==========================
-
- if(raceState.oddPlayer){
-
-  const firstLoser = raceState.losers.shift()
-
-  if(firstLoser){
-
-   raceState.matches.push({
-    player1:firstLoser,
-    player2:raceState.oddPlayer,
-    winner:null,
-    loser:null
-   })
-
-  }
-
-  raceState.oddPlayer=null
-
- }
-
- // ==========================
- // CHECK TOURNAMENT WINNER
- // ==========================
-
- const winners = raceState.matches
-  .filter(m => m && m.winner)
-  .map(m => m.winner)
-
- if(winners.length === 1){
+  const winner = raceState.matches[0].winner
 
   const resetButton = new ButtonBuilder()
    .setCustomId("reset_tournament")
@@ -150,26 +67,16 @@ async function winnerButton(interaction){
   const row = new ActionRowBuilder().addComponents(resetButton)
 
   await interaction.channel.send({
-   content:`🏆 TOURNAMENT WINNER: ${winners[0].ign}`,
+   content:`🏆 TOURNAMENT WINNER: ${winner.ign}`,
    components:[row]
   })
 
   return
  }
 
- // ==========================
- // NEXT ROUND
- // ==========================
-
- const nextMatches = generateNextRound(raceState.matches)
-
- // proteksi jika generator gagal
- if(!nextMatches || nextMatches.length === 0){
-  return
- }
-
  raceState.matches = nextMatches
  raceState.currentRound++
+ raceState.currentMatchIndex = 0
 
  await updateBracketPanel(interaction.client)
 
