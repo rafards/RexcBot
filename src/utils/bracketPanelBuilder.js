@@ -56,8 +56,6 @@ function buildPlayerBracket(){
   .setTitle(`🏁 ROUND ${raceState.currentRound}`)
   .setDescription(description || "Waiting match...")
 
-}
-
 
  // ===============================
  // SHOW BYE MATCH (PLAYER GANJIL)
@@ -76,8 +74,6 @@ function buildPlayerBracket(){
  return new EmbedBuilder()
   .setTitle(`🏁 ROUND ${raceState.currentRound}`)
   .setDescription(description || "Waiting match...")
-
-}
 
 
 // ===============================
