@@ -1,6 +1,7 @@
 const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
+const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 
 async function winnerButton(interaction){
@@ -31,6 +32,7 @@ async function winnerButton(interaction){
  const winner = playerIndex===1 ? match.player1 : match.player2
  const loser  = playerIndex===1 ? match.player2 : match.player1
 
+
  // =========================
  // SAVE RESULT
  // =========================
@@ -38,14 +40,19 @@ async function winnerButton(interaction){
  match.winner = winner
  match.loser = loser
 
+ if(winner) winner.result = "win"
+ if(loser) loser.result = "lose"
+
  if(loser){
   raceState.losers.push(loser)
  }
 
+ // update player list realtime
+ await updateRegistrationPanels(interaction)
+
  // =========================
  // BYE SYSTEM
  // =========================
- // jika ada player ganjil, dia akan melawan loser match1
 
  if(matchIndex === 0 && raceState.oddPlayer){
 
@@ -62,10 +69,8 @@ async function winnerButton(interaction){
 
  await interaction.deferUpdate()
 
- // pindah ke match berikutnya
  raceState.currentMatchIndex++
 
- // update panel
  await updateBracketPanel(interaction.client)
 
  const finished = raceState.currentMatchIndex >= raceState.matches.length
