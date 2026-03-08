@@ -15,6 +15,7 @@ const raceState = {
  oddPlayer:null,
  losers:[],
  currentRound:1,
+ currentMatchIndex: 0,
 
  registrationOpen:false,
 
