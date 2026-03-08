@@ -34,9 +34,6 @@ function buildPlayerBracket(){
   description += `\n`
 
  })
- 
-}
-
 
  // ===============================
  // SHOW BYE MATCH
@@ -56,24 +53,7 @@ function buildPlayerBracket(){
   .setTitle(`🏁 ROUND ${raceState.currentRound}`)
   .setDescription(description || "Waiting match...")
 
-
- // ===============================
- // SHOW BYE MATCH (PLAYER GANJIL)
- // ===============================
-
- if(raceState.oddPlayer){
-
-  const matchNumber = raceState.matches.length + 1
-
-  description += `Match ${matchNumber}\n`
-  description += `${raceState.oddPlayer.ign} vs TBD\n`
-  description += `(wait loser Match 1)\n\n`
-
- }
-
- return new EmbedBuilder()
-  .setTitle(`🏁 ROUND ${raceState.currentRound}`)
-  .setDescription(description || "Waiting match...")
+}
 
 
 // ===============================
@@ -86,25 +66,25 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
- const champion = raceState.matches[0]?.winner
+  const champion = raceState.matches[0]?.winner
 
- if(champion){
+  if(champion){
+
+   return{
+    embed:new EmbedBuilder()
+     .setTitle("🏆 TOURNAMENT FINISHED")
+     .setDescription(`Winner: ${champion.ign}`),
+    components:[]
+   }
+
+  }
 
   return{
    embed:new EmbedBuilder()
-    .setTitle("🏆 TOURNAMENT FINISHED")
-    .setDescription(`Winner: ${champion.ign}`),
+    .setTitle("Match Finished")
+    .setDescription("Waiting next round"),
    components:[]
   }
-
- }
-
- return{
-  embed:new EmbedBuilder()
-   .setTitle("Match Finished")
-   .setDescription("Waiting next round"),
-  components:[]
- }
 
  }
 
@@ -150,7 +130,6 @@ async function sendBracketPanel(interaction){
  )
 
  const playerEmbed = buildPlayerBracket()
-
  const adminPanel = buildAdminPanel()
 
  const playerMsg = await playerChannel.send({
@@ -164,7 +143,6 @@ async function sendBracketPanel(interaction){
 
  raceState.bracketPanelId = playerMsg.id
  raceState.bracketChannelId = playerChannel.id
-
  raceState.adminMatchPanelId = adminMsg.id
 
 }
@@ -183,7 +161,6 @@ async function updateBracketPanel(client){
  const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
 
  const playerEmbed = buildPlayerBracket()
-
  const adminData = buildAdminPanel()
 
  await playerPanel.edit({
