@@ -2,10 +2,10 @@ const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("
 const { raceState } = require("../data/raceState")
 
 // ===============================
-// BUILD EMBED
+// BUILD PLAYER BRACKET
 // ===============================
 
-function buildBracketEmbed(){
+function buildPlayerBracket(){
 
  let description = ""
 
@@ -14,9 +14,13 @@ function buildBracketEmbed(){
   const p1 = match.player1?.ign || "BYE"
   const p2 = match.player2?.ign || "BYE"
 
+  const active = !match.winner && raceState.matches.findIndex(m=>!m.winner) === i
+
+  const arrow = active ? "➡ " : ""
+
   const winner = match.winner ? `🏆 ${match.winner.ign}` : ""
 
-  description += `Match ${i+1}\n`
+  description += `${arrow}Match ${i+1}\n`
   description += `${p1} vs ${p2}\n`
 
   if(winner){
@@ -30,81 +34,119 @@ function buildBracketEmbed(){
  return new EmbedBuilder()
   .setTitle(`🏁 ROUND ${raceState.currentRound}`)
   .setDescription(description || "Waiting match...")
+
 }
 
 
 // ===============================
-// BUILD BUTTONS (ONLY ACTIVE MATCH)
+// BUILD ADMIN PANEL
 // ===============================
 
-function buildMatchButtons(){
+function buildAdminPanel(){
 
- const matchIndex = raceState.currentMatchIndex
- const match = raceState.matches[matchIndex]
+ const activeMatch = raceState.matches.find(m=>!m.winner)
 
- if(!match) return []
+ if(!activeMatch){
 
- const p1 = match.player1?.ign || "BYE"
- const p2 = match.player2?.ign || "BYE"
+  return {
+   embed:new EmbedBuilder()
+    .setTitle("Match Finished")
+    .setDescription("Waiting next round"),
+   components:[]
+  }
+
+ }
+
+ const p1 = activeMatch.player1?.ign || "BYE"
+ const p2 = activeMatch.player2?.ign || "BYE"
+
+ const embed = new EmbedBuilder()
+  .setTitle("⚔ MATCH CURRENT")
+  .setDescription(`${p1} vs ${p2}`)
 
  const btn1 = new ButtonBuilder()
-  .setCustomId(`winner_${matchIndex}_1`)
+  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_1`)
   .setLabel(p1)
   .setStyle(ButtonStyle.Primary)
 
  const btn2 = new ButtonBuilder()
-  .setCustomId(`winner_${matchIndex}_2`)
+  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_2`)
   .setLabel(p2)
   .setStyle(ButtonStyle.Danger)
 
  const row = new ActionRowBuilder().addComponents(btn1,btn2)
 
- return [row]
+ return {
+  embed,
+  components:[row]
+ }
 
 }
 
 
 // ===============================
-// SEND PANEL
+// SEND PANELS
 // ===============================
 
 async function sendBracketPanel(interaction){
 
- const embed = buildBracketEmbed()
- const rows = buildMatchButtons()
+ const playerChannel = interaction.guild.channels.cache.find(
+  c => c.name === "info-race"
+ )
 
- const panel = await interaction.channel.send({
-  embeds:[embed],
-  components:rows
+ const adminChannel = interaction.guild.channels.cache.find(
+  c => c.name === "setup-bot"
+ )
+
+ const playerEmbed = buildPlayerBracket()
+
+ const adminPanel = buildAdminPanel()
+
+ const playerMsg = await playerChannel.send({
+  embeds:[playerEmbed]
  })
 
- raceState.bracketPanelId = panel.id
- raceState.bracketChannelId = interaction.channel.id
+ const adminMsg = await adminChannel.send({
+  embeds:[adminPanel.embed],
+  components:adminPanel.components
+ })
+
+ raceState.bracketPanelId = playerMsg.id
+ raceState.bracketChannelId = playerChannel.id
+
+ raceState.adminMatchPanelId = adminMsg.id
 
 }
 
 
 // ===============================
-// UPDATE PANEL
+// UPDATE PANELS
 // ===============================
 
 async function updateBracketPanel(client){
 
- const channel = await client.channels.fetch(raceState.bracketChannelId)
- const panel = await channel.messages.fetch(raceState.bracketPanelId)
+ const playerChannel = await client.channels.fetch(raceState.bracketChannelId)
+ const adminChannel = await client.channels.fetch(raceState.panelChannelId)
 
- const embed = buildBracketEmbed()
- const rows = buildMatchButtons()
+ const playerPanel = await playerChannel.messages.fetch(raceState.bracketPanelId)
+ const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
 
- await panel.edit({
-  embeds:[embed],
-  components:rows
+ const playerEmbed = buildPlayerBracket()
+
+ const adminData = buildAdminPanel()
+
+ await playerPanel.edit({
+  embeds:[playerEmbed]
+ })
+
+ await adminPanel.edit({
+  embeds:[adminData.embed],
+  components:adminData.components
  })
 
 }
 
 module.exports = {
  sendBracketPanel,
- updateBracketPanel,
- buildBracketEmbed
+ updateBracketPanel
 }
