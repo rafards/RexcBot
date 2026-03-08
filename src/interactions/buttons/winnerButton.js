@@ -31,10 +31,34 @@ async function winnerButton(interaction){
  const winner = playerIndex===1 ? match.player1 : match.player2
  const loser  = playerIndex===1 ? match.player2 : match.player1
 
+ // =========================
+ // SAVE RESULT
+ // =========================
+
  match.winner = winner
  match.loser = loser
 
- raceState.losers.push(loser)
+ if(loser){
+  raceState.losers.push(loser)
+ }
+
+ // =========================
+ // BYE SYSTEM
+ // =========================
+ // jika ada player ganjil, dia akan melawan loser match1
+
+ if(matchIndex === 0 && raceState.oddPlayer){
+
+  raceState.matches.push({
+   player1: raceState.oddPlayer,
+   player2: loser,
+   winner:null,
+   loser:null
+  })
+
+  raceState.oddPlayer = null
+
+ }
 
  await interaction.deferUpdate()
 
@@ -57,7 +81,7 @@ async function winnerButton(interaction){
 
  if(!nextMatches || nextMatches.length === 0){
 
-  const winner = raceState.matches[0].winner
+  const champion = raceState.matches[0]?.winner
 
   const resetButton = new ButtonBuilder()
    .setCustomId("reset_tournament")
@@ -67,7 +91,7 @@ async function winnerButton(interaction){
   const row = new ActionRowBuilder().addComponents(resetButton)
 
   await interaction.channel.send({
-   content:`🏆 TOURNAMENT WINNER: ${winner.ign}`,
+   content:`🏆 TOURNAMENT WINNER: ${champion?.ign || "Unknown"}`,
    components:[row]
   })
 
