@@ -34,6 +34,8 @@ function buildPlayerBracket(){
   description += `\n`
 
  })
+ 
+}
 
 
  // ===============================
