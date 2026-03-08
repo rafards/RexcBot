@@ -25,16 +25,24 @@ async function updateRegistrationPanels(interaction){
 
  let text=""
 
- raceState.players.forEach((p,i)=>{
+raceState.players.forEach((p,i)=>{
 
-  let status=""
+ const win = p.winCount || 0
+ const lose = p.loseCount || 0
 
-  if(p.result === "win") status=" ✅ Menang"
-  if(p.result === "lose") status=" ❌ Kalah"
+ text += `${i+1}. ${p.ign}\n`
 
-  text += `${i+1}. ${p.ign}${status}\n`
+ if(win > 0){
+  text += `   🏆 Win : ${win}\n`
+ }
 
- })
+ if(lose > 0){
+  text += `   ❌ Lose : ${lose}\n`
+ }
+
+ text += `\n`
+
+})
 
  if(text===""){
 
