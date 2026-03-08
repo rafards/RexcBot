@@ -96,7 +96,6 @@ async function winnerButton(interaction){
   const row = new ActionRowBuilder().addComponents(resetButton)
 
   await interaction.channel.send({
-   content:`🏆 TOURNAMENT WINNER: ${champion?.ign || "Unknown"}`,
    components:[row]
   })
 
