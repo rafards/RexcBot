@@ -102,12 +102,23 @@ function buildAdminPanel(){
 async function sendRoundPanel(client){
 
  const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
+ const adminChannel = await client.channels.fetch(raceState.panelChannelId)
 
- const embed = buildRoundEmbed()
+ const playerEmbed = buildRoundEmbed()
+ const adminData = buildAdminPanel()
 
+ // panel round untuk player
  await playerChannel.send({
-  embeds:[embed]
+  embeds:[playerEmbed]
  })
+
+ // panel match current untuk admin
+ const adminMsg = await adminChannel.send({
+  embeds:[adminData.embed],
+  components:adminData.components
+ })
+
+ raceState.adminMatchPanelId = adminMsg.id
 
 }
 
