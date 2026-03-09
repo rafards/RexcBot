@@ -27,6 +27,7 @@ async function updateRegistrationPanels(interaction){
 
   const playerEmbed = new EmbedBuilder()
    .setTitle("🏁 SSR BRACKET RACE")
+   .setDescription("Registration is now open!\n\nJoin the race before the slot is full.")
    .addFields(
     {
      name:"🏎 Race",
@@ -54,6 +55,9 @@ async function updateRegistrationPanels(interaction){
      inline:false
     }
    )
+   .setFooter({
+    text:"Press JOIN to participate in the race"
+   })
 
   await playerPanel.edit({
    embeds:[playerEmbed]
@@ -95,7 +99,7 @@ async function updateRegistrationPanels(interaction){
  }
 
  // =========================
- // UPDATE ADMIN PLAYER LIST
+ // UPDATE ADMIN PANEL
  // =========================
 
  if(adminPanel){
