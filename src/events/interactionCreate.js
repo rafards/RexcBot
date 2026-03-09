@@ -27,15 +27,20 @@ client.on("interactionCreate", async interaction => {
   return playerButton(interaction)
  }
 
- await resetTournamentButton(interaction)
- await fillTestPlayersButton(interaction)
+ if(interaction.customId === "fill_test_players"){
+  return fillTestPlayersButton(interaction)
+ }
+
+ if(interaction.customId === "reset_tournament"){
+  return resetTournamentButton(interaction)
+ }
 
  if(interaction.customId.startsWith("winner_")){
   return winnerButton(interaction)
  }
 
  return bracketButtons(interaction)
-}
+ }
 
  // ===============================
  // MODAL
