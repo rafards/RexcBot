@@ -27,7 +27,7 @@ async function updateRegistrationPanels(interaction){
 
   const playerEmbed = new EmbedBuilder()
    .setTitle("🏁 SSR BRACKET RACE")
-   .setDescription("Registration is now open!\n\nJoin the race before the slot is full.")
+   .setDescription("Registration is now open!\nJoin the race before the slot is full.")
    .addFields(
     {
      name:"🏎 Race",
