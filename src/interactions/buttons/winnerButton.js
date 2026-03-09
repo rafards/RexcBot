@@ -3,6 +3,7 @@ const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+const { sendRoundPanel } = require("../../utils/bracketPanelBuilder")
 
 async function winnerButton(interaction){
 
@@ -99,29 +100,28 @@ if(loser){
 
  const nextMatches = generateNextRound(raceState.matches)
 
- if(!nextMatches || nextMatches.length === 0){
+if(!nextMatches || nextMatches.length === 0){
 
-  const champion = raceState.matches[0]?.winner
+ const resetButton = new ButtonBuilder()
+  .setCustomId("reset_tournament")
+  .setLabel("Reset Tournament")
+  .setStyle(ButtonStyle.Danger)
 
-  const resetButton = new ButtonBuilder()
-   .setCustomId("reset_tournament")
-   .setLabel("Reset Tournament")
-   .setStyle(ButtonStyle.Danger)
+ const row = new ActionRowBuilder().addComponents(resetButton)
 
-  const row = new ActionRowBuilder().addComponents(resetButton)
+ await interaction.channel.send({
+  components:[row]
+ })
 
-  await interaction.channel.send({
-   components:[row]
-  })
+ return
+}
 
-  return
- }
+raceState.matches = nextMatches
+raceState.currentRound++
+raceState.currentMatchIndex = 0
 
- raceState.matches = nextMatches
- raceState.currentRound++
- raceState.currentMatchIndex = 0
-
- await updateBracketPanel(interaction.client)
+await sendRoundPanel(interaction.client)
+await updateBracketPanel(interaction.client)
 
 }
 
