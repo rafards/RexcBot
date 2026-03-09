@@ -1,6 +1,14 @@
 const { EmbedBuilder } = require("discord.js")
 const { raceState } = require("../data/raceState")
 
+function formatRupiah(value){
+
+ if(!value || value === 0) return "Gratis"
+
+ return "Rp" + Number(value).toLocaleString("id-ID")
+
+}
+
 async function updateRegistrationPanels(interaction){
 
  const guild = interaction.guild
@@ -11,11 +19,41 @@ async function updateRegistrationPanels(interaction){
  const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId).catch(()=>null)
  const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId).catch(()=>null)
 
+ // =========================
+ // UPDATE PLAYER PANEL
+ // =========================
+
  if(playerPanel){
 
   const playerEmbed = new EmbedBuilder()
-   .setTitle(`🏁 ${raceState.raceName}`)
-   .setDescription(`Players\n${raceState.players.length}/${raceState.slot}`)
+   .setTitle("🏁 SSR BRACKET RACE")
+   .addFields(
+    {
+     name:"🏎 Race",
+     value: raceState.raceName,
+     inline:false
+    },
+    {
+     name:"💰 Registration",
+     value: formatRupiah(raceState.racePrice),
+     inline:true
+    },
+    {
+     name:"🏁 Lap",
+     value:`${raceState.lap} Laps`,
+     inline:true
+    },
+    {
+     name:"👥 Players",
+     value:`${raceState.players.length} / ${raceState.slot}`,
+     inline:true
+    },
+    {
+     name:"⏰ Race Start",
+     value: raceState.time || "TBA",
+     inline:false
+    }
+   )
 
   await playerPanel.edit({
    embeds:[playerEmbed]
@@ -23,26 +61,30 @@ async function updateRegistrationPanels(interaction){
 
  }
 
+ // =========================
+ // BUILD PLAYER LIST
+ // =========================
+
  let text=""
 
-raceState.players.forEach((p,i)=>{
+ raceState.players.forEach((p,i)=>{
 
- const win = p.winCount || 0
- const lose = p.loseCount || 0
+  const win = p.winCount || 0
+  const lose = p.loseCount || 0
 
- text += `${i+1}. ${p.ign}\n`
+  text += `${i+1}. ${p.ign}\n`
 
- if(win > 0){
-  text += `   🏆 Win : ${win}\n`
- }
+  if(win > 0){
+   text += `   🏆 Win : ${win}\n`
+  }
 
- if(lose > 0){
-  text += `   ❌ Lose : ${lose}\n`
- }
+  if(lose > 0){
+   text += `   ❌ Lose : ${lose}\n`
+  }
 
- text += `\n`
+  text += `\n`
 
-})
+ })
 
  if(text===""){
 
@@ -51,6 +93,10 @@ raceState.players.forEach((p,i)=>{
   }
 
  }
+
+ // =========================
+ // UPDATE ADMIN PLAYER LIST
+ // =========================
 
  if(adminPanel){
 
@@ -63,6 +109,10 @@ raceState.players.forEach((p,i)=>{
   })
 
  }
+
+ // =========================
+ // SLOT FULL → DELETE PANEL
+ // =========================
 
  if(raceState.players.length >= raceState.slot){
 
