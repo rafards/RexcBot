@@ -59,7 +59,7 @@ async function generateBracket(interaction){
 
  const { sendBracketPanel } = require("../utils/bracketPanelBuilder")
 
- await sendRoundPanel(client)
+ await sendRoundPanel(interaction.client)
 
 }
 
