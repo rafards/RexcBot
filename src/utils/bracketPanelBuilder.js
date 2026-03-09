@@ -113,15 +113,18 @@ async function sendRoundPanel(client){
 
 async function updateBracketPanel(client){
 
- const adminChannel = await client.channels.fetch(raceState.panelChannelId)
+ const channel = await client.channels.fetch(raceState.playerPanelChannelId)
 
- const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
+ const msg = await channel.messages.fetch(raceState.playerPanelId)
 
- const adminData = buildAdminPanel()
+ const embed = msg.embeds[0]
 
- await adminPanel.edit({
-  embeds:[adminData.embed],
-  components:adminData.components
+ const newEmbed = EmbedBuilder.from(embed)
+  .setDescription(buildFullTournamentEmbed())
+
+ await msg.edit({
+  embeds:[newEmbed],
+  components:[]
  })
 
 }
