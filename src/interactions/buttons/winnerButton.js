@@ -116,6 +116,16 @@ if(!nextMatches || nextMatches.length === 0){
  return
 }
 
+raceState.roundHistory.push({
+ round: raceState.currentRound,
+ matches: raceState.matches.map((m,i)=>({
+  index:i+1,
+  p1:m.player1?.ign,
+  p2:m.player2?.ign,
+  winner:m.winner?.ign || null
+ }))
+})
+
 raceState.matches = nextMatches
 raceState.currentRound++
 raceState.currentMatchIndex = 0
