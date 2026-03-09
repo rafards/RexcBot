@@ -4,12 +4,14 @@ const { raceState } = require("../../data/raceState")
 
 async function deployBracket(message){
 
- // hapus command
+ if(raceState.panelMessageId){
+  await message.delete().catch(()=>{})
+  return
+ }
+
  await message.delete().catch(()=>{})
 
  const embed = createBracketEmbed(raceState)
-
- // tombol setup race
  const row = getSetupButton("setup_race")
 
  const msg = await message.channel.send({
