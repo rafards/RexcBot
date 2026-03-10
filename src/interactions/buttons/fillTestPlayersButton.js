@@ -21,6 +21,12 @@ async function fillTestPlayersButton(interaction){
    ign:`BOT-${num}`
   })
 
+ }
+
+ await interaction.message.edit({
+  components:[]
+ })
+
   await interaction.message.edit({
    components:[]
   })
