@@ -46,6 +46,9 @@ function generateBracket(players){
   oddPlayer
  }
 
+ raceState.roundHistory = []
+ raceState.currentMatchIndex = 0
+
 }
 
 module.exports = { generateBracket }
