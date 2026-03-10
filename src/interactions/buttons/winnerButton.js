@@ -54,8 +54,6 @@ async function winnerButton(interaction){
 
  raceState.currentMatchIndex++
 
- await updateBracketPanel(interaction.client)
-
  // ===============================
 // SAVE MATCH RESULT TO HISTORY
 // ===============================
@@ -76,6 +74,8 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  winner: winner?.ign || null
 })
 
+ await updateBracketPanel(interaction.client)
+ 
  const finished = raceState.matches.every(m=>m.winner)
 
  if(!finished) return
@@ -94,7 +94,7 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   embeds:[
    {
     title:"🏆 TOURNAMENT FINISHED",
-    description:`Champion: **${winner.ign}**`,
+    description:`Chamion: **${winner.ign}**`,
     color:0xFFD700
    }
   ]
@@ -107,9 +107,11 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  const row = new ActionRowBuilder().addComponents(resetButton)
 
- await interaction.channel.send({
+ const resetMsg = await interaction.channel.send({
   components:[row]
  })
+
+ raceState.resetMessageId = resetMsg.id
 
  return
  }
