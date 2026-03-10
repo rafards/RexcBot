@@ -1,169 +1,67 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+const { EmbedBuilder } = require("discord.js")
 const { raceState } = require("../data/raceState")
 
-function buildRoundDescription(){
+function buildBracketEmbed(){
 
- let description = ""
+ let text=""
 
  const activeIndex = raceState.matches.findIndex(m=>!m.winner)
 
- raceState.matches.forEach((match,i)=>{
+ raceState.matches.forEach((m,i)=>{
 
-  const p1 = match.player1?.ign || "BYE"
-  const p2 = match.player2?.ign || "BYE"
+  const p1 = m.player1?.ign || "BYE"
+  const p2 = m.player2?.ign || "BYE"
 
-  const live = i===activeIndex && !match.winner
+  const live = i===activeIndex && !m.winner
 
-  const label = live
+  const title = live
    ? `➡ Match ${i+1} 🔴 LIVE`
    : `Match ${i+1}`
 
-  description += `${label}\n`
-  description += `${p1} vs ${p2}\n`
+  text += `${title}\n`
+  text += `${p1} vs ${p2}\n`
 
-  if(match.winner){
-   description += `🏆 ${match.winner.ign}\n`
+  if(m.winner){
+   text += `🏆 ${m.winner.ign}\n`
   }
 
-  description += "\n"
+  text += "\n"
 
  })
 
- if(raceState.oddPlayer){
-
-  const num = raceState.matches.length + 1
-
-  description += `Match ${num}\n`
-  description += `${raceState.oddPlayer.ign} vs TBD\n`
-  description += `(wait loser Match 1)\n\n`
-
- }
-
- return description
-
+ return new EmbedBuilder()
+  .setTitle(`🏁 TOURNAMENT BRACKET`)
+  .setDescription(`🏁 ROUND ${raceState.currentRound}\n\n${text}`)
 }
 
-function buildAdminPanel(){
+async function sendBracketPanel(client){
 
- const activeMatch = raceState.matches.find(m=>!m.winner)
+ const channel = await client.channels.fetch(raceState.playerPanelChannelId)
 
- if(!activeMatch){
+ const embed = buildBracketEmbed()
 
-  const champion =
- raceState.matches.length === 1
-  ? raceState.matches[0]?.winner
-  : null
-
-  if(champion){
-
-   return {
-    embed:new EmbedBuilder()
-     .setTitle("🏆 TOURNAMENT FINISHED")
-     .setDescription(`Winner: ${champion.ign}`),
-    components:[]
-   }
-
-  }
-
-  return {
-   embed:new EmbedBuilder()
-    .setTitle("Match Finished")
-    .setDescription("Waiting next round"),
-   components:[]
-  }
-
- }
-
- const p1 = activeMatch.player1?.ign || "BYE"
- const p2 = activeMatch.player2?.ign || "BYE"
-
- const embed = new EmbedBuilder()
-  .setTitle("⚔ MATCH CURRENT")
-  .setDescription(`${p1} vs ${p2}`)
-
- const btn1 = new ButtonBuilder()
-  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_1`)
-  .setLabel(p1)
-  .setStyle(ButtonStyle.Primary)
-
- const btn2 = new ButtonBuilder()
-  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_2`)
-  .setLabel(p2)
-  .setStyle(ButtonStyle.Danger)
-
- const row = new ActionRowBuilder().addComponents(btn1,btn2)
-
- return {
-  embed,
-  components:[row]
- }
-
-}
-
-async function startBracketPanels(client){
-
- const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
- const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
-
- const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId)
-
- const baseEmbed = playerPanel.embeds[0]
-
- const newEmbed = EmbedBuilder.from(baseEmbed)
-
- newEmbed.addFields({
-  name:`🏁 ROUND ${raceState.currentRound}`,
-  value:buildRoundDescription()
+ const msg = await channel.send({
+  embeds:[embed]
  })
 
- await playerPanel.edit({
-  embeds:[newEmbed],
-  components:[]
- })
-
- const adminData = buildAdminPanel()
-
- const adminMsg = await adminChannel.send({
-  embeds:[adminData.embed],
-  components:adminData.components
- })
-
- raceState.adminMatchPanelId = adminMsg.id
-
+ raceState.bracketMessageId = msg.id
 }
 
 async function updateBracketPanel(client){
 
- const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
- const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
+ const channel = await client.channels.fetch(raceState.playerPanelChannelId)
 
- const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId)
- const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
+ const msg = await channel.messages.fetch(raceState.bracketMessageId)
 
- const embed = playerPanel.embeds[0]
+ const embed = buildBracketEmbed()
 
- const newEmbed = EmbedBuilder.from(embed)
-  .setDescription(
-   embed.description.split("🏁 ROUND")[0] +
-   `🏁 ROUND ${raceState.currentRound}\n\n` +
-   buildRoundDescription()
-  )
-
- await playerPanel.edit({
-  embeds:[newEmbed],
-  components:[]
- })
-
- const adminData = buildAdminPanel()
-
- await adminPanel.edit({
-  embeds:[adminData.embed],
-  components:adminData.components
+ await msg.edit({
+  embeds:[embed]
  })
 
 }
 
-module.exports = {
- startBracketPanels,
+module.exports={
+ sendBracketPanel,
  updateBracketPanel
 }
