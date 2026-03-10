@@ -110,11 +110,11 @@ async function startBracketPanels(client){
  const baseEmbed = playerPanel.embeds[0]
 
  const newEmbed = EmbedBuilder.from(baseEmbed)
-  .setDescription(
-   baseEmbed.description + "\n\n" +
-   `🏁 ROUND ${raceState.currentRound}\n\n` +
-   buildRoundDescription()
-  )
+
+ newEmbed.addFields({
+  name:`🏁 ROUND ${raceState.currentRound}`,
+  value:buildRoundDescription()
+ })
 
  await playerPanel.edit({
   embeds:[newEmbed],
