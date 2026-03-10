@@ -38,7 +38,7 @@ async function sendBracketPanel(client){
 
  const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
  const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
-
+ 
  const embed = buildBracketEmbed()
 
  const msg = await playerChannel.send({
@@ -46,15 +46,6 @@ async function sendBracketPanel(client){
  })
 
  raceState.bracketMessageId = msg.id
-
- const adminData = buildAdminPanel()
-
- const adminMsg = await adminChannel.send({
-  embeds:[adminData.embed],
-  components:adminData.components
- })
-
- // ================= ADMIN MATCH PANEL =================
 
  const adminData = buildAdminPanel()
 
