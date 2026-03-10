@@ -8,11 +8,12 @@ function generateNextRound(matches){
 
  for(let i=0;i<winners.length;i+=2){
 
-  if(!winners[i+1]) break
+  const p1 = winners[i]
+  const p2 = winners[i+1] || null
 
   next.push({
-   player1:winners[i],
-   player2:winners[i+1],
+   player1:p1,
+   player2:p2,
    winner:null,
    loser:null
   })
@@ -20,7 +21,6 @@ function generateNextRound(matches){
  }
 
  return next
-
 }
 
 module.exports = { generateNextRound }
