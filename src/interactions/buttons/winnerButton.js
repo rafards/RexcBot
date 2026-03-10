@@ -89,8 +89,8 @@ if(loser){
 
  await updateBracketPanel(interaction.client)
 
- const finished = raceState.currentMatchIndex >= raceState.matches.length
-
+ const finished = raceState.matches.every(m=>m.winner)
+ 
  if(!finished) return
 
 
