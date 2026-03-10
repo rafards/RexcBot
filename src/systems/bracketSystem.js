@@ -57,8 +57,6 @@ async function generateBracket(interaction){
 
  raceState.matches = generateMatches(shuffled)
 
- const { sendBracketPanel } = require("../utils/bracketPanelBuilder")
-
  await startBracketPanels(interaction.client)
 
 }
