@@ -1,5 +1,5 @@
 const { raceState } = require("../data/raceState")
-const { sendRoundPanel } = require("../utils/bracketPanelBuilder")
+const { startBracketPanels } = require("../utils/bracketPanelBuilder")
 
 function shuffle(array){
 
@@ -59,7 +59,7 @@ async function generateBracket(interaction){
 
  const { sendBracketPanel } = require("../utils/bracketPanelBuilder")
 
- await sendRoundPanel(interaction.client)
+ await startBracketPanels(interaction.client)
 
 }
 
