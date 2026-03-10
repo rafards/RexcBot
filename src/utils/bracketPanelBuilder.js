@@ -33,6 +33,8 @@ function buildBracketEmbed(){
 
  raceState.matches.forEach((m,i)=>{
 
+  if(m.winner) return
+  
   const p1 = m.player1?.ign || "BYE"
   const p2 = m.player2?.ign || "BYE"
 
