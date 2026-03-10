@@ -41,7 +41,7 @@ async function updateRegistrationPanels(interaction){
  let text=""
 
  raceState.players.forEach((p,i)=>{
-  text += `${i+1}. ${p.ign}\n\n`
+  text += `${i+1}. ${p.ign}\n`
  })
 
  if(text===""){
