@@ -31,6 +31,9 @@ function buildBracketEmbed(){
 
  const activeIndex = raceState.matches.findIndex(m=>!m.winner)
 
+ text+=`━━━━━━━━━━━━━━\n`
+ text+=`⚔ CURRENT ROUND\n\n`
+ 
  raceState.matches.forEach((m,i)=>{
 
   if(m.winner) return
