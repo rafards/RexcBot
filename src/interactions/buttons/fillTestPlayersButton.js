@@ -23,6 +23,18 @@ async function fillTestPlayersButton(interaction){
 
  }
 
+ // sembunyikan tombol fill jika slot sudah penuh
+if(raceState.players.length >= raceState.slot){
+
+ const adminChannel = interaction.channel
+ const msg = interaction.message
+
+ await msg.edit({
+  components:[]
+ })
+
+}
+ 
  await updateRegistrationPanels(interaction)
 
  if(raceState.players.length >= raceState.slot){
