@@ -57,57 +57,66 @@ async function resetTournamentButton(interaction){
   // DELETE BRACKET PANEL
   // ==========================
 
-  if(raceState.bracketPanelId && raceState.bracketChannelId){
+  if(raceState.bracketMessageId && raceState.playerPanelChannelId){
 
-   const bracketChannel = await client.channels.fetch(raceState.bracketChannelId).catch(()=>null)
+   const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId).catch(()=>null)
 
-   if(bracketChannel){
-    const msg = await bracketChannel.messages.fetch(raceState.bracketPanelId).catch(()=>null)
+   if(playerChannel){
+    const msg = await playerChannel.messages.fetch(raceState.bracketMessageId).catch(()=>null)
     if(msg) await msg.delete().catch(()=>{})
    }
 
   }
 
   // ==========================
-  // CLEAN ALL CHANNEL MESSAGES
+  // DELETE ADMIN MATCH PANEL
   // ==========================
 
-  const playerChannel = await interaction.client.channels.fetch(raceState.playerPanelChannelId)
+  if(raceState.adminMatchPanelId){
 
-  if(raceState.bracketMessageId){
-   const msg = await playerChannel.messages.fetch(raceState.bracketMessageId).catch(()=>null)
-   if(msg) await msg.delete()
+   const msg = await channel.messages.fetch(raceState.adminMatchPanelId).catch(()=>null)
+
+   if(msg) await msg.delete().catch(()=>{})
+
   }
 
- // ==========================
- // RESET STATE
- // ==========================
+  // ==========================
+  // RESET STATE
+  // ==========================
 
- raceState.raceName=null
- raceState.racePrice=null
+  raceState.raceName = null
+  raceState.racePrice = null
 
- raceState.lap=null
- raceState.slot=null
- raceState.time=null
+  raceState.lap = null
+  raceState.slot = null
+  raceState.time = null
 
- raceState.players=[]
+  raceState.players = []
 
- raceState.matches=[]
- raceState.losers=[]
- raceState.oddPlayer=null
+  raceState.matches = []
+  raceState.losers = []
+  raceState.oddPlayer = null
 
- raceState.currentRound=1
+  raceState.currentRound = 1
+  raceState.currentMatchIndex = 0
+  raceState.roundHistory = []
 
- raceState.registrationOpen=false
+  raceState.registrationOpen = false
 
- raceState.playerPanelId=null
- raceState.adminListPanelId=null
+  raceState.playerPanelId = null
+  raceState.adminListPanelId = null
 
- raceState.bracketPanelId=null
- raceState.bracketChannelId=null
+  raceState.bracketPanelId = null
+  raceState.bracketMessageId = null
 
- raceState.panelMessageId=null
- raceState.panelChannelId=null
+  raceState.adminMatchPanelId = null
+
+  raceState.panelMessageId = null
+  raceState.panelChannelId = null
+
+ }catch(err){
+  console.log("Reset tournament error:", err)
+ }
 
 }
 
