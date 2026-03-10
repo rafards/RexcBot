@@ -84,18 +84,34 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  if(!nextMatches || nextMatches.length === 0){
 
-  const resetButton = new ButtonBuilder()
-   .setCustomId("reset_tournament")
-   .setLabel("Reset Tournament")
-   .setStyle(ButtonStyle.Danger)
+ // ===============================
+ // ANNOUNCE CHAMPION
+ // ===============================
 
-  const row = new ActionRowBuilder().addComponents(resetButton)
+ const playerChannel = await interaction.client.channels.fetch(raceState.playerPanelChannelId)
 
-  await interaction.channel.send({
-   components:[row]
-  })
+ await playerChannel.send({
+  embeds:[
+   {
+    title:"🏆 TOURNAMENT FINISHED",
+    description:`Champion: **${winner.ign}**`,
+    color:0xFFD700
+   }
+  ]
+ })
 
-  return
+ const resetButton = new ButtonBuilder()
+  .setCustomId("reset_tournament")
+  .setLabel("Reset Tournament")
+  .setStyle(ButtonStyle.Danger)
+
+ const row = new ActionRowBuilder().addComponents(resetButton)
+
+ await interaction.channel.send({
+  components:[row]
+ })
+
+ return
  }
 
  raceState.matches = nextMatches
