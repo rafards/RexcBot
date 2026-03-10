@@ -14,7 +14,6 @@ function shuffle(array){
  }
 
  return array
-
 }
 
 function generateMatches(players){
@@ -39,26 +38,20 @@ async function generateBracket(interaction){
 
  const shuffled = shuffle([...raceState.players])
 
- // reset data bracket
  raceState.matches = []
  raceState.losers = []
  raceState.currentRound = 1
+ raceState.currentMatchIndex = 0
 
- // jika player ganjil
  if(shuffled.length % 2 !== 0){
-
   raceState.oddPlayer = shuffled.pop()
-
  }else{
-
   raceState.oddPlayer = null
-
  }
 
  raceState.matches = generateMatches(shuffled)
 
  await sendBracketPanel(interaction.client)
-
 }
 
 module.exports = { generateBracket }
