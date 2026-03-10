@@ -54,6 +54,15 @@ async function sendBracketPanel(client){
   components:adminData.components
  })
 
+ // ================= ADMIN MATCH PANEL =================
+
+ const adminData = buildAdminPanel()
+
+ const adminMsg = await adminChannel.send({
+  embeds:[adminData.embed],
+  components:adminData.components
+ })
+
  raceState.adminMatchPanelId = adminMsg.id
 }
 
