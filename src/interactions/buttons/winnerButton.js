@@ -56,6 +56,26 @@ async function winnerButton(interaction){
 
  await updateBracketPanel(interaction.client)
 
+ // ===============================
+// SAVE MATCH RESULT TO HISTORY
+// ===============================
+
+if(!raceState.roundHistory[raceState.currentRound-1]){
+
+ raceState.roundHistory.push({
+  round: raceState.currentRound,
+  matches:[]
+ })
+
+}
+
+raceState.roundHistory[raceState.currentRound-1].matches.push({
+ index: matchIndex+1,
+ p1: match.player1?.ign,
+ p2: match.player2?.ign,
+ winner: winner?.ign || null
+})
+
  const finished = raceState.matches.every(m=>m.winner)
 
  if(!finished) return
