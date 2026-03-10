@@ -31,7 +31,50 @@ function buildBracketEmbed(){
 
  return new EmbedBuilder()
   .setTitle("🏁 TOURNAMENT BRACKET")
-  .setDescription(`🏁 ROUND ${raceState.currentRound}\n\n${text}`)
+  .setDescription(buildFullBracketHistory())
+}
+
+function buildFullBracketHistory(){
+
+ let text = ""
+
+ raceState.roundHistory.forEach(r=>{
+
+  text += `🏁 ROUND ${r.round}\n\n`
+
+  r.matches.forEach(m=>{
+   text += `Match ${m.index}\n`
+   text += `${m.p1} vs ${m.p2}\n`
+
+   if(m.winner){
+    text += `🏆 ${m.winner}\n`
+   }
+
+   text += "\n"
+  })
+
+ })
+
+ const activeIndex = raceState.matches.findIndex(m=>!m.winner)
+
+ raceState.matches.forEach((m,i)=>{
+
+  const p1 = m.player1?.ign || "BYE"
+  const p2 = m.player2?.ign || "BYE"
+
+  const live = i===activeIndex && !m.winner
+
+  const title = live
+   ? `➡ Match ${i+1} 🔴 LIVE`
+   : `Match ${i+1}`
+
+  text += `${title}\n`
+  text += `${p1} vs ${p2}\n\n`
+
+ })
+
+ return text
+
 }
 
 async function sendBracketPanel(client){
