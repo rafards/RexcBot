@@ -9,6 +9,7 @@ function buildBracketEmbed(){
 
  raceState.roundHistory.forEach(r=>{
 
+  text+=`━━━━━━━━━━━━━━\n`
   text+=`🏁 ROUND ${r.round}\n\n`
 
   r.matches.forEach(m=>{
