@@ -36,28 +36,89 @@ function buildBracketEmbed(){
 
 async function sendBracketPanel(client){
 
- const channel = await client.channels.fetch(raceState.playerPanelChannelId)
+ const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
+ const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
 
  const embed = buildBracketEmbed()
 
- const msg = await channel.send({
+ const msg = await playerChannel.send({
   embeds:[embed]
  })
 
  raceState.bracketMessageId = msg.id
+
+ const adminData = buildAdminPanel()
+
+ const adminMsg = await adminChannel.send({
+  embeds:[adminData.embed],
+  components:adminData.components
+ })
+
+ raceState.adminMatchPanelId = adminMsg.id
 }
 
 async function updateBracketPanel(client){
 
- const channel = await client.channels.fetch(raceState.playerPanelChannelId)
+ const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
+ const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
 
- const msg = await channel.messages.fetch(raceState.bracketMessageId)
+ const msg = await playerChannel.messages.fetch(raceState.bracketMessageId)
 
  const embed = buildBracketEmbed()
 
  await msg.edit({
   embeds:[embed]
  })
+
+ const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
+
+ const adminData = buildAdminPanel()
+
+ await adminPanel.edit({
+  embeds:[adminData.embed],
+  components:adminData.components
+ })
+
+}
+
+function buildAdminPanel(){
+
+ const activeMatch = raceState.matches.find(m=>!m.winner)
+
+ if(!activeMatch){
+
+  return {
+   embed:new EmbedBuilder()
+    .setTitle("Match Finished")
+    .setDescription("Waiting next round"),
+   components:[]
+  }
+
+ }
+
+ const p1 = activeMatch.player1?.ign || "BYE"
+ const p2 = activeMatch.player2?.ign || "BYE"
+
+ const embed = new EmbedBuilder()
+  .setTitle("⚔ MATCH CURRENT")
+  .setDescription(`${p1} vs ${p2}`)
+
+ const btn1 = new ButtonBuilder()
+  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_1`)
+  .setLabel(p1)
+  .setStyle(ButtonStyle.Primary)
+
+ const btn2 = new ButtonBuilder()
+  .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_2`)
+  .setLabel(p2)
+  .setStyle(ButtonStyle.Danger)
+
+ const row = new ActionRowBuilder().addComponents(btn1,btn2)
+
+ return {
+  embed,
+  components:[row]
+ }
 
 }
 
