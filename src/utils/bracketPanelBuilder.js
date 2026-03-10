@@ -49,7 +49,10 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
-  const champion = raceState.matches[0]?.winner
+  const champion =
+ raceState.matches.length === 1
+  ? raceState.matches[0]?.winner
+  : null
 
   if(champion){
 
