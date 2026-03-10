@@ -16,8 +16,6 @@ async function updateRegistrationPanels(interaction){
  const playerPanel = await playerChannel.messages.fetch(raceState.playerPanelId).catch(()=>null)
  const adminPanel = await adminChannel.messages.fetch(raceState.adminListPanelId).catch(()=>null)
 
- // ================= PLAYER PANEL =================
-
  if(playerPanel){
 
   const embed = new EmbedBuilder()
@@ -32,11 +30,13 @@ async function updateRegistrationPanels(interaction){
    )
    .setFooter({ text:"Press JOIN to participate in the race" })
 
-  await playerPanel.edit({ embeds:[embed] })
+  const components = raceState.players.length >= raceState.slot ? [] : undefined
 
+  await playerPanel.edit({
+   embeds:[embed],
+   components
+  })
  }
-
- // ================= ADMIN PLAYER LIST =================
 
  let text=""
 
@@ -57,7 +57,6 @@ async function updateRegistrationPanels(interaction){
    .setDescription(text)
 
   await adminPanel.edit({embeds:[embed]})
-
  }
 
 }
