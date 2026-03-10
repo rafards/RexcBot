@@ -106,14 +106,27 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
+ const champion = raceState.matches[0]?.winner
+
+ if(champion){
+
   return {
    embed:new EmbedBuilder()
-    .setTitle("Match Finished")
-    .setDescription("Waiting next round"),
+    .setTitle("🏆 TOURNAMENT FINISHED")
+    .setDescription(`Winner: ${champion.ign}`),
    components:[]
   }
 
  }
+
+ return {
+  embed:new EmbedBuilder()
+   .setTitle("Match Finished")
+   .setDescription("Waiting next round"),
+  components:[]
+ }
+
+}
 
  const p1 = activeMatch.player1?.ign || "BYE"
  const p2 = activeMatch.player2?.ign || "BYE"
