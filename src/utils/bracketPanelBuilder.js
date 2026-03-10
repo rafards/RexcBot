@@ -30,7 +30,7 @@ function buildBracketEmbed(){
  })
 
  return new EmbedBuilder()
-  .setTitle(`🏁 TOURNAMENT BRACKET`)
+  .setTitle("🏁 TOURNAMENT BRACKET")
   .setDescription(`🏁 ROUND ${raceState.currentRound}\n\n${text}`)
 }
 
