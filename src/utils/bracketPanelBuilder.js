@@ -49,12 +49,31 @@ async function sendBracketPanel(client){
 
  const adminData = buildAdminPanel()
 
- const adminMsg = await adminChannel.send({
-  embeds:[adminData.embed],
-  components:adminData.components
- })
+let adminMsg
 
- raceState.adminMatchPanelId = adminMsg.id
+if(raceState.adminMatchPanelId){
+
+ adminMsg = await adminChannel.messages.fetch(raceState.adminMatchPanelId).catch(()=>null)
+
+}
+
+ if(adminMsg){
+
+  await adminMsg.edit({
+   embeds:[adminData.embed],
+   components:adminData.components
+  })
+
+ }else{
+
+  adminMsg = await adminChannel.send({
+   embeds:[adminData.embed],
+   components:adminData.components
+  })
+
+  raceState.adminMatchPanelId = adminMsg.id
+
+ }
 }
 
 async function updateBracketPanel(client){
