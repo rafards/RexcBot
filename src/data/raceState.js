@@ -28,6 +28,7 @@ const raceState = {
 
  bracketPanelId:null,
  bracketChannelId:null,
+ bracketMessageId:null,
 
  adminMatchPanelId:null
 
