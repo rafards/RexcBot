@@ -118,6 +118,11 @@ async function resetTournamentButton(interaction){
   console.log("Reset tournament error:", err)
  }
 
+ // hapus tombol reset
+ try{
+  await interaction.message.delete().catch(()=>{})
+ }catch{}
+ 
 }
 
 module.exports = { resetTournamentButton }
