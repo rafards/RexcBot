@@ -12,6 +12,7 @@ async function fillTestPlayersButton(interaction){
 
  if(remaining <= 0) return
 
+ // isi bot player
  for(let i=0;i<remaining;i++){
 
   const num = raceState.players.length + 1
@@ -23,19 +24,10 @@ async function fillTestPlayersButton(interaction){
 
  }
 
- await interaction.message.edit({
-  components:[]
- })
-
-  await interaction.message.edit({
-   components:[]
-  })
-
- }
-
+ // update panel sekali saja
  await updateRegistrationPanels(interaction)
 
- // jika slot penuh → auto start bracket
+ // slot penuh → generate bracket
  if(raceState.players.length >= raceState.slot){
 
   raceState.registrationOpen = false
