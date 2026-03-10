@@ -72,12 +72,12 @@ async function resetTournamentButton(interaction){
   // CLEAN ALL CHANNEL MESSAGES
   // ==========================
 
-  const messages = await channel.messages.fetch({ limit:100 })
-  await channel.bulkDelete(messages, true).catch(()=>{})
+  const playerChannel = await interaction.client.channels.fetch(raceState.playerPanelChannelId)
 
- }catch(err){
-  console.log("Reset cleanup error:", err)
- }
+  if(raceState.bracketMessageId){
+   const msg = await playerChannel.messages.fetch(raceState.bracketMessageId).catch(()=>null)
+   if(msg) await msg.delete()
+  }
 
  // ==========================
  // RESET STATE
