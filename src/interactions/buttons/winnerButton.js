@@ -60,10 +60,10 @@ async function winnerButton(interaction){
 
 if(!raceState.roundHistory[raceState.currentRound-1]){
 
- raceState.roundHistory.push({
+ raceState.roundHistory[raceState.currentRound-1] = {
   round: raceState.currentRound,
   matches:[]
- })
+ }
 
 }
 
