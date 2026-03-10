@@ -1,9 +1,7 @@
 const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
-const { updateRegistrationPanels } = require("../../utils/updateRegistrationPanels")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
-const { sendRoundPanel } = require("../../utils/bracketPanelBuilder")
 
 async function winnerButton(interaction){
 
@@ -33,42 +31,12 @@ async function winnerButton(interaction){
  const winner = playerIndex===1 ? match.player1 : match.player2
  const loser  = playerIndex===1 ? match.player2 : match.player1
 
-
- // =========================
- // SAVE RESULT
- // =========================
-
  match.winner = winner
  match.loser = loser
-
- // =========================
-// COUNT WIN / LOSE
-// =========================
-
-if(winner){
-
- if(!winner.winCount) winner.winCount = 0
- winner.winCount++
-
-}
-
-if(loser){
-
- if(!loser.loseCount) loser.loseCount = 0
- loser.loseCount++
-
-}
 
  if(loser){
   raceState.losers.push(loser)
  }
-
- // update player list realtime
- await updateRegistrationPanels(interaction)
-
- // =========================
- // BYE SYSTEM
- // =========================
 
  if(matchIndex === 0 && raceState.oddPlayer){
 
@@ -80,7 +48,6 @@ if(loser){
   })
 
   raceState.oddPlayer = null
-
  }
 
  await interaction.deferUpdate()
@@ -90,48 +57,32 @@ if(loser){
  await updateBracketPanel(interaction.client)
 
  const finished = raceState.matches.every(m=>m.winner)
- 
+
  if(!finished) return
-
-
- // ===============================
- // ROUND FINISHED
- // ===============================
 
  const nextMatches = generateNextRound(raceState.matches)
 
-if(!nextMatches || nextMatches.length === 0){
+ if(!nextMatches || nextMatches.length === 0){
 
- const resetButton = new ButtonBuilder()
-  .setCustomId("reset_tournament")
-  .setLabel("Reset Tournament")
-  .setStyle(ButtonStyle.Danger)
+  const resetButton = new ButtonBuilder()
+   .setCustomId("reset_tournament")
+   .setLabel("Reset Tournament")
+   .setStyle(ButtonStyle.Danger)
 
- const row = new ActionRowBuilder().addComponents(resetButton)
+  const row = new ActionRowBuilder().addComponents(resetButton)
 
- await interaction.channel.send({
-  components:[row]
- })
+  await interaction.channel.send({
+   components:[row]
+  })
 
- return
-}
+  return
+ }
 
-raceState.roundHistory.push({
- round: raceState.currentRound,
- matches: raceState.matches.map((m,i)=>({
-  index:i+1,
-  p1:m.player1?.ign,
-  p2:m.player2?.ign,
-  winner:m.winner?.ign || null
- }))
-})
+ raceState.matches = nextMatches
+ raceState.currentRound++
+ raceState.currentMatchIndex = 0
 
-raceState.matches = nextMatches
-raceState.currentRound++
-raceState.currentMatchIndex = 0
-
-await sendRoundPanel(interaction.client)
-await updateBracketPanel(interaction.client)
+ await updateBracketPanel(interaction.client)
 
 }
 
