@@ -80,6 +80,14 @@ async function resetTournamentButton(interaction){
 
   }
 
+  if(raceState.resetMessageId){
+
+   const msg = await interaction.channel.messages.fetch(raceState.resetMessageId).catch(()=>null)
+
+   if(msg) await msg.delete().catch(()=>{})
+
+  }
+
   // ==========================
   // RESET STATE
   // ==========================
