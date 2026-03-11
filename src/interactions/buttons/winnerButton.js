@@ -36,6 +36,10 @@ async function winnerButton(interaction){
 
  if(loser){
   raceState.losers.push(loser)
+
+  if(raceState.currentRound > 1){
+   raceState.luckyLoserCandidates.push(loser)
+  }
  }
 
  if(matchIndex === 0 && raceState.oddPlayer){
@@ -79,6 +83,17 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  const finished = raceState.matches.every(m=>m.winner)
 
  if(!finished) return
+
+ const winners = raceState.matches.map(m=>m.winner).filter(Boolean)
+
+ if(raceState.currentRound > 1 && winners.length % 2 !== 0){
+
+  const waitingPlayer = winners.pop()
+
+  raceState.waitingPlayer = waitingPlayer
+  raceState.luckyLoserMode = true
+
+ }
 
  const nextMatches = generateNextRound(raceState.matches)
 
