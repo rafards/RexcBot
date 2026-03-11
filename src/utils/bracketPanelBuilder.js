@@ -130,6 +130,30 @@ async function updateBracketPanel(client){
 
 }
 
+if(raceState.luckyLoserMode){
+
+ const embed = new EmbedBuilder()
+  .setTitle("⚠ Lucky Loser Selection")
+  .setDescription(
+   `Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`
+  )
+
+ const buttons = raceState.luckyLoserCandidates.map((p,i)=>
+  new ButtonBuilder()
+   .setCustomId(`lucky_${i}`)
+   .setLabel(p.ign)
+   .setStyle(ButtonStyle.Secondary)
+ )
+
+ const row = new ActionRowBuilder().addComponents(buttons)
+
+ return {
+  embed,
+  components:[row]
+ }
+
+}
+
 function buildAdminPanel(){
 
  const activeMatch = raceState.matches.find(m=>!m.winner)
