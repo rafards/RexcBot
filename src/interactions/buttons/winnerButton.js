@@ -147,7 +147,7 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  
  if(
   raceState.currentRound > 1 &&
-  winners.length > 3 &&
+  winners.length >= 5 &&
   winners.length % 2 !== 0
  ){
 
