@@ -4,6 +4,32 @@ function generateNextRound(matches){
   .map(m=>m.winner)
   .filter(Boolean)
 
+ // =========================
+ // TOURNAMENT FINISHED
+ // =========================
+
+ if(winners.length <= 1){
+  return []
+ }
+
+ // =========================
+ // ROUND ROBIN (3 PLAYER)
+ // =========================
+
+ if(winners.length === 3){
+
+  return [
+   { player1:winners[0], player2:winners[1], winner:null, loser:null },
+   { player1:winners[1], player2:winners[2], winner:null, loser:null },
+   { player1:winners[2], player2:winners[0], winner:null, loser:null }
+  ]
+
+ }
+
+ // =========================
+ // NORMAL BRACKET
+ // =========================
+
  const next=[]
 
  for(let i=0;i<winners.length;i+=2){
