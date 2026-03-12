@@ -33,13 +33,11 @@ function buildBracketEmbed(){
 
  text+=`━━━━━━━━━━━━━━\n`
  text+=`⚔ CURRENT ROUND\n\n`
- 
+
  raceState.matches.forEach((m,i)=>{
 
-  if(m.winner) return
-  
-  const p1 = m.player1?.ign || "BYE"
-  const p2 = m.player2?.ign || "BYE"
+  const p1 = m.player1?.ign || "TBD"
+  const p2 = m.player2?.ign || "TBD"
 
   const live = i===activeIndex && !m.winner
 
