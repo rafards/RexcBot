@@ -116,25 +116,29 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  return
  }
 
- if(raceState.currentRound > 1 && winners.length % 2 !== 0){
-
-  const waitingPlayer = winners.pop()
-
-  raceState.waitingPlayer = waitingPlayer
-  raceState.luckyLoserMode = true
-
- }
-
  // ===============================
- // ROUND ROBIN (3 PLAYER)
- // ===============================
+// ROUND ROBIN (3 PLAYER)
+// ===============================
 
- if(winners.length === 3){
+if(winners.length === 3){
 
-  raceState.roundRobinMode = true
-  raceState.roundRobinPlayers = winners
+ raceState.roundRobinMode = true
+ raceState.roundRobinPlayers = winners
 
- }
+}
+
+// ===============================
+// LUCKY LOSER
+// ===============================
+
+if(!raceState.roundRobinMode && raceState.currentRound > 1 && winners.length % 2 !== 0){
+
+ const waitingPlayer = winners.pop()
+
+ raceState.waitingPlayer = waitingPlayer
+ raceState.luckyLoserMode = true
+
+}
 
  // ===============================
  // ROUND ROBIN FINISHED
