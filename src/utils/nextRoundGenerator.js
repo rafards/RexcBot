@@ -10,13 +10,15 @@ function generateNextRound(matches){
 
  if(winners.length === 3){
 
-  return [
-   { player1:winners[0], player2:winners[1], winner:null, loser:null },
-   { player1:winners[1], player2:winners[2], winner:null, loser:null },
-   { player1:winners[2], player2:winners[0], winner:null, loser:null }
-  ]
+ const [a,b,c] = winners
 
- }
+ return [
+  { player1:a, player2:b, winner:null, loser:null },
+  { player1:b, player2:c, winner:null, loser:null },
+  { player1:c, player2:a, winner:null, loser:null }
+ ]
+
+}
 
  // =========================
  // NORMAL BRACKET
