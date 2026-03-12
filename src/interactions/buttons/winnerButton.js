@@ -86,6 +86,10 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  const winners = raceState.matches.map(m=>m.winner).filter(Boolean)
 
+ if(winners.length === 1){
+ return
+ }
+
  if(raceState.currentRound > 1 && winners.length % 2 !== 0){
 
   const waitingPlayer = winners.pop()
@@ -93,6 +97,25 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   raceState.waitingPlayer = waitingPlayer
   raceState.luckyLoserMode = true
 
+ }
+
+ // ===============================
+ // ROUND ROBIN (3 PLAYER)
+ // ===============================
+
+ if(winners.length === 3){
+
+  raceState.matches = [
+   { player1:winners[0], player2:winners[1], winner:null, loser:null },
+   { player1:winners[1], player2:winners[2], winner:null, loser:null },
+   { player1:winners[2], player2:winners[0], winner:null, loser:null }
+  ]
+
+  raceState.currentMatchIndex = 0
+
+  await updateBracketPanel(interaction.client)
+
+  return
  }
 
  const nextMatches = generateNextRound(raceState.matches)
@@ -134,6 +157,10 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  raceState.matches = nextMatches
  raceState.currentRound++
  raceState.currentMatchIndex = 0
+
+ raceState.luckyLoserCandidates = []
+ raceState.luckyLoserMode = false
+ raceState.waitingPlayer = null
 
  await updateBracketPanel(interaction.client)
 
