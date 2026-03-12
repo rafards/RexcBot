@@ -128,7 +128,8 @@ async function updateBracketPanel(client){
 
 }
 
-if(raceState.luckyLoserMode){
+function buildAdminPanel(){
+ if(raceState.luckyLoserMode){
 
  const embed = new EmbedBuilder()
   .setTitle("⚠ Lucky Loser Selection")
@@ -150,9 +151,7 @@ if(raceState.luckyLoserMode){
   components:[row]
  }
 
-}
-
-function buildAdminPanel(){
+ }
 
  const activeMatch = raceState.matches.find(m=>!m.winner)
 
