@@ -32,21 +32,28 @@ function buildBracketEmbed(){
 
  function buildRoundRobinEmbed(){
 
-  const players = raceState.roundRobinPlayers
+  const matches = raceState.matches
 
   let text = ""
-
+  
   text += `🏁 ROUND ROBIN FINAL\n\n`
-
-  text += `Match 1\n`
-  text += `${players[0].ign} vs ${players[1].ign}\n\n`
- 
-  text += `Match 2\n`
-  text += `${players[1].ign} vs ${players[2].ign}\n\n`
-
-  text += `Match 3\n`
-  text += `${players[2].ign} vs ${players[0].ign}\n\n`
-
+  
+  matches.forEach((m,i)=>{
+  
+   const p1 = m.player1?.ign || "TBD"
+   const p2 = m.player2?.ign || "TBD"
+  
+   text += `Match ${i+1}\n`
+   text += `${p1} vs ${p2}\n`
+  
+   if(m.winner){
+    text += `🏆 ${m.winner.ign}\n`
+   }
+  
+   text += "\n"
+  
+  })
+  
   return new EmbedBuilder()
    .setTitle("🏁 ROUND ROBIN")
    .setDescription(text)
