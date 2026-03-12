@@ -10,6 +10,7 @@ const { deployRegistrationButton } = require("../interactions/buttons/deployRegi
 const { playerButton } = require("../interactions/buttons/playerButton")
 const { fillTestPlayersButton } = require("../interactions/buttons/fillTestPlayersButton")
 const { resetTournamentButton } = require("../interactions/buttons/resetTournamentButton")
+const { updateBracketPanel } = require("../utils/bracketPanelBuilder")
 
 client.on("interactionCreate", async interaction => {
 
@@ -118,8 +119,6 @@ client.on("interactionCreate", async interaction => {
   raceState.luckyLoserCandidates = []
 
   await interaction.deferUpdate()
-
-  const { updateBracketPanel } = require("../utils/bracketPanelBuilder")
 
   return updateBracketPanel(interaction.client)
  }
