@@ -38,7 +38,13 @@ async function winnerButton(interaction){
   raceState.losers.push(loser)
 
   if(raceState.currentRound > 1){
-   raceState.luckyLoserCandidates.push(loser)
+
+   const exists = raceState.luckyLoserCandidates.find(p=>p.id === loser.id)
+  
+   if(!exists){
+    raceState.luckyLoserCandidates.push(loser)
+   }
+
   }
  }
 
