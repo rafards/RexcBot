@@ -36,6 +36,15 @@ client.on("interactionCreate", async interaction => {
   return resetTournamentButton(interaction)
  }
 
+ if(lucky.id === raceState.waitingPlayer.id){
+
+  return interaction.reply({
+   content:"Lucky loser cannot be the same as waiting player.",
+   ephemeral:true
+  })
+ 
+ }
+
  // ===============================
  // SELECT MENU
  // ===============================
