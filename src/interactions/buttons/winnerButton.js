@@ -114,9 +114,9 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  if(!finished) return
 
- const winners = [...new Set(
-  raceState.matches.map(m=>m.winner).filter(Boolean)
- )]
+ const winners = raceState.matches
+ .map(m=>m.winner)
+ .filter(Boolean)
 
  if(winners.length === 1){
  return
@@ -145,8 +145,12 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  // LUCKY LOSER (GANJIL)
  // ===============================
  
- if(winners.length > 3 && winners.length % 2 !== 0){
- 
+ if(
+  raceState.currentRound > 1 &&
+  winners.length > 3 &&
+  winners.length % 2 !== 0
+ ){
+
   const waitingPlayer = winners.pop()
  
   raceState.waitingPlayer = waitingPlayer
@@ -154,7 +158,7 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  
   return
  }
-
+ 
  // ===============================
  // ROUND ROBIN FINISHED
  // ===============================
