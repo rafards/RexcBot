@@ -24,6 +24,9 @@ const raceState = {
  roundRobinMode:false,
  roundRobinPlayers:[],
  roundRobinResults:[],
+ p1:null,
+ p2:null,
+ p3:null,
 
  registrationOpen:false,
 
