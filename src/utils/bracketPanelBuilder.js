@@ -69,26 +69,39 @@ function buildBracketEmbed(){
 
  const activeIndex = raceState.matches.findIndex(m=>!m.winner)
 
- text+=`━━━━━━━━━━━━━━━━\n`
- text+=`⚔ CURRENT MATCH\n\n`
-
- raceState.matches.forEach((m,i)=>{
-
-  if(m.winner) return
-
-  const p1 = m.player1?.ign || "TBD"
-  const p2 = m.player2?.ign || "TBD"
-
-  const live = i===activeIndex
-  
-  const title = live
-   ? `➡ Match ${i+1} 🔴 LIVE`
-   : `Match ${i+1}`
-
-  text+=`${title}\n`
-  text+=`${p1} vs ${p2}\n\n`
-
- })
+ const activeMatch = raceState.matches[activeIndex]
+ 
+ if(activeMatch){
+ 
+  const p1 = activeMatch.player1?.ign || "TBD"
+  const p2 = activeMatch.player2?.ign || "TBD"
+ 
+  text+=`━━━━━━━━━━━━━━━━\n`
+  text+=`⚔ CURRENT MATCH\n`
+  text+=`${p1} vs ${p2} 🔴 LIVE\n\n`
+ 
+ }
+ 
+ const upcoming = raceState.matches
+  .slice(activeIndex + 1)
+  .filter(m=>!m.winner)
+ 
+ if(upcoming.length){
+ 
+  text+=`📋 UPCOMING MATCHES\n`
+ 
+  upcoming.forEach(m=>{
+ 
+   const p1 = m.player1?.ign || "TBD"
+   const p2 = m.player2?.ign || "TBD"
+ 
+   text+=`${p1} vs ${p2}\n`
+ 
+  })
+ 
+  text+="\n"
+ 
+ }
 
  return new EmbedBuilder()
   .setTitle("🏁 TOURNAMENT BRACKET")
