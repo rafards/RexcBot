@@ -132,27 +132,6 @@ client.on("interactionCreate", async interaction => {
   return winnerButton(interaction)
  }
 
- if(interaction.customId.startsWith("lucky_")){
-
-  const index = parseInt(interaction.customId.split("_")[1])
-
-  const lucky = raceState.luckyLoserCandidates[index]
-
-  raceState.matches.push({
-   player1: raceState.waitingPlayer,
-   player2: lucky,
-   winner:null,
-   loser:null
-  })
-
-  raceState.luckyLoserMode = false
-  raceState.luckyLoserCandidates = []
-
-  await interaction.deferUpdate()
-
-  return updateBracketPanel(interaction.client)
- }
-
  return bracketButtons(interaction)
  }
 
