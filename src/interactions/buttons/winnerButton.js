@@ -105,6 +105,9 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  if(winners.length === 3){
 
+  raceState.roundRobinMode = true
+  raceState.roundRobinPlayers = winners
+
   raceState.matches = [
    { player1:winners[0], player2:winners[1], winner:null, loser:null },
    { player1:winners[1], player2:winners[2], winner:null, loser:null },
