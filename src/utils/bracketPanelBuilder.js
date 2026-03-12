@@ -183,9 +183,13 @@ function buildAdminPanel(){
  const p1 = activeMatch.player1?.ign || "BYE"
  const p2 = activeMatch.player2?.ign || "BYE"
 
+ const matchIndex = raceState.matches.indexOf(activeMatch)
+
  const embed = new EmbedBuilder()
-  .setTitle("⚔ MATCH CURRENT")
-  .setDescription(`${p1} vs ${p2}`)
+  .setTitle(`⚔ ROUND ${raceState.currentRound}`)
+  .setDescription(
+   `Match ${matchIndex+1}\n\n${p1} vs ${p2}`
+  )
 
  const btn1 = new ButtonBuilder()
   .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_1`)
