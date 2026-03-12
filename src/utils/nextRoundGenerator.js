@@ -33,7 +33,11 @@ function generateNextRound(winners){
  for(let i=0;i<winners.length;i+=2){
 
   const p1 = winners[i]
-  const p2 = winners[i+1] || null
+  let p2 = winners[i+1] || null
+  
+  if(p1 && p2 && p1.id === p2.id){
+   p2 = null
+  }
 
   next.push({
    player1:p1,
