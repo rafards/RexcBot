@@ -82,6 +82,30 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  
  const finished = raceState.matches.every(m=>m.winner)
 
+ if(finished && raceState.roundRobinMode){
+
+  const players = raceState.roundRobinPlayers
+
+  const buttons = players.map((p,i)=>
+  new ButtonBuilder()
+   .setCustomId(`select_p1_${i}`)
+   .setLabel(p.ign)
+   .setStyle(ButtonStyle.Primary)
+  )
+
+  const row = new ActionRowBuilder().addComponents(buttons)
+
+  await interaction.channel.send({
+   embeds:[{
+    title:"🏁 Round Robin Finished",
+    description:"Select Champion (P1)"
+   }],
+   components:[row]
+  })
+
+  return
+ }
+
  if(!finished) return
 
  const winners = raceState.matches.map(m=>m.winner).filter(Boolean)
