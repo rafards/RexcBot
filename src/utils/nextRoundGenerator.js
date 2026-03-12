@@ -5,14 +5,6 @@ function generateNextRound(matches){
   .filter(Boolean)
 
  // =========================
- // TOURNAMENT FINISHED
- // =========================
-
- if(winners.length <= 1){
-  return null
- }
-
- // =========================
  // ROUND ROBIN (3 PLAYER)
  // =========================
 
@@ -44,6 +36,14 @@ function generateNextRound(matches){
    loser:null
   })
 
+ }
+
+ // =========================
+ // TOURNAMENT FINISHED
+ // =========================
+
+ if(winners.length <= 1){
+  return null
  }
 
  return next
