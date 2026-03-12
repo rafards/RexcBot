@@ -57,17 +57,17 @@ function buildBracketEmbed(){
  const activeIndex = raceState.matches.findIndex(m=>!m.winner)
 
  text+=`━━━━━━━━━━━━━━━━\n`
- text+=`⚔ CURRENT ROUND\n\n`
+ text+=`⚔ CURRENT MATCH\n\n`
 
  raceState.matches.forEach((m,i)=>{
 
- if(m.winner) return
+  if(m.winner) return
 
   const p1 = m.player1?.ign || "TBD"
   const p2 = m.player2?.ign || "TBD"
 
   const live = i===activeIndex
-
+  
   const title = live
    ? `➡ Match ${i+1} 🔴 LIVE`
    : `Match ${i+1}`
