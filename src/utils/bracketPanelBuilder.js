@@ -1,4 +1,10 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+const { 
+ EmbedBuilder,
+ ButtonBuilder,
+ ButtonStyle,
+ ActionRowBuilder,
+ StringSelectMenuBuilder
+} = require("discord.js")
 const { raceState } = require("../data/raceState")
 
 function buildBracketEmbed(){
@@ -165,15 +171,18 @@ function buildAdminPanel(){
     `Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`
    )
 
-  const buttons = raceState.luckyLoserCandidates.map((p,i)=>
-   new ButtonBuilder()
-    .setCustomId(`lucky_${i}`)
-    .setLabel(p.ign)
-    .setStyle(ButtonStyle.Secondary)
-  )
-
-  const row = new ActionRowBuilder().addComponents(buttons)
-
+  const options = raceState.luckyLoserCandidates.map((p,i)=>({
+   label:p.ign,
+   value:String(i)
+  }))
+  
+  const select = new StringSelectMenuBuilder()
+   .setCustomId("select_lucky_loser")
+   .setPlaceholder("Select Lucky Loser")
+   .addOptions(options)
+  
+  const row = new ActionRowBuilder().addComponents(select)
+  
   return {
    embed,
    components:[row]
