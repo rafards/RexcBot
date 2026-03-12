@@ -21,6 +21,10 @@ const raceState = {
  currentMatchIndex: 0,
  roundHistory:[],
 
+ roundRobinMode:false,
+ roundRobinPlayers:[],
+ roundRobinResults:[],
+
  registrationOpen:false,
 
  panelMessageId:null,
