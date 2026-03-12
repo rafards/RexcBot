@@ -9,7 +9,7 @@ function generateNextRound(matches){
  // =========================
 
  if(winners.length <= 1){
-  return []
+  return null
  }
 
  // =========================
