@@ -134,19 +134,6 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   raceState.roundRobinMode = true
   raceState.roundRobinPlayers = winners
 
-  const [a,b,c] = winners
-
-  raceState.matches = [
-   { player1:a, player2:b, winner:null, loser:null },
-   { player1:b, player2:c, winner:null, loser:null },
-   { player1:c, player2:a, winner:null, loser:null }
-  ]
-
-  raceState.currentMatchIndex = 0
-
-  await updateBracketPanel(interaction.client)
-
-  return
  }
 
  // ===============================
@@ -181,7 +168,7 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   return
  }
 
- const nextMatches = generateNextRound(raceState.matches)
+ const nextMatches = generateNextRound(winners)
 
  if(!nextMatches || nextMatches.length === 0){
 
