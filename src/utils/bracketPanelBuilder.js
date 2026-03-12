@@ -176,6 +176,13 @@ function buildAdminPanel(){
    value:String(i)
   }))
   
+  if(options.length === 0){
+   options.push({
+    label:"No candidates",
+    value:"none"
+   })
+  }
+  
   const select = new StringSelectMenuBuilder()
    .setCustomId("select_lucky_loser")
    .setPlaceholder("Select Lucky Loser")
