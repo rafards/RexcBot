@@ -36,6 +36,36 @@ client.on("interactionCreate", async interaction => {
   return resetTournamentButton(interaction)
  }
 
+ // ===============================
+ // SELECT MENU
+ // ===============================
+ 
+ if(interaction.isStringSelectMenu()){
+ 
+  if(interaction.customId === "select_lucky_loser"){
+ 
+   const index = parseInt(interaction.values[0])
+ 
+   const lucky = raceState.luckyLoserCandidates[index]
+ 
+   raceState.matches.push({
+    player1: raceState.waitingPlayer,
+    player2: lucky,
+    winner:null,
+    loser:null
+   })
+ 
+   raceState.luckyLoserMode = false
+   raceState.luckyLoserCandidates = []
+ 
+   await interaction.deferUpdate()
+ 
+   return updateBracketPanel(interaction.client)
+ 
+  }
+ 
+ }
+
  if(interaction.customId.startsWith("select_p1_")){
 
  const index = parseInt(interaction.customId.split("_")[2])
