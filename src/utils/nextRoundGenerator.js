@@ -1,8 +1,12 @@
-function generateNextRound(matches){
+function generateNextRound(winners){
 
- const winners = matches
-  .map(m=>m.winner)
-  .filter(Boolean)
+ // =========================
+ // TOURNAMENT FINISHED
+ // =========================
+
+ if(winners.length <= 1){
+  return null
+ }
 
  // =========================
  // ROUND ROBIN (3 PLAYER)
@@ -15,7 +19,7 @@ function generateNextRound(matches){
  return [
   { player1:a, player2:b, winner:null, loser:null },
   { player1:b, player2:c, winner:null, loser:null },
-  { player1:c, player2:a, winner:null, loser:null }
+  { player1:a, player2:c, winner:null, loser:null }
  ]
 
 }
@@ -38,14 +42,6 @@ function generateNextRound(matches){
    loser:null
   })
 
- }
-
- // =========================
- // TOURNAMENT FINISHED
- // =========================
-
- if(winners.length <= 1){
-  return null
  }
 
  return next
