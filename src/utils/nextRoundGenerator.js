@@ -35,6 +35,21 @@ function generateNextRound(winners){
   const p1 = winners[i]
   let p2 = winners[i+1] || null
   
+  // anti self match
+  if(p1 && p2 && p1.id === p2.id){
+  
+   const swap = winners[i+2]
+  
+   if(swap){
+    winners[i+1] = swap
+    winners[i+2] = p2
+    p2 = swap
+   }else{
+    p2 = null
+   }
+  
+  }
+  
   if(p1 && p2 && p1.id === p2.id){
    p2 = null
   }
