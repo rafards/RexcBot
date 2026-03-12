@@ -117,28 +117,37 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  }
 
  // ===============================
-// ROUND ROBIN (3 PLAYER)
-// ===============================
-
-if(winners.length === 3){
-
- raceState.roundRobinMode = true
- raceState.roundRobinPlayers = winners
-
-}
-
-// ===============================
-// LUCKY LOSER
-// ===============================
-
-if(!raceState.roundRobinMode && raceState.currentRound > 1 && winners.length % 2 !== 0){
-
- const waitingPlayer = winners.pop()
-
- raceState.waitingPlayer = waitingPlayer
- raceState.luckyLoserMode = true
-
-}
+ // ROUND ROBIN (3 PLAYER)
+ // ===============================
+ 
+ if(winners.length === 3){
+ 
+  raceState.roundRobinMode = true
+  raceState.roundRobinPlayers = winners
+ 
+  const nextMatches = generateNextRound(winners)
+ 
+  raceState.matches = nextMatches
+  raceState.currentMatchIndex = 0
+ 
+  await updateBracketPanel(interaction.client)
+ 
+  return
+ }
+ 
+ // ===============================
+ // LUCKY LOSER (GANJIL)
+ // ===============================
+ 
+ if(winners.length > 3 && winners.length % 2 !== 0){
+ 
+  const waitingPlayer = winners.pop()
+ 
+  raceState.waitingPlayer = waitingPlayer
+  raceState.luckyLoserMode = true
+ 
+  return
+ }
 
  // ===============================
  // ROUND ROBIN FINISHED
