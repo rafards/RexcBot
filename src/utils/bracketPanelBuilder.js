@@ -3,6 +3,9 @@ const { raceState } = require("../data/raceState")
 
 function buildBracketEmbed(){
 
+ if(raceState.roundRobinMode){
+  return buildRoundRobinEmbed()
+ }
  let text=""
 
  // ================= HISTORY =================
@@ -26,6 +29,28 @@ function buildBracketEmbed(){
   })
 
  })
+
+ function buildRoundRobinEmbed(){
+
+  const players = raceState.roundRobinPlayers
+
+  let text = ""
+
+  text += `🏁 ROUND ROBIN FINAL\n\n`
+
+  text += `Match 1\n`
+  text += `${players[0].ign} vs ${players[1].ign}\n\n`
+ 
+  text += `Match 2\n`
+  text += `${players[1].ign} vs ${players[2].ign}\n\n`
+
+  text += `Match 3\n`
+  text += `${players[2].ign} vs ${players[0].ign}\n\n`
+
+  return new EmbedBuilder()
+   .setTitle("🏁 ROUND ROBIN")
+   .setDescription(text)
+ }
 
  // ================= CURRENT ROUND =================
 
@@ -131,25 +156,60 @@ async function updateBracketPanel(client){
 function buildAdminPanel(){
  if(raceState.luckyLoserMode){
 
- const embed = new EmbedBuilder()
-  .setTitle("⚠ Lucky Loser Selection")
-  .setDescription(
-   `Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`
+  const embed = new EmbedBuilder()
+   .setTitle("⚠ Lucky Loser Selection")
+   .setDescription(
+    `Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`
+   )
+
+  const buttons = raceState.luckyLoserCandidates.map((p,i)=>
+   new ButtonBuilder()
+    .setCustomId(`lucky_${i}`)
+    .setLabel(p.ign)
+    .setStyle(ButtonStyle.Secondary)
   )
 
- const buttons = raceState.luckyLoserCandidates.map((p,i)=>
-  new ButtonBuilder()
-   .setCustomId(`lucky_${i}`)
-   .setLabel(p.ign)
-   .setStyle(ButtonStyle.Secondary)
- )
+  const row = new ActionRowBuilder().addComponents(buttons)
 
- const row = new ActionRowBuilder().addComponents(buttons)
-
- return {
-  embed,
-  components:[row]
+  return {
+   embed,
+   components:[row]
+  }
  }
+
+ if(raceState.roundRobinMode){
+
+  const activeMatch = raceState.matches.find(m=>!m.winner)
+
+  if(!activeMatch){
+   return {
+    embed:new EmbedBuilder()
+    .setTitle("Round Robin Finished")
+    .setDescription("Waiting admin decision"),
+    components:[]
+   }
+  }
+
+  const p1 = activeMatch.player1?.ign
+  const p2 = activeMatch.player2?.ign
+
+  const embed = new EmbedBuilder()
+   .setTitle("🏁 ROUND ROBIN MATCH")
+   .setDescription(`${p1} vs ${p2}`)
+
+  const btn1 = new ButtonBuilder()
+   .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_1`)
+   .setLabel(p1)
+   .setStyle(ButtonStyle.Primary)
+
+  const btn2 = new ButtonBuilder()
+   .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_2`)
+   .setLabel(p2)
+   .setStyle(ButtonStyle.Danger)
+ 
+  const row = new ActionRowBuilder().addComponents(btn1,btn2)
+
+  return { embed, components:[row] }
 
  }
 
