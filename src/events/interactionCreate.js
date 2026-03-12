@@ -45,6 +45,13 @@ client.on("interactionCreate", async interaction => {
   if(interaction.customId === "select_lucky_loser"){
  
    const index = parseInt(interaction.values[0])
+
+   if(isNaN(index)){
+    return interaction.reply({
+     content:"No lucky loser available.",
+     ephemeral:true
+    })
+   }
  
    const lucky = raceState.luckyLoserCandidates[index]
  
