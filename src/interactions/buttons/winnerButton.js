@@ -121,6 +121,38 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   return
  }
 
+ // ===============================
+ // ROUND ROBIN FINISHED
+ // ===============================
+
+ if(raceState.roundRobinMode){
+
+  const players = raceState.roundRobinPlayers
+
+  const embed = {
+   title:"🏁 Round Robin Finished",
+   description:"Select Champion",
+   color:0xFFD700
+  }
+
+  const buttons = players.map((p,i)=>({
+   type:2,
+   style:1,
+   label:p.ign,
+   custom_id:`select_p1_${i}`
+  }))
+
+  await interaction.channel.send({
+    embeds:[embed],
+    components:[{
+    type:1,
+    components:buttons
+   }]
+  })
+
+  return
+ }
+
  const nextMatches = generateNextRound(raceState.matches)
 
  if(!nextMatches || nextMatches.length === 0){
