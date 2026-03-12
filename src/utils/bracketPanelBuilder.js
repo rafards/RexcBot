@@ -67,7 +67,9 @@ function buildBracketEmbed(){
 
  // ================= CURRENT ROUND =================
 
- const activeIndex = raceState.matches.findIndex(m=>!m.winner)
+ const activeIndex = raceState.matches.findIndex(
+  m => !m.winner && m.player1 && m.player2
+ )
 
  const activeMatch = raceState.matches[activeIndex]
  
