@@ -108,7 +108,9 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
 
  if(!finished) return
 
- const winners = raceState.matches.map(m=>m.winner).filter(Boolean)
+ const winners = [...new Set(
+  raceState.matches.map(m=>m.winner).filter(Boolean)
+ )]
 
  if(winners.length === 1){
  return
@@ -132,10 +134,12 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
   raceState.roundRobinMode = true
   raceState.roundRobinPlayers = winners
 
+  const [a,b,c] = winners
+
   raceState.matches = [
-   { player1:winners[0], player2:winners[1], winner:null, loser:null },
-   { player1:winners[1], player2:winners[2], winner:null, loser:null },
-   { player1:winners[2], player2:winners[0], winner:null, loser:null }
+   { player1:a, player2:b, winner:null, loser:null },
+   { player1:b, player2:c, winner:null, loser:null },
+   { player1:c, player2:a, winner:null, loser:null }
   ]
 
   raceState.currentMatchIndex = 0
