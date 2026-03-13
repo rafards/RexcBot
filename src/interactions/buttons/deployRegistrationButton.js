@@ -1,5 +1,6 @@
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const { raceState } = require("../../data/raceState")
+const config = require("../../config")
 
 function formatRupiah(value){
 
@@ -15,9 +16,9 @@ async function deployRegistrationButton(interaction){
 
  await interaction.deferUpdate()
 
- const playerChannel = interaction.guild.channels.cache.find(
-  c => c.name === "info-race"
- )
+ const playerChannel = interaction.guild.channels.cache.get(
+  config.infoRaceChannel
+)
 
  if(!playerChannel) return
 
