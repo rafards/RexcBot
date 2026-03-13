@@ -40,6 +40,18 @@ function buildBracketEmbed(){
  const matches = raceState.matches
  const activeIndex = matches.findIndex(m=>!m.winner)
 
+  if(activeIndex === -1){
+
+ text+="━━━━━━━━━━━━━━\n"
+ text+="⏳ WAITING ADMIN DECISION\n\n"
+ text+="Admin sedang menentukan pemenang turnamen.\n"
+
+ return new EmbedBuilder()
+  .setTitle("🏁 TOURNAMENT BRACKET")
+  .setDescription(text)
+
+  }
+
  text+="━━━━━━━━━━━━━━\n"
  text+="🏁 ROUND ROBIN FINAL\n\n"
 
@@ -112,8 +124,8 @@ return new EmbedBuilder()
      p2 = "Waiting Lucky Loser"
    }
 
-   text+=`Match ${m.index}\n`
-   text+=`${p1} vs ${p2}\n`
+   text+=`Match ${activeIndex + i + 2}\n`
+   text+=`${p1} vs ${p2}\n\n`
  
   })
  
@@ -234,15 +246,6 @@ function buildAdminPanel(){
  if(raceState.roundRobinMode){
 
   const activeMatch = raceState.matches.find(m=>!m.winner)
-
-  if(!activeMatch){
-   return {
-    embed:new EmbedBuilder()
-    .setTitle("Round Robin Finished")
-    .setDescription("Select Champion"),
-    components:[]
-   }
-  }
 
   const p1 = activeMatch.player1?.ign
   const p2 = activeMatch.player2?.ign
