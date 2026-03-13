@@ -1,6 +1,6 @@
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const { raceState } = require("../../data/raceState")
-const config = require("../../config")
+const config = require("../../config/config")
 
 function formatRupiah(value){
 
