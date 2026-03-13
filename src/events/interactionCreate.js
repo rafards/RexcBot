@@ -15,6 +15,57 @@ const { updateBracketPanel } = require("../utils/bracketPanelBuilder")
 client.on("interactionCreate", async interaction => {
 
  // ===============================
+// SELECT MENU
+// ===============================
+
+if(interaction.isStringSelectMenu()){
+
+ if(interaction.customId === "select_lucky_loser"){
+
+  const index = parseInt(interaction.values[0])
+
+  if(isNaN(index)){
+   return interaction.reply({
+    content:"No lucky loser available.",
+    ephemeral:true
+   })
+  }
+
+  const lucky = raceState.luckyLoserCandidates[index]
+
+  if(!lucky){
+   return interaction.reply({
+    content:"Invalid lucky loser.",
+    ephemeral:true
+   })
+  }
+
+  if(lucky.id === raceState.waitingPlayer?.id){
+   return interaction.reply({
+    content:"Lucky loser cannot be the same as waiting player.",
+    ephemeral:true
+   })
+  }
+
+  raceState.matches.push({
+   player1: raceState.waitingPlayer,
+   player2: lucky,
+   winner:null,
+   loser:null
+  })
+
+  raceState.luckyLoserMode = false
+  raceState.luckyLoserCandidates = []
+
+  await interaction.deferUpdate()
+
+  return updateBracketPanel(interaction.client)
+
+ }
+
+}
+
+ // ===============================
  // BUTTON
  // ===============================
 
@@ -34,52 +85,6 @@ client.on("interactionCreate", async interaction => {
 
  if(interaction.customId === "reset_tournament"){
   return resetTournamentButton(interaction)
- }
-
- if(lucky.id === raceState.waitingPlayer.id){
-
-  return interaction.reply({
-   content:"Lucky loser cannot be the same as waiting player.",
-   ephemeral:true
-  })
- 
- }
-
- // ===============================
- // SELECT MENU
- // ===============================
- 
- if(interaction.isStringSelectMenu()){
- 
-  if(interaction.customId === "select_lucky_loser"){
- 
-   const index = parseInt(interaction.values[0])
-
-   if(isNaN(index)){
-    return interaction.reply({
-     content:"No lucky loser available.",
-     ephemeral:true
-    })
-   }
- 
-   const lucky = raceState.luckyLoserCandidates[index]
- 
-   raceState.matches.push({
-    player1: raceState.waitingPlayer,
-    player2: lucky,
-    winner:null,
-    loser:null
-   })
- 
-   raceState.luckyLoserMode = false
-   raceState.luckyLoserCandidates = []
- 
-   await interaction.deferUpdate()
- 
-   return updateBracketPanel(interaction.client)
- 
-  }
- 
  }
 
  if(interaction.customId.startsWith("select_p1_")){
