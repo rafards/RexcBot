@@ -70,13 +70,6 @@ async function selectChampionButton(interaction){
    }]
   })
 
-  await interaction.update({
-   embeds:[{
-    title:"Result Locked"
-   }],
-   components:[]
-  })
-
   const resetButton = new ButtonBuilder()
    .setCustomId("reset_tournament")
    .setLabel("Reset Tournament")
