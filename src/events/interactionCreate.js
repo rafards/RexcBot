@@ -47,12 +47,13 @@ if(interaction.isStringSelectMenu()){
    })
   }
 
-  raceState.matches.push({
-   player1: raceState.waitingPlayer,
-   player2: lucky,
-   winner:null,
-   loser:null
-  })
+  const waitingMatch = raceState.matches.find(
+   m => m.player1 === raceState.waitingPlayer && m.player2 === null
+  )
+
+  if(waitingMatch){
+   waitingMatch.player2 = lucky
+  }
 
   raceState.luckyLoserMode = false
   raceState.luckyLoserCandidates = []
