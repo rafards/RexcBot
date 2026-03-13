@@ -108,7 +108,8 @@ return new EmbedBuilder()
  : raceState.matches.slice(activeIndex + 1).filter(m=>!m.winner)
  
  if(upcoming.length){
- 
+
+  text+=`━━━━━━━━━━━━━━━━\n`
   text+=`📋 UPCOMING MATCHES\n`
  
   upcoming.forEach((m,i)=>{
