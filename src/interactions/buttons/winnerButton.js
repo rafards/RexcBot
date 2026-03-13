@@ -88,6 +88,28 @@ raceState.roundHistory[raceState.currentRound-1].matches.push({
  
  const finished = raceState.matches.every(m=>m.winner)
 
+ // ===============================
+// CHECK LUCKY LOSER TRIGGER
+// ===============================
+
+if(
+ raceState.currentRound > 1 &&
+ raceState.matches.some(m => m.player2 === null)
+){
+
+ const remainingMatches = raceState.matches.filter(m=>!m.winner)
+
+ if(remainingMatches.length === 1){
+
+  raceState.waitingPlayer = remainingMatches[0].player1
+  raceState.luckyLoserMode = true
+
+  await updateBracketPanel(interaction.client)
+  return
+ }
+
+}
+
  if(finished && raceState.roundRobinMode){
 
   const players = raceState.roundRobinPlayers
