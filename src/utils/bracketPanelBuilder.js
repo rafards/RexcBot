@@ -97,9 +97,9 @@ function buildBracketEmbed(){
 
    if(m.player2){
     p2 = m.player2.ign
-   }else if(raceState.currentRound === 1){
-    p2 = "Loser Match 1"
-   }else if(raceState.luckyLoserMode){
+   }else if(m.waitingLoserMatch){
+    p2 = `Loser Match ${m.waitingLoserMatch}`
+   }else if(m.player2 === null){
     p2 = "Lucky Loser"
    }
  
