@@ -1,7 +1,7 @@
 const { createBracketEmbed } = require("../../utils/embeds")
 const { getSetupButton } = require("../../utils/bracketButtons")
 const { raceState } = require("../../data/raceState")
-const config = require("../../config")
+const config = require("../../config/config")
 
 async function deployBracket(message){
 
