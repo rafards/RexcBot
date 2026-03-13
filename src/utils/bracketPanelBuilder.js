@@ -249,8 +249,20 @@ function buildAdminPanel(){
 
   const activeMatch = raceState.matches.find(m=>!m.winner)
 
-  const p1 = activeMatch.player1?.ign
-  const p2 = activeMatch.player2?.ign
+  // ROUND ROBIN SUDAH SELESAI
+  if(!activeMatch){
+
+   return {
+    embed:new EmbedBuilder()
+     .setTitle("🏁 Round Robin Finished")
+     .setDescription("Waiting admin decision"),
+    components:[]
+   }
+
+  }
+
+  const p1 = activeMatch.player1?.ign || "TBD"
+  const p2 = activeMatch.player2?.ign || "TBD"
 
   const embed = new EmbedBuilder()
    .setTitle("🏁 ROUND ROBIN MATCH")
@@ -265,7 +277,7 @@ function buildAdminPanel(){
    .setCustomId(`winner_${raceState.matches.indexOf(activeMatch)}_2`)
    .setLabel(p2)
    .setStyle(ButtonStyle.Danger)
- 
+
   const row = new ActionRowBuilder().addComponents(btn1,btn2)
 
   return { embed, components:[row] }
@@ -276,7 +288,7 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
- const champion = raceState.matches[0]?.winner
+ const champion = raceState.matches?.[0]?.winner
 
  if(champion){
 
