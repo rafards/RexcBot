@@ -65,9 +65,13 @@ function buildBracketEmbed(){
 
  })
 
- return new EmbedBuilder()
-  .setTitle("🏁 TOURNAMENT BRACKET")
-  .setDescription(text)
+ if(!text || text.trim() === ""){
+ text = "Bracket belum dimulai"
+}
+
+return new EmbedBuilder()
+ .setTitle("🏁 TOURNAMENT BRACKET")
+ .setDescription(text)
 }
 
  // ================= CURRENT ROUND =================
@@ -117,9 +121,13 @@ function buildBracketEmbed(){
  
  }
 
- return new EmbedBuilder()
-  .setTitle("🏁 TOURNAMENT BRACKET")
-  .setDescription(text)
+ if(!text || text.trim() === ""){
+ text = "Bracket belum dimulai"
+}
+
+return new EmbedBuilder()
+ .setTitle("🏁 TOURNAMENT BRACKET")
+ .setDescription(text)
 
 }
 
