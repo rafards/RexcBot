@@ -48,7 +48,7 @@ function buildBracketEmbed(){
   const p1 = m.player1?.ign || "TBD"
   const p2 = m.player2?.ign || "TBD"
 
-  const live = i===activeIndex
+  const live = activeIndex !== -1 && i === activeIndex
 
   const title = live
    ? `➡ Match ${i+1} 🔴 LIVE`
@@ -87,9 +87,9 @@ function buildBracketEmbed(){
  
  }
  
- const upcoming = raceState.matches
-  .slice(activeIndex + 1)
-  .filter(m=>!m.winner)
+ const upcoming = activeIndex === -1
+ ? []
+ : raceState.matches.slice(activeIndex + 1).filter(m=>!m.winner)
  
  if(upcoming.length){
  
@@ -105,7 +105,7 @@ function buildBracketEmbed(){
    }else if(m.waitingLoserMatch){
      p2 = `Loser Match ${m.waitingLoserMatch}`
    }else if(raceState.luckyLoserMode){
-     p2 = "Lucky Loser"
+     p2 = "Waiting Lucky Loser"
    }
  
    text+=`${p1} vs ${p2}\n`
