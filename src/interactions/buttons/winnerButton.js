@@ -166,6 +166,34 @@ if(
  .filter(Boolean)
 
  if(winners.length === 1){
+
+ const champion = winners[0]
+
+ const playerChannel = await interaction.client.channels.fetch(
+  raceState.playerPanelChannelId
+ )
+
+ await playerChannel.send({
+  embeds:[{
+   title:"🏆 TOURNAMENT FINISHED",
+   description:`Champion: **${champion.ign}**`,
+   color:0xFFD700
+  }]
+ })
+
+ const resetButton = new ButtonBuilder()
+  .setCustomId("reset_tournament")
+  .setLabel("Reset Tournament")
+  .setStyle(ButtonStyle.Danger)
+
+ const row = new ActionRowBuilder().addComponents(resetButton)
+
+ const resetMsg = await interaction.channel.send({
+  components:[row]
+ })
+
+ raceState.resetMessageId = resetMsg.id
+
  return
  }
 
@@ -252,7 +280,7 @@ if(
   embeds:[
    {
     title:"🏆 TOURNAMENT FINISHED",
-    description:`Chamion: **${winner.ign}**`,
+    description:`Champion: **${winner.ign}**`,
     color:0xFFD700
    }
   ]
