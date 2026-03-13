@@ -9,25 +9,67 @@ const { raceState } = require("../data/raceState")
 
 function buildBracketEmbed(){
 
+ let text=""
+ 
  if(raceState.roundRobinMode){
+
  // ================= HISTORY =================
 
-  raceState.roundHistory.forEach(r=>{
+ raceState.roundHistory.forEach(r=>{
 
-   text+=`━━━━━━━━━━━━━━\n`
-   text+=`🏁 ROUND ${r.round}\n\n`
+  text+=`━━━━━━━━━━━━━━\n`
+  text+=`🏁 ROUND ${r.round}\n\n`
 
-   r.matches.forEach(m=>{
- 
-    text+=`Match ${m.index}\n`
-    text+=`${m.p1} vs ${m.p2}\n`
+  r.matches.forEach(m=>{
 
-    if(m.winner){
-     text+=`🏆 ${m.winner}\n`
-    }
-    text+="\n"
-   })
+   text+=`Match ${m.index}\n`
+   text+=`${m.p1} vs ${m.p2}\n`
+
+   if(m.winner){
+    text+=`🏆 ${m.winner}\n`
+   }
+
+   text+="\n"
+
   })
+
+ })
+
+ // ================= ROUND ROBIN =================
+
+ const matches = raceState.matches
+ const activeIndex = matches.findIndex(m=>!m.winner)
+
+ text+="━━━━━━━━━━━━━━\n"
+ text+="🏁 ROUND ROBIN FINAL\n\n"
+
+ matches.forEach((m,i)=>{
+
+  const p1 = m.player1?.ign || "TBD"
+  const p2 = m.player2?.ign || "TBD"
+
+  const live = i===activeIndex
+
+  const title = live
+   ? `➡ Match ${i+1} 🔴 LIVE`
+   : `Match ${i+1}`
+
+  text+=`${title}\n`
+  text+=`${p1} vs ${p2}\n`
+
+  if(m.winner){
+   text+=`🏆 ${m.winner.ign}\n`
+  }
+
+  text+="\n"
+
+ })
+
+ return new EmbedBuilder()
+  .setTitle("🏁 TOURNAMENT BRACKET")
+  .setDescription(text)
+
+ }
 
  function buildRoundRobinEmbed(){
 
@@ -63,7 +105,7 @@ function buildBracketEmbed(){
 
   return text
   
- })
+ }
   
   return new EmbedBuilder()
    .setTitle("🏁 ROUND ROBIN")
@@ -104,7 +146,7 @@ function buildBracketEmbed(){
     p2 = m.player2.ign
    }else if(m.waitingLoserMatch){
     p2 = `Loser Match ${m.waitingLoserMatch}`
-   }else if(m.player2 === null){
+   }else if(raceState.luckyLoserMode){
     p2 = "Lucky Loser"
    }
  
