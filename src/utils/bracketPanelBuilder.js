@@ -10,8 +10,6 @@ const { raceState } = require("../data/raceState")
 function buildBracketEmbed(){
 
  let text=""
- 
- if(raceState.roundRobinMode){
 
  // ================= HISTORY =================
 
@@ -34,6 +32,8 @@ function buildBracketEmbed(){
   })
 
  })
+ 
+ if(raceState.roundRobinMode){
 
  // ================= ROUND ROBIN =================
 
@@ -107,7 +107,8 @@ function buildBracketEmbed(){
    }else if(raceState.luckyLoserMode){
      p2 = "Waiting Lucky Loser"
    }
- 
+
+   text+=`Match ${m.index}\n`
    text+=`${p1} vs ${p2}\n`
  
   })
