@@ -212,6 +212,23 @@ async function updateBracketPanel(client){
 
 }
 
+function calculateRoundRobinWins(){
+
+ const wins = {}
+
+ raceState.roundRobinPlayers.forEach(p=>{
+  wins[p.id] = 0
+ })
+
+ raceState.matches.forEach(m=>{
+  if(m.winner){
+   wins[m.winner.id]++
+  }
+ })
+
+ return Object.entries(wins).sort((a,b)=>b[1]-a[1])
+}
+
 function buildAdminPanel(){
  if(raceState.luckyLoserMode){
 
@@ -289,24 +306,51 @@ function buildAdminPanel(){
 
  if(!activeMatch){
 
- const champion = raceState.matches?.[0]?.winner
+ const result = calculateRoundRobinWins()
 
- if(champion){
+ const first = result[0][1]
 
-  return {
-   embed:new EmbedBuilder()
-    .setTitle("🏆 TOURNAMENT FINISHED")
-    .setDescription(`Winner: ${champion.ign}`),
-   components:[]
-  }
+ // ===============================
+ // AUTO CHAMPION (2 WIN)
+ // ===============================
 
- }
+ if(first === 2){
+
+ const champ = raceState.roundRobinPlayers.find(p=>p.id===result[0][0])
+ const p2 = raceState.roundRobinPlayers.find(p=>p.id===result[1][0])
+ const p3 = raceState.roundRobinPlayers.find(p=>p.id===result[2][0])
 
  return {
   embed:new EmbedBuilder()
-   .setTitle("Match Finished")
-   .setDescription("Waiting next round"),
+   .setTitle("🏆 TOURNAMENT RESULT")
+   .setDescription(
+`🥇 ${champ?.ign}
+🥈 ${p2?.ign}
+🥉 ${p3?.ign}`
+   ),
   components:[]
+ }
+
+ }
+
+ // ===============================
+ // DRAW 1-1-1 → ADMIN SELECT
+ // ===============================
+
+ const buttons = raceState.roundRobinPlayers.map((p,i)=>
+  new ButtonBuilder()
+   .setCustomId(`select_p1_${i}`)
+   .setLabel(p.ign)
+   .setStyle(ButtonStyle.Primary)
+ )
+
+ const row = new ActionRowBuilder().addComponents(buttons)
+
+ return {
+  embed:new EmbedBuilder()
+   .setTitle("🏁 Round Robin Finished")
+   .setDescription("Semua pemain menang 1 kali.\nAdmin memilih champion."),
+  components:[row]
  }
 
 }
