@@ -12,7 +12,7 @@ async function winnerButton(interaction){
  const matchIndex = parseInt(parts[1])
  const playerIndex = parseInt(parts[2])
 
- const match = raceState.matches[matchIndex]
+ const match = raceState.matches.find((m,i)=>i === matchIndex)
 
  if(!match){
   return interaction.reply({
@@ -81,7 +81,7 @@ if(!raceState.roundHistory[raceState.currentRound-1]){
 raceState.roundHistory[raceState.currentRound-1].matches.push({
  index: matchIndex+1,
  p1: match.player1?.ign,
- p2: match.player2?.ign,
+ p2: match.player2 ? match.player2.ign : "Loser Match 1",
  winner: winner?.ign || null
 })
 
