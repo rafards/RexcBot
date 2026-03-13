@@ -50,14 +50,15 @@ async function winnerButton(interaction){
 
  if(matchIndex === 0 && raceState.oddPlayer){
 
-  raceState.matches.push({
-   player1: raceState.oddPlayer,
-   player2: loser,
-   winner:null,
-   loser:null
-  })
+ const waitingMatch = raceState.matches.find(
+  m => m.player1 === raceState.oddPlayer && m.player2 === null
+ )
 
-  raceState.oddPlayer = null
+ if(waitingMatch){
+  waitingMatch.player2 = loser
+ }
+
+ raceState.oddPlayer = null
  }
 
  await interaction.deferUpdate()
