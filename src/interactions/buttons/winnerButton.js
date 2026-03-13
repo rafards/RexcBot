@@ -136,6 +136,30 @@ if(
 
  if(!finished) return
 
+ // ===============================
+// AUTO LUCKY LOSER TRIGGER
+// ===============================
+
+const waitingMatch = raceState.matches.find(m=>m.player2 === null)
+
+if(
+ raceState.currentRound > 1 &&
+ waitingMatch
+){
+
+ const remainingMatches = raceState.matches.filter(m=>!m.winner)
+
+ if(remainingMatches.length === 1){
+
+  raceState.waitingPlayer = waitingMatch.player1
+  raceState.luckyLoserMode = true
+
+  await updateBracketPanel(interaction.client)
+  return
+ }
+
+}
+
  const winners = raceState.matches
  .map(m=>m.winner)
  .filter(Boolean)
