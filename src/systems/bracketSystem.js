@@ -60,6 +60,7 @@ if(raceState.oddPlayer){
  raceState.matches.push({
   player1: raceState.oddPlayer,
   player2: null,
+  waitingLoserMatch:1,
   winner:null,
   loser:null
  })
