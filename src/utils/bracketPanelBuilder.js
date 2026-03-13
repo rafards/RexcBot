@@ -230,7 +230,7 @@ function buildAdminPanel(){
    return {
     embed:new EmbedBuilder()
     .setTitle("Round Robin Finished")
-    .setDescription("Waiting admin decision"),
+    .setDescription("Select Champion"),
     components:[]
    }
   }
