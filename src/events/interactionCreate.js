@@ -147,6 +147,17 @@ if(interaction.isStringSelectMenu()){
    components:[]
   })
 
+  const resetButton = new ButtonBuilder()
+  .setCustomId("reset_tournament")
+  .setLabel("Reset Tournament")
+  .setStyle(ButtonStyle.Danger)
+ 
+  const row = new ActionRowBuilder().addComponents(resetButton)
+
+  await interaction.channel.send({
+   components:[row]
+  })
+
   return
  }
 
