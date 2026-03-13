@@ -51,6 +51,21 @@ async function generateBracket(interaction){
 
  raceState.matches = generateMatches(shuffled)
 
+ // ===============================
+// ROUND 1 WAITING LOSER MATCH
+// ===============================
+
+if(raceState.oddPlayer){
+
+ raceState.matches.push({
+  player1: raceState.oddPlayer,
+  player2: null,
+  winner:null,
+  loser:null
+ })
+
+}
+
  await sendBracketPanel(interaction.client)
 }
 
