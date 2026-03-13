@@ -95,7 +95,15 @@ function buildBracketEmbed(){
   upcoming.forEach(m=>{
  
    const p1 = m.player1?.ign || "TBD"
-   const p2 = m.player2?.ign || "TBD"
+   let p2 = "TBD"
+
+   if(m.player2){
+    p2 = m.player2.ign
+   }else if(raceState.currentRound === 1){
+    p2 = "Loser Match 1"
+   }else if(raceState.luckyLoserMode){
+    p2 = "Lucky Loser"
+   }
  
    text+=`${p1} vs ${p2}\n`
  
