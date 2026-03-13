@@ -10,55 +10,60 @@ const { raceState } = require("../data/raceState")
 function buildBracketEmbed(){
 
  if(raceState.roundRobinMode){
-  return buildRoundRobinEmbed()
- }
- let text=""
-
  // ================= HISTORY =================
 
- raceState.roundHistory.forEach(r=>{
+  raceState.roundHistory.forEach(r=>{
 
-  text+=`━━━━━━━━━━━━━━\n`
-  text+=`🏁 ROUND ${r.round}\n\n`
+   text+=`━━━━━━━━━━━━━━\n`
+   text+=`🏁 ROUND ${r.round}\n\n`
 
-  r.matches.forEach(m=>{
+   r.matches.forEach(m=>{
+ 
+    text+=`Match ${m.index}\n`
+    text+=`${m.p1} vs ${m.p2}\n`
 
-   text+=`Match ${m.index}\n`
-   text+=`${m.p1} vs ${m.p2}\n`
+    if(m.winner){
+     text+=`🏆 ${m.winner}\n`
+    }
+    text+="\n"
+   })
+  })
+
+ function buildRoundRobinEmbed(){
+
+  const matches = raceState.matches
+  const activeIndex = matches.findIndex(m=>!m.winner)
+  
+  let text=""
+
+  text+="━━━━━━━━━━━━━━\n"
+  text+="🏁 ROUND ROBIN FINAL\n\n"
+
+  matches.forEach((m,i)=>{
+
+   const p1 = m.player1?.ign || "TBD"
+   const p2 = m.player2?.ign || "TBD"
+
+   const live = i===activeIndex
+
+   const title = live
+    ? `➡ Match ${i+1} 🔴 LIVE`
+    : `Match ${i+1}`
+
+   text+=`${title}\n`
+   text+=`${p1} vs ${p2}\n`
 
    if(m.winner){
-    text+=`🏆 ${m.winner}\n`
+    text+=`🏆 ${m.winner.ign}\n`
    }
 
    text+="\n"
 
   })
 
+  return text
+  
  })
-
- function buildRoundRobinEmbed(){
-
-  const matches = raceState.matches
-
-  let text = ""
-  
-  text += `🏁 ROUND ROBIN FINAL\n\n`
-  
-  matches.forEach((m,i)=>{
-  
-   const p1 = m.player1?.ign || "TBD"
-   const p2 = m.player2?.ign || "TBD"
-  
-   text += `Match ${i+1}\n`
-   text += `${p1} vs ${p2}\n`
-  
-   if(m.winner){
-    text += `🏆 ${m.winner.ign}\n`
-   }
-  
-   text += "\n"
-  
-  })
   
   return new EmbedBuilder()
    .setTitle("🏁 ROUND ROBIN")
