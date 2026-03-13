@@ -111,7 +111,7 @@ return new EmbedBuilder()
  
   text+=`📋 UPCOMING MATCHES\n`
  
-  upcoming.forEach(m=>{
+  upcoming.forEach((m,i)=>{
  
    const p1 = m.player1?.ign || "TBD"
    let p2 = "TBD"
@@ -124,7 +124,9 @@ return new EmbedBuilder()
      p2 = "Waiting Lucky Loser"
    }
 
-   text+=`Match ${activeIndex + i + 2}\n`
+   const matchNumber = activeIndex + i + 2
+
+   text+=`Match ${matchNumber}\n`
    text+=`${p1} vs ${p2}\n\n`
  
   })
