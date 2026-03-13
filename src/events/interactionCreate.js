@@ -11,6 +11,7 @@ const { playerButton } = require("../interactions/buttons/playerButton")
 const { fillTestPlayersButton } = require("../interactions/buttons/fillTestPlayersButton")
 const { resetTournamentButton } = require("../interactions/buttons/resetTournamentButton")
 const { updateBracketPanel } = require("../utils/bracketPanelBuilder")
+const { selectChampionButton } = require("./interactions/buttons/selectChampionButton")
 
 client.on("interactionCreate", async interaction => {
 
@@ -83,6 +84,8 @@ if(interaction.isStringSelectMenu()){
  if(interaction.customId === "fill_test_players"){
   return fillTestPlayersButton(interaction)
  }
+
+  await selectChampionButton(interaction)
 
  if(interaction.customId === "reset_tournament"){
   return resetTournamentButton(interaction)
