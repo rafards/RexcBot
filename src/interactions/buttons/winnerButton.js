@@ -153,7 +153,11 @@ async function winnerButton(interaction){
 
  }
 
- raceState.roundHistory[raceState.currentRound-1].matches.push({
+ const historyRound = raceState.roundRobinMode
+ ? raceState.roundHistory[raceState.roundHistory.length-1]
+ : raceState.roundHistory[raceState.currentRound-1]
+
+ historyRound.matches.push({
   index: matchIndex+1,
   p1: match.player1?.ign,
   p2: match.player2 ? match.player2.ign : "Loser Match 1",
@@ -275,6 +279,11 @@ if(raceState.roundRobinMode){
 
   raceState.roundRobinMode = true
   raceState.roundRobinPlayers = winners
+
+  raceState.roundHistory.push({
+   round:"ROUND ROBIN",
+   matches:[]
+  })
 
   const nextMatches = generateNextRound(winners)
 
