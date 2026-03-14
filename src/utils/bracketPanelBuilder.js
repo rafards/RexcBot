@@ -34,6 +34,10 @@ function buildBracketEmbed(){
 
  })
 
+ if(raceState.roundRobinMode){
+ text+="━━━━━━━━━━━━━━\n"
+ }
+
  // ================= ROUND ROBIN =================
 
  if(raceState.roundRobinMode){
@@ -75,7 +79,7 @@ function buildBracketEmbed(){
  }
 
  text+="━━━━━━━━━━━━━━\n"
- text+="🏁 ROUND ROBIN FINAL\n\n"
+ text+="🏁 ROUND ROBIN\n\n"
 
  matches.forEach((m,i)=>{
 
