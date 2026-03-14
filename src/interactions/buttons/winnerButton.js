@@ -181,24 +181,40 @@ async function winnerButton(interaction){
   .filter(Boolean)
 
  // ===============================
-// ROUND ROBIN FINISHED
-// ===============================
+ // ROUND ROBIN GENERATOR (3 PLAYER)
+ // ===============================
+ 
+ if(winners.length === 3){
+ 
+  raceState.matches = generateNextRound(winners)
+ 
+  raceState.currentRound++
+  raceState.currentMatchIndex = 0
+ 
+  await updateBracketPanel(interaction.client)
+ 
+  return
+ }
 
-if(raceState.matches.length === 3){
+ // ===============================
+ // ROUND ROBIN FINISHED
+ // ===============================
+ 
+ if(raceState.matches.length === 3){
+ 
+  const winCount = {}
+ 
+  raceState.matches.forEach(m=>{
+   if(!m.winner) return
+ 
+   const id = m.winner.id
+ 
+   if(!winCount[id]) winCount[id] = 0
+ 
+   winCount[id]++
+  })
 
- const winCount = {}
-
- raceState.matches.forEach(m=>{
-  if(!m.winner) return
-
-  const id = m.winner.id
-
-  if(!winCount[id]) winCount[id] = 0
-
-  winCount[id]++
- })
-
- const scores = Object.entries(winCount).sort((a,b)=>b[1]-a[1])
+  const scores = Object.entries(winCount).sort((a,b)=>b[1]-a[1])
 
  // AUTO CHAMPION (2 WIN)
 
