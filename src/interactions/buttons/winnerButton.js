@@ -144,11 +144,14 @@ async function winnerButton(interaction){
   winner: winner?.ign || null
  })
 
- await updateBracketPanel(interaction.client)
-
  const finished = raceState.matches.every(m=>m.winner)
 
- if(!finished) return
+ if(!finished){
+ 
+  await updateBracketPanel(interaction.client)
+  return
+ 
+ }
 
  // ================= ROUND ROBIN RESULT =================
 
