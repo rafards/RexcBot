@@ -370,6 +370,30 @@ function buildAdminPanel(){
 
  const activeMatch = raceState.matches?.find(m=>!m.winner)
 
+ // ================= FINAL RESULT =================
+
+if(raceState.p1 && raceState.p2 && raceState.p3){
+
+ const resetButton = new ButtonBuilder()
+  .setCustomId("reset_tournament")
+  .setLabel("Reset Tournament")
+  .setStyle(ButtonStyle.Danger)
+
+ const row = new ActionRowBuilder().addComponents(resetButton)
+
+ return {
+  embed:new EmbedBuilder()
+   .setTitle("🏆 TOURNAMENT RESULT")
+   .setDescription(
+`🥇 ${raceState.p1.ign}
+🥈 ${raceState.p2.ign}
+🥉 ${raceState.p3.ign}`
+   ),
+  components:[row]
+ }
+
+}
+
  if(activeMatch){
 
   const p1 = activeMatch.player1?.ign || "BYE"
