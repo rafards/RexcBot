@@ -171,11 +171,19 @@ async function winnerButton(interaction){
    const champ = scores[0][0]
    const second = scores[1][0]
 
-   const players = [
-    raceState.matches[0].player1,
-    raceState.matches[0].player2,
-    raceState.matches[1].player2
-   ]
+   const players = []
+
+   raceState.matches.forEach(m => {
+   
+    if(!players.find(p => p.id === m.player1.id)){
+     players.push(m.player1)
+    }
+   
+    if(!players.find(p => p.id === m.player2.id)){
+     players.push(m.player2)
+    }
+   
+   })
 
    const p1 = players.find(p=>p.id === champ)
    const p2 = players.find(p=>p.id === second)
