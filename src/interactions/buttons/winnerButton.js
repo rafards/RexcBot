@@ -141,7 +141,7 @@ async function winnerButton(interaction){
  await interaction.deferUpdate()
 
  // ===============================
- // SAVE MATCH RESULT TO HISTORY
+ // SAVE HISTORY
  // ===============================
 
  if(!raceState.roundHistory[raceState.currentRound-1]){
@@ -153,11 +153,7 @@ async function winnerButton(interaction){
 
  }
 
- const historyRound = raceState.roundRobinMode
- ? raceState.roundHistory[raceState.roundHistory.length-1]
- : raceState.roundHistory[raceState.currentRound-1]
-
- historyRound.matches.push({
+ raceState.roundHistory[raceState.currentRound-1].matches.push({
   index: matchIndex+1,
   p1: match.player1?.ign,
   p2: match.player2 ? match.player2.ign : "Loser Match 1",
@@ -168,53 +164,7 @@ async function winnerButton(interaction){
 
  const finished = raceState.matches.every(m=>m.winner)
 
- // ===============================
- // CHECK LUCKY LOSER TRIGGER
- // ===============================
-
- if(
-  raceState.currentRound > 1 &&
-  raceState.matches.some(m => m.player2 === null)
- ){
-
-  const remainingMatches = raceState.matches.filter(m=>!m.winner)
-
-  if(remainingMatches.length === 1){
-
-   raceState.waitingPlayer = remainingMatches[0].player1
-   raceState.luckyLoserMode = true
-
-   await updateBracketPanel(interaction.client)
-   return
-  }
-
- }
-
  if(!finished) return
-
- // ===============================
- // AUTO LUCKY LOSER TRIGGER
- // ===============================
-
- const waitingMatch = raceState.matches.find(m=>m.player2 === null)
-
- if(
-  raceState.currentRound > 1 &&
-  waitingMatch
- ){
-
-  const remainingMatches = raceState.matches.filter(m=>!m.winner)
-
-  if(remainingMatches.length === 1){
-
-   raceState.waitingPlayer = waitingMatch.player1
-   raceState.luckyLoserMode = true
-
-   await updateBracketPanel(interaction.client)
-   return
-  }
-
- }
 
  // ===============================
  // GET ROUND WINNERS
@@ -223,25 +173,6 @@ async function winnerButton(interaction){
  const winners = raceState.matches
   .map(m=>m.winner)
   .filter(Boolean)
-
- // ===============================
-// ROUND ROBIN FINISHED GUARD
-// ===============================
-
-if(raceState.roundRobinMode){
-
- const unfinished = raceState.matches.find(m=>!m.winner)
-
- // semua match round robin selesai
- if(!unfinished){
-
-  // update panel agar admin memilih champion
-  await updateBracketPanel(interaction.client)
-
-  return
- }
-
-}
 
  // ===============================
  // TOURNAMENT FINISHED
@@ -272,73 +203,10 @@ if(raceState.roundRobinMode){
  }
 
  // ===============================
- // ROUND ROBIN (3 PLAYER)
- // ===============================
-
- if(winners.length === 3){
-
-  raceState.roundRobinMode = true
-  raceState.roundRobinPlayers = winners
-
-  raceState.roundHistory.push({
-   round:"ROUND ROBIN",
-   matches:[]
-  })
-
-  const nextMatches = generateNextRound(winners)
-
-  raceState.matches = nextMatches
-  raceState.currentMatchIndex = 0
-
-  await updateBracketPanel(interaction.client)
-
-  return
- }
-
- // ===============================
- // LUCKY LOSER (GANJIL)
- // ===============================
-
- if(
-  raceState.currentRound > 1 &&
-  winners.length >= 5 &&
-  winners.length % 2 !== 0
- ){
-
-  const waitingPlayer = winners.pop()
-
-  raceState.waitingPlayer = waitingPlayer
-  raceState.luckyLoserMode = true
-
-  return
- }
-
- // ===============================
  // NEXT ROUND
  // ===============================
 
  const nextMatches = generateNextRound(winners)
-
- if(!nextMatches || nextMatches.length === 0){
-
-  const playerChannel = await interaction.client.channels.fetch(
-   raceState.playerPanelChannelId
-  )
-
-  await playerChannel.send({
-   embeds:[
-    {
-     title:"🏆 TOURNAMENT RESULT",
-     description:`🥇 ${winners[0].ign}`,
-     color:0xFFD700
-    }
-   ]
-  })
-
-  await sendResetButton(interaction)
-
-  return
- }
 
  raceState.matches = nextMatches
  raceState.currentRound++
