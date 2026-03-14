@@ -221,6 +221,25 @@ async function winnerButton(interaction){
   .filter(Boolean)
 
  // ===============================
+// ROUND ROBIN FINISHED GUARD
+// ===============================
+
+if(raceState.roundRobinMode){
+
+ const unfinished = raceState.matches.find(m=>!m.winner)
+
+ // semua match round robin selesai
+ if(!unfinished){
+
+  // update panel agar admin memilih champion
+  await updateBracketPanel(interaction.client)
+
+  return
+ }
+
+}
+
+ // ===============================
  // TOURNAMENT FINISHED
  // ===============================
 
