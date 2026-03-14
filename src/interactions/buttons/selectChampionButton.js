@@ -1,7 +1,16 @@
 const { raceState } = require("../../data/raceState")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 
 async function selectChampionButton(interaction){
+
+ // stop jika champion sudah dipilih
+ if(raceState.p1 && raceState.p2 && raceState.p3){
+  return interaction.reply({
+   content:"Champion sudah ditentukan.",
+   ephemeral:true
+  })
+ }
 
  // ===============================
  // SELECT P1
@@ -10,34 +19,27 @@ async function selectChampionButton(interaction){
  if(interaction.customId.startsWith("select_p1_")){
 
   const index = parseInt(interaction.customId.split("_")[2])
+
   const player = raceState.roundRobinPlayers[index]
 
   raceState.p1 = player
 
-  const remaining = raceState.roundRobinPlayers.filter(p=>p!==player)
+  const remaining = raceState.roundRobinPlayers.filter(p=>p.id !== player.id)
 
-  const buttons = remaining.map((p,i)=>({
-   type:2,
-   style:1,
-   label:p.ign,
-   custom_id:`select_p2_${i}`
-  }))
+  const buttons = remaining.map((p,i)=>
+   new ButtonBuilder()
+    .setCustomId(`select_p2_${i}`)
+    .setLabel(p.ign)
+    .setStyle(ButtonStyle.Primary)
+  )
 
-  if(buttons.length === 0){
-   return interaction.reply({
-    content:"No players available",
-    ephemeral:true
-   })
-  }
+  const row = new ActionRowBuilder().addComponents(buttons)
 
   return interaction.update({
    embeds:[{
     title:"Select 2nd Place (P2)"
    }],
-   components:[{
-    type:1,
-    components:buttons
-   }]
+   components:[row]
   })
 
  }
@@ -50,10 +52,11 @@ async function selectChampionButton(interaction){
 
   const index = parseInt(interaction.customId.split("_")[2])
 
-  const remaining = raceState.roundRobinPlayers.filter(p=>p!==raceState.p1)
+  const remaining = raceState.roundRobinPlayers.filter(p=>p.id !== raceState.p1.id)
 
   raceState.p2 = remaining[index]
-  raceState.p3 = remaining.find(p=>p!==raceState.p2)
+
+  raceState.p3 = remaining.find(p=>p.id !== raceState.p2.id)
 
   const playerChannel = await interaction.client.channels.fetch(
    raceState.playerPanelChannelId
@@ -70,18 +73,29 @@ async function selectChampionButton(interaction){
    }]
   })
 
-  const resetButton = new ButtonBuilder()
-   .setCustomId("reset_tournament")
-   .setLabel("Reset Tournament")
-   .setStyle(ButtonStyle.Danger)
+  // ===============================
+  // RESET BUTTON (ANTI DUPLICATE)
+  // ===============================
 
-  const row = new ActionRowBuilder().addComponents(resetButton)
+  if(!raceState.resetMessageId){
 
-  const resetMsg = await interaction.channel.send({
-   components:[row]
-  })
+   const resetButton = new ButtonBuilder()
+    .setCustomId("reset_tournament")
+    .setLabel("Reset Tournament")
+    .setStyle(ButtonStyle.Danger)
 
-  raceState.resetMessageId = resetMsg.id
+   const row = new ActionRowBuilder().addComponents(resetButton)
+
+   const msg = await interaction.channel.send({
+    components:[row]
+   })
+
+   raceState.resetMessageId = msg.id
+  }
+
+  await interaction.deferUpdate()
+
+  await updateBracketPanel(interaction.client)
 
  }
 
