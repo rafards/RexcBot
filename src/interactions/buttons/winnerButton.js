@@ -31,10 +31,10 @@ async function sendResetButton(interaction){
 
 function calculateTop3(){
 
- const lastRound = raceState.roundHistory[raceState.roundHistory.length-1]
+ const lastRound = raceState.roundHistory[raceState.roundHistory.length - 1]
  if(!lastRound) return null
 
- const finalMatch = lastRound.matches[lastRound.matches.length-1]
+ const finalMatch = lastRound.matches[lastRound.matches.length - 1]
 
  const champion = finalMatch.winner
 
@@ -42,7 +42,7 @@ function calculateTop3(){
   ? finalMatch.p2
   : finalMatch.p1
 
- const previousRound = raceState.roundHistory[raceState.roundHistory.length-2]
+ const previousRound = raceState.roundHistory[raceState.roundHistory.length - 2]
 
  let thirdPlace = null
 
@@ -56,6 +56,7 @@ function calculateTop3(){
    .filter(Boolean)
 
   thirdPlace = semifinalLosers[0] || null
+
  }
 
  return {
@@ -74,29 +75,33 @@ async function winnerButton(interaction){
 
  if(!interaction.customId.startsWith("winner_")) return
 
- const parts = interaction.customId.split("_")
+ const [,matchIndexStr,playerIndexStr] = interaction.customId.split("_")
 
- const matchIndex = parseInt(parts[1])
- const playerIndex = parseInt(parts[2])
+ const matchIndex = parseInt(matchIndexStr)
+ const playerIndex = parseInt(playerIndexStr)
 
- const match = raceState.matches.find((m,i)=>i === matchIndex)
+ const match = raceState.matches[matchIndex]
 
  if(!match){
+
   return interaction.reply({
    content:"Match tidak ditemukan",
    ephemeral:true
   })
+
  }
 
  if(match.winner){
+
   return interaction.reply({
    content:"Winner already set",
    ephemeral:true
   })
+
  }
 
- const winner = playerIndex===1 ? match.player1 : match.player2
- const loser  = playerIndex===1 ? match.player2 : match.player1
+ const winner = playerIndex === 1 ? match.player1 : match.player2
+ const loser  = playerIndex === 1 ? match.player2 : match.player1
 
  match.winner = winner
  match.loser = loser
@@ -136,25 +141,26 @@ async function winnerButton(interaction){
   }
 
   raceState.oddPlayer = null
+
  }
 
  await interaction.deferUpdate()
 
  // ===============================
- // SAVE HISTORY
+ // SAVE MATCH HISTORY
  // ===============================
 
- if(!raceState.roundHistory[raceState.currentRound-1]){
+ if(!raceState.roundHistory[raceState.currentRound - 1]){
 
-  raceState.roundHistory[raceState.currentRound-1] = {
+  raceState.roundHistory[raceState.currentRound - 1] = {
    round: raceState.currentRound,
    matches:[]
   }
 
  }
 
- raceState.roundHistory[raceState.currentRound-1].matches.push({
-  index: matchIndex+1,
+ raceState.roundHistory[raceState.currentRound - 1].matches.push({
+  index: matchIndex + 1,
   p1: match.player1?.ign,
   p2: match.player2 ? match.player2.ign : "Loser Match 1",
   winner: winner?.ign || null
@@ -162,7 +168,7 @@ async function winnerButton(interaction){
 
  await updateBracketPanel(interaction.client)
 
- const finished = raceState.matches.every(m=>m.winner)
+ const finished = raceState.matches.every(m => m.winner)
 
  if(!finished) return
 
@@ -171,7 +177,7 @@ async function winnerButton(interaction){
  // ===============================
 
  const winners = raceState.matches
-  .map(m=>m.winner)
+  .map(m => m.winner)
   .filter(Boolean)
 
  // ===============================
@@ -203,7 +209,7 @@ async function winnerButton(interaction){
  }
 
  // ===============================
- // NEXT ROUND
+ // GENERATE NEXT ROUND
  // ===============================
 
  const nextMatches = generateNextRound(winners)
