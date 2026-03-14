@@ -34,78 +34,7 @@ function buildBracketEmbed(){
 
  })
 
- // ================= ROUND ROBIN =================
-
- if(raceState.roundRobinMode){
-
- const matches = raceState.matches
- const activeIndex = matches.findIndex(m=>!m.winner)
-
- // ROUND ROBIN FINISHED
-
- if(activeIndex === -1){
-
-  const result = calculateRoundRobinWins()
-  const first = result[0][1]
-
-  if(first === 2){
-
-   const champ = raceState.roundRobinPlayers.find(p=>p.id===result[0][0])
-   const p2 = raceState.roundRobinPlayers.find(p=>p.id===result[1][0])
-   const p3 = raceState.roundRobinPlayers.find(p=>p.id===result[2][0])
-
-   text+="━━━━━━━━━━━━━━\n"
-   text+="🏆 FINAL RESULT\n\n"
-   text+=`🥇 ${champ?.ign}\n`
-   text+=`🥈 ${p2?.ign}\n`
-   text+=`🥉 ${p3?.ign}\n`
-
-  }else{
-
-   text+="━━━━━━━━━━━━━━\n"
-   text+="⏳ WAITING ADMIN DECISION\n\n"
-   text+="Semua pemain menang 1 kali.\n"
-
-  }
-
-  return new EmbedBuilder()
-   .setTitle("🏁 TOURNAMENT BRACKET")
-   .setDescription(text)
-
- }
-
- text+="━━━━━━━━━━━━━━\n"
- text+="🏁 ROUND ROBIN\n\n"
-
- matches.forEach((m,i)=>{
-
-  const p1 = m.player1?.ign || "TBD"
-  const p2 = m.player2?.ign || "TBD"
-
-  const live = i === activeIndex
-
-  const title = live
-   ? `➡ Match ${i+1} 🔴 LIVE`
-   : `Match ${i+1}`
-
-  text+=`${title}\n`
-  text+=`${p1} vs ${p2}\n`
-
-  if(m.winner){
-   text+=`🏆 ${m.winner.ign}\n`
-  }
-
-  text+="\n"
-
- })
-
- return new EmbedBuilder()
-  .setTitle("🏁 TOURNAMENT BRACKET")
-  .setDescription(text)
-
- }
-
- // ================= CURRENT ROUND =================
+ // ================= CURRENT MATCH =================
 
  const activeIndex = raceState.matches.findIndex(m => !m.winner)
  const activeMatch = raceState.matches[activeIndex]
@@ -120,6 +49,8 @@ function buildBracketEmbed(){
   text+=`${p1} vs ${p2} 🔴 LIVE\n\n`
 
  }
+
+ // ================= UPCOMING =================
 
  const upcoming = activeIndex === -1
  ? []
@@ -225,32 +156,12 @@ async function updateBracketPanel(client){
  const adminData = buildAdminPanel() || {
  embed:new EmbedBuilder().setTitle("Panel"),
  components:[]
-  }
+ }
 
  await adminPanel.edit({
   embeds:[adminData.embed],
   components:adminData.components
  })
-
-}
-
-// ================= CALCULATE WINS =================
-
-function calculateRoundRobinWins(){
-
- const wins={}
-
- raceState.roundRobinPlayers.forEach(p=>{
-  wins[p.id]=0
- })
-
- raceState.matches.forEach(m=>{
-  if(m.winner){
-   wins[m.winner.id]++
-  }
- })
-
- return Object.entries(wins).sort((a,b)=>b[1]-a[1])
 
 }
 
@@ -288,107 +199,33 @@ function buildAdminPanel(){
 
  }
 
- // ================= ROUND ROBIN =================
+ // ================= FINAL RESULT =================
 
- if(raceState.roundRobinMode){
+ if(raceState.p1 && raceState.p2 && raceState.p3){
 
-  const activeMatch = raceState.matches.find(m=>!m.winner)
-
-  if(!activeMatch){
-
-   const result = calculateRoundRobinWins()
-   const first = result[0][1]
-
-   if(first===2){
-
-    const champ = raceState.roundRobinPlayers.find(p=>p.id===result[0][0])
-    const p2 = raceState.roundRobinPlayers.find(p=>p.id===result[1][0])
-    const p3 = raceState.roundRobinPlayers.find(p=>p.id===result[2][0])
-
-    return {
-     embed:new EmbedBuilder()
-      .setTitle("🏆 TOURNAMENT RESULT")
-      .setDescription(
-`🥇 ${champ?.ign}
-🥈 ${p2?.ign}
-🥉 ${p3?.ign}`
-      ),
-     components:[]
-    }
-
-   }
-
-   const buttons = raceState.roundRobinPlayers.map((p,i)=>
-    new ButtonBuilder()
-     .setCustomId(`select_p1_${i}`)
-     .setLabel(p.ign)
-     .setStyle(ButtonStyle.Primary)
-   )
-
-   const row = new ActionRowBuilder().addComponents(buttons)
-
-   return {
-    embed:new EmbedBuilder()
-     .setTitle("🏁 Round Robin Finished")
-     .setDescription("Semua pemain menang 1 kali.\nAdmin memilih champion."),
-    components:[row]
-   }
-
-  }
-
-  const p1 = activeMatch.player1?.ign
-  const p2 = activeMatch.player2?.ign
-
-  const matchIndex = raceState.matches.indexOf(activeMatch)
-
-  const btn1 = new ButtonBuilder()
-   .setCustomId(`winner_${matchIndex}_1`)
-   .setLabel(p1)
-   .setStyle(ButtonStyle.Primary)
-
-  const btn2 = new ButtonBuilder()
-   .setCustomId(`winner_${matchIndex}_2`)
-   .setLabel(p2)
+  const resetButton = new ButtonBuilder()
+   .setCustomId("reset_tournament")
+   .setLabel("Reset Tournament")
    .setStyle(ButtonStyle.Danger)
 
-  const row = new ActionRowBuilder().addComponents(btn1,btn2)
+  const row = new ActionRowBuilder().addComponents(resetButton)
 
   return {
    embed:new EmbedBuilder()
-    .setTitle(`⚔ ROUND ROBIN`)
-    .setDescription(`${p1} vs ${p2}`),
+    .setTitle("🏆 TOURNAMENT RESULT")
+    .setDescription(
+`🥇 ${raceState.p1.ign}
+🥈 ${raceState.p2.ign}
+🥉 ${raceState.p3.ign}`
+    ),
    components:[row]
   }
 
  }
 
- // ================= NORMAL BRACKET =================
+ // ================= ACTIVE MATCH =================
 
  const activeMatch = raceState.matches?.find(m=>!m.winner)
-
- // ================= FINAL RESULT =================
-
-if(raceState.p1 && raceState.p2 && raceState.p3){
-
- const resetButton = new ButtonBuilder()
-  .setCustomId("reset_tournament")
-  .setLabel("Reset Tournament")
-  .setStyle(ButtonStyle.Danger)
-
- const row = new ActionRowBuilder().addComponents(resetButton)
-
- return {
-  embed:new EmbedBuilder()
-   .setTitle("🏆 TOURNAMENT RESULT")
-   .setDescription(
-`🥇 ${raceState.p1.ign}
-🥈 ${raceState.p2.ign}
-🥉 ${raceState.p3.ign}`
-   ),
-  components:[row]
- }
-
-}
 
  if(activeMatch){
 
