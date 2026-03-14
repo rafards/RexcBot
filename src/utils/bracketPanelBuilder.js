@@ -1,4 +1,4 @@
-const { 
+const {
  EmbedBuilder,
  ButtonBuilder,
  ButtonStyle,
@@ -8,27 +8,31 @@ const {
 
 const { raceState } = require("../data/raceState")
 
+// ===============================
+// BUILD PLAYER BRACKET EMBED
+// ===============================
+
 function buildBracketEmbed(){
 
- let text=""
+ let text = ""
 
  // ================= HISTORY =================
 
  raceState.roundHistory.forEach(r=>{
 
-  text+=`━━━━━━━━━━━━━━\n`
-  text+=`🏁 ROUND ${r.round}\n\n`
+  text += `━━━━━━━━━━━━━━\n`
+  text += `🏁 ROUND ${r.round}\n\n`
 
   r.matches.forEach(m=>{
 
-   text+=`Match ${m.index}\n`
-   text+=`${m.p1} vs ${m.p2}\n`
+   text += `Match ${m.index}\n`
+   text += `${m.p1} vs ${m.p2}\n`
 
    if(m.winner){
-    text+=`🏆 ${m.winner}\n`
+    text += `🏆 ${m.winner}\n`
    }
 
-   text+="\n"
+   text += "\n"
 
   })
 
@@ -44,47 +48,50 @@ function buildBracketEmbed(){
   const p1 = activeMatch.player1?.ign || "TBD"
   const p2 = activeMatch.player2?.ign || "TBD"
 
-  text+=`━━━━━━━━━━━━━━━━\n`
-  text+=`⚔ CURRENT MATCH\n`
-  text+=`${p1} vs ${p2} 🔴 LIVE\n\n`
+  text += `━━━━━━━━━━━━━━━━\n`
+  text += `⚔ CURRENT MATCH\n`
+  text += `${p1} vs ${p2} 🔴 LIVE\n\n`
 
  }
 
  // ================= UPCOMING =================
 
  const upcoming = activeIndex === -1
- ? []
- : raceState.matches.slice(activeIndex + 1).filter(m=>!m.winner)
+  ? []
+  : raceState.matches.slice(activeIndex + 1).filter(m=>!m.winner)
 
  if(upcoming.length){
 
-  text+=`━━━━━━━━━━━━━━━━\n`
-  text+=`📋 UPCOMING MATCHES\n`
+  text += `━━━━━━━━━━━━━━━━\n`
+  text += `📋 UPCOMING MATCHES\n`
 
   upcoming.forEach((m,i)=>{
 
    const p1 = m.player1?.ign || "TBD"
+
    let p2 = "TBD"
 
    if(m.player2){
     p2 = m.player2.ign
-   }else if(m.waitingLoserMatch){
+   }
+   else if(m.waitingLoserMatch){
     p2 = `Loser Match ${m.waitingLoserMatch}`
-   }else if(raceState.luckyLoserMode){
+   }
+   else if(raceState.luckyLoserMode){
     p2 = "Waiting Lucky Loser"
    }
 
    const matchNumber = activeIndex + i + 2
 
-   text+=`Match ${matchNumber}\n`
-   text+=`${p1} vs ${p2}\n\n`
+   text += `Match ${matchNumber}\n`
+   text += `${p1} vs ${p2}\n\n`
 
   })
 
  }
 
  if(!text.trim()){
-  text="Bracket belum dimulai"
+  text = "Bracket belum dimulai"
  }
 
  return new EmbedBuilder()
@@ -93,12 +100,14 @@ function buildBracketEmbed(){
 
 }
 
-// ================= SEND PANEL =================
+// ===============================
+// SEND PANEL
+// ===============================
 
 async function sendBracketPanel(client){
 
  const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
- const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
+ const adminChannel  = await client.channels.fetch(raceState.adminListChannelId)
 
  const embed = buildBracketEmbed()
 
@@ -114,7 +123,9 @@ async function sendBracketPanel(client){
 
  if(raceState.adminMatchPanelId){
 
-  adminMsg = await adminChannel.messages.fetch(raceState.adminMatchPanelId).catch(()=>null)
+  adminMsg = await adminChannel.messages
+   .fetch(raceState.adminMatchPanelId)
+   .catch(()=>null)
 
  }
 
@@ -125,7 +136,8 @@ async function sendBracketPanel(client){
    components:adminData.components
   })
 
- }else{
+ }
+ else{
 
   adminMsg = await adminChannel.send({
    embeds:[adminData.embed],
@@ -138,12 +150,14 @@ async function sendBracketPanel(client){
 
 }
 
-// ================= UPDATE PANEL =================
+// ===============================
+// UPDATE PANEL
+// ===============================
 
 async function updateBracketPanel(client){
 
  const playerChannel = await client.channels.fetch(raceState.playerPanelChannelId)
- const adminChannel = await client.channels.fetch(raceState.adminListChannelId)
+ const adminChannel  = await client.channels.fetch(raceState.adminListChannelId)
 
  const msg = await playerChannel.messages.fetch(raceState.bracketMessageId)
 
@@ -154,8 +168,8 @@ async function updateBracketPanel(client){
  const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
 
  const adminData = buildAdminPanel() || {
- embed:new EmbedBuilder().setTitle("Panel"),
- components:[]
+  embed:new EmbedBuilder().setTitle("Panel"),
+  components:[]
  }
 
  await adminPanel.edit({
@@ -165,7 +179,9 @@ async function updateBracketPanel(client){
 
 }
 
-// ================= ADMIN PANEL =================
+// ===============================
+// BUILD ADMIN PANEL
+// ===============================
 
 function buildAdminPanel(){
 
@@ -175,17 +191,22 @@ function buildAdminPanel(){
 
   const embed = new EmbedBuilder()
    .setTitle("⚠ Lucky Loser Selection")
-   .setDescription(`Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`)
+   .setDescription(
+`Waiting Player:
+${raceState.waitingPlayer?.ign}
+
+Select Lucky Loser`
+   )
 
   const options = raceState.luckyLoserCandidates.length
- ? raceState.luckyLoserCandidates.map((p,i)=>({
-    label:p.ign,
-    value:String(i)
-   }))
- : [{
-    label:"No Lucky Loser Available",
-    value:"none"
-   }]
+   ? raceState.luckyLoserCandidates.map((p,i)=>({
+      label:p.ign,
+      value:String(i)
+     }))
+   : [{
+      label:"No Lucky Loser Available",
+      value:"none"
+     }]
 
   const select = new StringSelectMenuBuilder()
    .setCustomId("select_lucky_loser")
@@ -266,7 +287,7 @@ function buildAdminPanel(){
 
 }
 
-module.exports={
+module.exports = {
  sendBracketPanel,
  updateBracketPanel
 }
