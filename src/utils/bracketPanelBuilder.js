@@ -258,7 +258,7 @@ function calculateRoundRobinWins(){
 
 function buildAdminPanel(){
 
- // LUCKY LOSER
+ // ================= LUCKY LOSER =================
 
  if(raceState.luckyLoserMode){
 
@@ -271,10 +271,6 @@ function buildAdminPanel(){
    value:String(i)
   }))
 
-  if(options.length===0){
-   options.push({label:"No candidates",value:"none"})
-  }
-
   const select = new StringSelectMenuBuilder()
    .setCustomId("select_lucky_loser")
    .setPlaceholder("Select Lucky Loser")
@@ -286,7 +282,7 @@ function buildAdminPanel(){
 
  }
 
- // ROUND ROBIN
+ // ================= ROUND ROBIN =================
 
  if(raceState.roundRobinMode){
 
@@ -334,14 +330,10 @@ function buildAdminPanel(){
 
   }
 
-  const p1 = activeMatch.player1?.ign || "BYE"
-  const p2 = activeMatch.player2?.ign || "BYE"
+  const p1 = activeMatch.player1?.ign
+  const p2 = activeMatch.player2?.ign
 
   const matchIndex = raceState.matches.indexOf(activeMatch)
-
-  const embed = new EmbedBuilder()
-   .setTitle(`⚔ ROUND ${raceState.currentRound}`)
-   .setDescription(`Match ${matchIndex+1}\n\n${p1} vs ${p2}`)
 
   const btn1 = new ButtonBuilder()
    .setCustomId(`winner_${matchIndex}_1`)
@@ -355,22 +347,59 @@ function buildAdminPanel(){
 
   const row = new ActionRowBuilder().addComponents(btn1,btn2)
 
-  return { embed, components:[row] }
+  return {
+   embed:new EmbedBuilder()
+    .setTitle(`⚔ ROUND ROBIN`)
+    .setDescription(`${p1} vs ${p2}`),
+   components:[row]
+  }
 
  }
 
- // DEFAULT RETURN (ANTI CRASH)
+ // ================= NORMAL BRACKET =================
 
-return {
- embed:new EmbedBuilder()
-  .setTitle("⚔ Waiting Match")
-  .setDescription("Bracket sedang dibuat..."),
- components:[]
-}
- 
+ const activeMatch = raceState.matches?.find(m=>!m.winner)
+
+ if(activeMatch){
+
+  const p1 = activeMatch.player1?.ign || "BYE"
+  const p2 = activeMatch.player2?.ign || "BYE"
+
+  const matchIndex = raceState.matches.indexOf(activeMatch)
+
+  const btn1 = new ButtonBuilder()
+   .setCustomId(`winner_${matchIndex}_1`)
+   .setLabel(p1)
+   .setStyle(ButtonStyle.Primary)
+
+  const btn2 = new ButtonBuilder()
+   .setCustomId(`winner_${matchIndex}_2`)
+   .setLabel(p2)
+   .setStyle(ButtonStyle.Danger)
+
+  const row = new ActionRowBuilder().addComponents(btn1,btn2)
+
+  return {
+   embed:new EmbedBuilder()
+    .setTitle(`⚔ ROUND ${raceState.currentRound}`)
+    .setDescription(`${p1} vs ${p2}`),
+   components:[row]
+  }
+
+ }
+
+ // ================= FALLBACK =================
+
+ return {
+  embed:new EmbedBuilder()
+   .setTitle("⚔ Waiting Match")
+   .setDescription("Bracket sedang dibuat..."),
+  components:[]
+ }
+
 }
 
 module.exports={
  sendBracketPanel,
  updateBracketPanel
-  }
+}
