@@ -270,14 +270,20 @@ function buildAdminPanel(){
    .setTitle("⚠ Lucky Loser Selection")
    .setDescription(`Waiting Player:\n${raceState.waitingPlayer?.ign}\n\nSelect Lucky Loser`)
 
-  const options = raceState.luckyLoserCandidates.map((p,i)=>({
-   label:p.ign,
-   value:String(i)
-  }))
+  const options = raceState.luckyLoserCandidates.length
+ ? raceState.luckyLoserCandidates.map((p,i)=>({
+    label:p.ign,
+    value:String(i)
+   }))
+ : [{
+    label:"No Lucky Loser Available",
+    value:"none"
+   }]
 
   const select = new StringSelectMenuBuilder()
    .setCustomId("select_lucky_loser")
    .setPlaceholder("Select Lucky Loser")
+   .setDisabled(options[0].value === "none")
    .addOptions(options)
 
   const row = new ActionRowBuilder().addComponents(select)
