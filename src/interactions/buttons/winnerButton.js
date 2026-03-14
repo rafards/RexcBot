@@ -181,6 +181,57 @@ async function winnerButton(interaction){
   .filter(Boolean)
 
  // ===============================
+// ROUND ROBIN FINISHED
+// ===============================
+
+if(raceState.matches.length === 3){
+
+ const winCount = {}
+
+ raceState.matches.forEach(m=>{
+  if(!m.winner) return
+
+  const id = m.winner.id
+
+  if(!winCount[id]) winCount[id] = 0
+
+  winCount[id]++
+ })
+
+ const scores = Object.entries(winCount).sort((a,b)=>b[1]-a[1])
+
+ // AUTO CHAMPION (2 WIN)
+
+ if(scores[0][1] === 2){
+
+  const champ = scores[0][0]
+  const second = scores[1][0]
+  const third = scores[2][0]
+
+  const players = raceState.matches
+   .flatMap(m=>[m.player1,m.player2])
+
+  const p1 = players.find(p=>p.id === champ)
+  const p2 = players.find(p=>p.id === second)
+  const p3 = players.find(p=>p.id === third)
+
+  raceState.p1 = p1
+  raceState.p2 = p2
+  raceState.p3 = p3
+
+  await updateBracketPanel(interaction.client)
+
+  return
+ }
+
+ // ALL PLAYER WIN 1 (ADMIN DECISION)
+
+ await updateBracketPanel(interaction.client)
+
+ return
+}
+
+ // ===============================
  // TOURNAMENT FINISHED
  // ===============================
 
