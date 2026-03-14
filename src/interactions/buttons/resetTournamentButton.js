@@ -80,6 +80,10 @@ async function resetTournamentButton(interaction){
 
   }
 
+  // ==========================
+  // DELETE RESET BUTTON
+  // ==========================
+
   if(raceState.resetMessageId){
 
    const msg = await interaction.channel.messages.fetch(raceState.resetMessageId).catch(()=>null)
@@ -121,6 +125,32 @@ async function resetTournamentButton(interaction){
 
   raceState.panelMessageId = null
   raceState.panelChannelId = null
+
+  // ==========================
+  // RESET ROUND ROBIN STATE
+  // ==========================
+
+  raceState.roundRobinMode = false
+  raceState.roundRobinPlayers = []
+  raceState.roundRobinResults = []
+
+  raceState.p1 = null
+  raceState.p2 = null
+  raceState.p3 = null
+
+  // ==========================
+  // RESET LUCKY LOSER
+  // ==========================
+
+  raceState.luckyLoserMode = false
+  raceState.waitingPlayer = null
+  raceState.luckyLoserCandidates = []
+
+  // ==========================
+  // RESET RESET BUTTON STATE
+  // ==========================
+
+  raceState.resetMessageId = null
 
  }catch(err){
   console.log("Reset tournament error:", err)
