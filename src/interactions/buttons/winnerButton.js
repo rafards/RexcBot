@@ -78,17 +78,11 @@ async function winnerButton(interaction){
  const match = raceState.matches[matchIndex]
 
  if(!match){
-  return interaction.reply({
-   content:"Match tidak ditemukan",
-   ephemeral:true
-  })
+  return interaction.reply({ content:"Match tidak ditemukan", ephemeral:true })
  }
 
  if(match.winner){
-  return interaction.reply({
-   content:"Winner already set",
-   ephemeral:true
-  })
+  return interaction.reply({ content:"Winner already set", ephemeral:true })
  }
 
  const winner = playerIndex === 1 ? match.player1 : match.player2
@@ -97,9 +91,7 @@ async function winnerButton(interaction){
  match.winner = winner
  match.loser = loser
 
- // ===============================
- // SAVE LOSER
- // ===============================
+ // ================= SAVE LOSER =================
 
  if(loser){
 
@@ -117,9 +109,7 @@ async function winnerButton(interaction){
 
  }
 
- // ===============================
- // HANDLE ODD PLAYER
- // ===============================
+ // ================= HANDLE ODD PLAYER =================
 
  if(matchIndex === 0 && raceState.oddPlayer){
 
@@ -136,9 +126,7 @@ async function winnerButton(interaction){
 
  await interaction.deferUpdate()
 
- // ===============================
- // SAVE HISTORY
- // ===============================
+ // ================= SAVE HISTORY =================
 
  if(!raceState.roundHistory[raceState.currentRound-1]){
 
@@ -162,27 +150,21 @@ async function winnerButton(interaction){
 
  if(!finished) return
 
- // ===============================
- // ROUND ROBIN RESULT CHECK
- // ===============================
+ // ================= ROUND ROBIN RESULT =================
 
- if(raceState.matches.length === 3){
+ if(raceState.roundRobinMode){
 
   const winCount = {}
 
   raceState.matches.forEach(m=>{
-
    const id = m.winner.id
-
    if(!winCount[id]) winCount[id] = 0
-
    winCount[id]++
-
   })
 
   const scores = Object.entries(winCount).sort((a,b)=>b[1]-a[1])
 
-  // ================= AUTO CHAMPION
+  // AUTO CHAMPION
 
   if(scores[0][1] === 2){
 
@@ -208,26 +190,25 @@ async function winnerButton(interaction){
    return
   }
 
-  // ================= ADMIN DECISION
+  // ADMIN DECISION (1-1-1)
 
   await updateBracketPanel(interaction.client)
 
   return
  }
 
- // ===============================
- // GET ROUND WINNERS
- // ===============================
+ // ================= GET WINNERS =================
 
  const winners = raceState.matches
   .map(m=>m.winner)
   .filter(Boolean)
 
- // ===============================
- // GENERATE ROUND ROBIN
- // ===============================
+ // ================= ROUND ROBIN GENERATOR =================
 
- if(winners.length === 3 && raceState.matches.length !== 3){
+ if(winners.length === 3){
+
+  raceState.roundRobinMode = true
+  raceState.roundRobinPlayers = winners
 
   raceState.matches = generateNextRound(winners)
 
@@ -239,9 +220,7 @@ async function winnerButton(interaction){
   return
  }
 
- // ===============================
- // TOURNAMENT FINISHED
- // ===============================
+ // ================= TOURNAMENT FINISHED =================
 
  if(winners.length === 1){
 
@@ -267,9 +246,7 @@ async function winnerButton(interaction){
   return
  }
 
- // ===============================
- // NEXT ROUND
- // ===============================
+ // ================= NEXT ROUND =================
 
  const nextMatches = generateNextRound(winners)
 
