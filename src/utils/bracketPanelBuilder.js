@@ -222,7 +222,10 @@ async function updateBracketPanel(client){
 
  const adminPanel = await adminChannel.messages.fetch(raceState.adminMatchPanelId)
 
- const adminData = buildAdminPanel()
+ const adminData = buildAdminPanel() || {
+ embed:new EmbedBuilder().setTitle("Panel"),
+ components:[]
+  }
 
  await adminPanel.edit({
   embeds:[adminData.embed],
@@ -356,6 +359,15 @@ function buildAdminPanel(){
 
  }
 
+ // DEFAULT RETURN (ANTI CRASH)
+
+return {
+ embed:new EmbedBuilder()
+  .setTitle("⚔ Waiting Match")
+  .setDescription("Bracket sedang dibuat..."),
+ components:[]
+}
+ 
 }
 
 module.exports={
