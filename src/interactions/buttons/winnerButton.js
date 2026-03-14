@@ -110,31 +110,7 @@ if(
  }
 
 }
-
- if(finished && raceState.roundRobinMode){
-
-  const players = raceState.roundRobinPlayers
-
-  const buttons = players.map((p,i)=>
-  new ButtonBuilder()
-   .setCustomId(`select_p1_${i}`)
-   .setLabel(p.ign)
-   .setStyle(ButtonStyle.Primary)
-  )
-
-  const row = new ActionRowBuilder().addComponents(buttons)
-
-  await interaction.channel.send({
-   embeds:[{
-    title:"🏁 Round Robin Finished",
-    description:"Select Champion (P1)"
-   }],
-   components:[row]
-  })
-
-  return
- }
-
+ 
  if(!finished) return
 
  // ===============================
