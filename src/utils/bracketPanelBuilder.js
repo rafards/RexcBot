@@ -34,10 +34,6 @@ function buildBracketEmbed(){
 
  })
 
- if(raceState.roundRobinMode){
- text+="━━━━━━━━━━━━━━\n"
- }
-
  // ================= ROUND ROBIN =================
 
  if(raceState.roundRobinMode){
