@@ -206,14 +206,16 @@ if(raceState.matches.length === 3){
 
   const champ = scores[0][0]
   const second = scores[1][0]
-  const third = scores[2][0]
 
-  const players = raceState.matches
-   .flatMap(m=>[m.player1,m.player2])
+  const players = [
+   raceState.matches[0].player1,
+   raceState.matches[0].player2,
+   raceState.matches[1].player2
+  ]
 
   const p1 = players.find(p=>p.id === champ)
   const p2 = players.find(p=>p.id === second)
-  const p3 = players.find(p=>p.id === third)
+  const p3 = players.find(p=>p.id !== champ && p.id !== second)
 
   raceState.p1 = p1
   raceState.p2 = p2
