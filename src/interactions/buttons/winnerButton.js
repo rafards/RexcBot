@@ -235,6 +235,9 @@ async function winnerButton(interaction){
 
  if(winners.length === 1){
 
+ // jika round robin mode jangan kirim reset
+ if(!raceState.roundRobinMode){
+
   const result = calculateTop3()
 
   const playerChannel = await interaction.client.channels.fetch(
@@ -254,8 +257,10 @@ async function winnerButton(interaction){
 
   await sendResetButton(interaction)
 
-  return
  }
+
+ return
+}
 
  // ================= NEXT ROUND =================
 
