@@ -12,6 +12,10 @@ async function fillTestPlayersButton(interaction){
 
  if(remaining <= 0) return
 
+ // ===============================
+ // GENERATE BOT PLAYERS
+ // ===============================
+
  for(let i=0;i<remaining;i++){
 
   const num = raceState.players.length + 1
@@ -23,19 +27,29 @@ async function fillTestPlayersButton(interaction){
 
  }
 
- // sembunyikan tombol fill jika slot sudah penuh
-if(raceState.players.length >= raceState.slot){
+ // ===============================
+ // HIDE FILL BUTTON
+ // ===============================
 
- const adminChannel = interaction.channel
- const msg = interaction.message
+ if(raceState.players.length >= raceState.slot){
 
- await msg.edit({
-  components:[]
- })
+  const msg = interaction.message
 
-}
- 
+  await msg.edit({
+   components:[]
+  })
+
+ }
+
+ // ===============================
+ // UPDATE REGISTRATION PANEL
+ // ===============================
+
  await updateRegistrationPanels(interaction)
+
+ // ===============================
+ // START BRACKET
+ // ===============================
 
  if(raceState.players.length >= raceState.slot){
 
