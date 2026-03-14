@@ -244,6 +244,34 @@ Select Lucky Loser`
 
  }
 
+ // ================= ROUND ROBIN FINISHED =================
+
+ if(raceState.roundRobinMode){
+ 
+  const allFinished = raceState.matches.every(m=>m.winner)
+ 
+  if(allFinished){
+ 
+   const buttons = raceState.roundRobinPlayers.map((p,i)=>
+    new ButtonBuilder()
+     .setCustomId(`select_p1_${i}`)
+     .setLabel(p.ign)
+     .setStyle(ButtonStyle.Primary)
+   )
+ 
+   const row = new ActionRowBuilder().addComponents(buttons)
+ 
+   return {
+    embed:new EmbedBuilder()
+     .setTitle("🏁 Round Robin Selesai")
+     .setDescription("Semua player menang 1 match.\nAdmin harus memilih champion."),
+    components:[row]
+   }
+ 
+  }
+ 
+ }
+
  // ================= ACTIVE MATCH =================
 
  const activeMatch = raceState.matches?.find(m=>!m.winner)
