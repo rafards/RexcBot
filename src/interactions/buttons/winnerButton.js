@@ -220,17 +220,13 @@ async function winnerButton(interaction){
 
  if(winners.length === 3){
 
-  raceState.roundRobinMode = true
-  raceState.roundRobinPlayers = winners
+ raceState.matches = startRoundRobin(winners)
 
-  raceState.matches = generateNextRound(winners)
+ raceState.currentRound++
 
-  raceState.currentRound++
-  raceState.currentMatchIndex = 0
+ await updateBracketPanel(interaction.client)
 
-  await updateBracketPanel(interaction.client)
-
-  return
+ return
  }
 
  // ================= TOURNAMENT FINISHED =================
@@ -263,6 +259,28 @@ async function winnerButton(interaction){
 
  return
 }
+
+ // THIRD PLACE
+
+  if(winners.length === 2 && raceState.currentRound >= 2){
+
+  const previousRound = raceState.roundHistory[raceState.roundHistory.length-1]
+
+  const losers = previousRound.matches
+   .map(m => m.p1 === m.winner ? m.p2 : m.p1)
+
+  if(losers.length === 2){
+
+   raceState.matches = startThirdPlaceSystem(winners, losers)
+
+   raceState.currentRound++
+
+   await updateBracketPanel(interaction.client)
+
+   return
+  }
+
+ }
 
  // ================= NEXT ROUND =================
 
