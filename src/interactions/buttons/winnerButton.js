@@ -284,20 +284,20 @@ async function winnerButton(interaction){
 
  if(finished && winners.length === 2 && raceState.currentRound >= 2){
 
-  const losers = previousRound.matches
-   .map(m => m.p1 === m.winner ? m.p2 : m.p1)
-   .filter(Boolean)
+ const losers = raceState.matches
+  .map(m => m.loser)
+  .filter(Boolean)
 
-  if(losers.length === 2){
- 
-   raceState.matches = startThirdPlaceSystem(winners, losers)
+ if(losers.length === 2){
 
-   raceState.currentRound++
+  raceState.matches = startThirdPlaceSystem(winners, losers)
 
-   await updateBracketPanel(interaction.client)
+  raceState.currentRound++
 
-   return
-  }
+  await updateBracketPanel(interaction.client)
+
+  return
+ }
 
  }
 
