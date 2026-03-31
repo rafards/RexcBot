@@ -94,10 +94,6 @@ function buildBracketEmbed(){
   text = "Bracket belum dimulai"
  }
 
- return new EmbedBuilder()
-  .setTitle("🏁 TOURNAMENT BRACKET")
-  .setDescription(text)
-
  // ================= ROUND ROBIN DRAW =================
 
 if(raceState.roundRobinMode){
@@ -129,6 +125,10 @@ if(raceState.roundRobinMode){
  }
 
 }
+
+ return new EmbedBuilder()
+  .setTitle("🏁 TOURNAMENT BRACKET")
+  .setDescription(text)
 
 }
 
