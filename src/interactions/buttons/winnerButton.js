@@ -259,6 +259,22 @@ if(raceState.finalPhase){
 
   raceState.finalPhase = false
 
+  // 🔥 TAMBAHAN INI
+  const playerChannel = await interaction.client.channels.fetch(
+   raceState.playerPanelChannelId
+  )
+
+  await playerChannel.send({
+   embeds:[{
+    title:"🏆 TOURNAMENT RESULT",
+    description:
+`🥇 ${raceState.p1.ign}
+🥈 ${raceState.p2.ign}
+🥉 ${raceState.p3.ign}`,
+    color:0xFFD700
+   }]
+  })
+
   await updateBracketPanel(interaction.client)
 
   return
