@@ -153,22 +153,10 @@ async function winnerButton(interaction){
 
  if(
   waitingMatch &&
-  remainingMatches.length === 2 && // 🔥 INI KUNCI
+  remainingMatches.length === 1 && // 🔥 INI YANG BENAR
   raceState.currentRound > 1 &&
   raceState.luckyLoserCandidates.length > 0
  ){
-
-  if(!raceState.luckyLoserMode){
-
-   raceState.luckyLoserMode = true
-   raceState.waitingPlayer = waitingMatch.player1
-
-   await updateBracketPanel(interaction.client)
-   return
-
-  }
-
- }
 
  if(!finished){
  
