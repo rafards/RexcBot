@@ -148,27 +148,27 @@ async function winnerButton(interaction){
 
  const finished = raceState.matches.every(m=>m.winner)
 
- const waitingMatch = raceState.matches.find(
- m => m.player1 && !m.player2
-)
+ const remainingMatches = raceState.matches.filter(m => !m.winner)
+ const waitingMatch = remainingMatches.find(m => m.player1 && !m.player2)
 
-if(
- waitingMatch &&
- raceState.currentRound > 1 &&
- raceState.luckyLoserCandidates.length > 0
-){
+ if(
+  waitingMatch &&
+  remainingMatches.length === 2 && // 🔥 INI KUNCI
+  raceState.currentRound > 1 &&
+  raceState.luckyLoserCandidates.length > 0
+ ){
 
- if(!raceState.luckyLoserMode){
+  if(!raceState.luckyLoserMode){
 
-  raceState.luckyLoserMode = true
-  raceState.waitingPlayer = waitingMatch.player1
+   raceState.luckyLoserMode = true
+   raceState.waitingPlayer = waitingMatch.player1
 
-  await updateBracketPanel(interaction.client)
-  return
+   await updateBracketPanel(interaction.client)
+   return
+
+  }
 
  }
-
-}
 
  if(!finished){
  
