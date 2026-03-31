@@ -367,7 +367,7 @@ if(
 
 // ================= TOURNAMENT FINISHED =================
 
-if(winners.length === 1){
+if(winners.length === 1 && !raceState.finalPhase && !raceState.thirdPlacePhase){
 
  if(!raceState.roundRobinMode){
 
