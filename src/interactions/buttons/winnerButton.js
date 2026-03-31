@@ -1,4 +1,4 @@
-const { raceState } = require("../../data/raceState")
+aconst { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
@@ -151,12 +151,25 @@ async function winnerButton(interaction){
  const remainingMatches = raceState.matches.filter(m => !m.winner)
  const waitingMatch = remainingMatches.find(m => m.player1 && !m.player2)
 
+ // 🔥 LUCKY LOSER TRIGGER
  if(
   waitingMatch &&
-  remainingMatches.length === 1 && // 🔥 INI YANG BENAR
+  remainingMatches.length === 1 &&
   raceState.currentRound > 1 &&
   raceState.luckyLoserCandidates.length > 0
  ){
+
+  if(!raceState.luckyLoserMode){
+
+   raceState.luckyLoserMode = true
+   raceState.waitingPlayer = waitingMatch.player1
+
+   await updateBracketPanel(interaction.client)
+   return
+
+  }
+
+ }
 
  if(!finished){
  
