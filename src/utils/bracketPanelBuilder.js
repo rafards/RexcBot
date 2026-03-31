@@ -255,8 +255,13 @@ Select Lucky Loser`
  // ================= FINAL RESULT =================
 
  if(raceState.p1 && raceState.p2 && raceState.p3){
-  
-  const row = new ActionRowBuilder()
+
+  const resetButton = new ButtonBuilder()
+   .setCustomId("reset_tournament")
+   .setLabel("Reset Tournament")
+   .setStyle(ButtonStyle.Danger)
+
+  const row = new ActionRowBuilder().addComponents(resetButton)
 
   return {
    embed:new EmbedBuilder()
