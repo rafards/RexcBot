@@ -98,6 +98,38 @@ function buildBracketEmbed(){
   .setTitle("🏁 TOURNAMENT BRACKET")
   .setDescription(text)
 
+ // ================= ROUND ROBIN DRAW =================
+
+if(raceState.roundRobinMode){
+
+ const allFinished = raceState.matches.every(m=>m.winner)
+
+ if(allFinished){
+
+  const winCount = {}
+
+  raceState.matches.forEach(m=>{
+   const id = m.winner.id
+   if(!winCount[id]) winCount[id] = 0
+   winCount[id]++
+  })
+
+  const scores = Object.values(winCount)
+
+  const isDraw = scores.every(s => s === scores[0])
+
+  if(isDraw){
+
+   text += `━━━━━━━━━━━━━━━━\n`
+   text += `⚖ DRAW CONDITION\n`
+   text += `Admin sedang menentukan pemenang...\n\n`
+
+  }
+
+ }
+
+}
+
 }
 
 // ===============================
@@ -223,20 +255,15 @@ Select Lucky Loser`
  // ================= FINAL RESULT =================
 
  if(raceState.p1 && raceState.p2 && raceState.p3){
-
-  const resetButton = new ButtonBuilder()
-   .setCustomId("reset_tournament")
-   .setLabel("Reset Tournament")
-   .setStyle(ButtonStyle.Danger)
-
-  const row = new ActionRowBuilder().addComponents(resetButton)
+  
+  const row = new ActionRowBuilder()
 
   return {
    embed:new EmbedBuilder()
     .setTitle("🏆 TOURNAMENT RESULT")
     .setDescription(
 `🥇 ${raceState.p1.ign}
-🥈 ${raceState.p2.ign}
+🥈 ${raceState.p2.ign}s
 🥉 ${raceState.p3.ign}`
     ),
    components:[row]
@@ -264,7 +291,7 @@ Select Lucky Loser`
    return {
     embed:new EmbedBuilder()
      .setTitle("🏁 Round Robin Selesai")
-     .setDescription("Semua player menang 1 match.\nAdmin harus memilih champion."),
+     .setDescription("Semua player menang 1 match.\n Pilih champion."),
     components:[row]
    }
  
