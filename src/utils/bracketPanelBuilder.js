@@ -77,7 +77,7 @@ function buildBracketEmbed(){
    else if(m.waitingLoserMatch){
     p2 = `Loser Match ${m.waitingLoserMatch}`
    }
-   else if(raceState.luckyLoserMode){
+   else if(m.player1 && !m.player2){
     p2 = "Waiting Lucky Loser"
    }
 
