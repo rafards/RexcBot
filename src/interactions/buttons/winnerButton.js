@@ -1,4 +1,4 @@
-aconst { raceState } = require("../../data/raceState")
+const { raceState } = require("../../data/raceState")
 const { generateNextRound } = require("../../utils/nextRoundGenerator")
 const { updateBracketPanel } = require("../../utils/bracketPanelBuilder")
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
