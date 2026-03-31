@@ -235,44 +235,72 @@ async function winnerButton(interaction){
 
  // ================= GET WINNERS =================
 
- const winners = raceState.matches
-  .map(m=>m.winner)
-  .filter(Boolean)
+const winners = raceState.matches
+ .map(m=>m.winner)
+ .filter(Boolean)
 
- // ================= FINAL PHASE HANDLER =================
+// ================= FINAL PHASE (FINAL MATCH) =================
 
 if(raceState.finalPhase){
 
- const allFinished = raceState.matches.every(m=>m.winner)
+ const finishedFinal = raceState.matches.every(m=>m.winner)
 
- if(allFinished){
+ if(finishedFinal){
 
-  const thirdMatch = raceState.matches[0]
-  const finalMatch = raceState.matches[1]
+  const finalMatch = raceState.matches[0]
 
   const champion = finalMatch.winner
   const runnerUp = finalMatch.player1.id === champion.id
    ? finalMatch.player2
    : finalMatch.player1
 
-  const thirdPlace = thirdMatch.winner
-
   raceState.p1 = champion
   raceState.p2 = runnerUp
-  raceState.p3 = thirdPlace
 
   raceState.finalPhase = false
 
   await updateBracketPanel(interaction.client)
 
-  return // 🔥 STOP TOTAL (INI YANG PENTING)
+  return
  }
 
 }
 
- // ================= ROUND ROBIN GENERATOR =================
+// ================= THIRD PLACE PHASE =================
 
- if(winners.length === 3){
+if(raceState.thirdPlacePhase){
+
+ const finishedThird = raceState.matches.every(m=>m.winner)
+
+ if(finishedThird){
+
+  // simpan juara 3
+  raceState.p3 = raceState.matches[0].winner
+
+  // masuk FINAL
+  raceState.matches = [
+   {
+    player1: raceState.finalPlayers[0],
+    player2: raceState.finalPlayers[1],
+    winner: null,
+    loser: null
+   }
+  ]
+
+  raceState.currentRound++
+  raceState.thirdPlacePhase = false
+  raceState.finalPhase = true
+
+  await updateBracketPanel(interaction.client)
+
+  return
+ }
+
+}
+
+// ================= ROUND ROBIN GENERATOR =================
+
+if(winners.length === 3){
 
  raceState.matches = startRoundRobin(winners)
 
@@ -281,13 +309,50 @@ if(raceState.finalPhase){
  await updateBracketPanel(interaction.client)
 
  return
+}
+
+// ================= SEMIFINAL → THIRD PLACE =================
+
+if(
+ winners.length === 2 &&
+ raceState.matches.length === 2 &&
+ !raceState.thirdPlacePhase &&
+ !raceState.finalPhase
+){
+
+ const losers = raceState.matches
+  .map(m => m.loser)
+  .filter(Boolean)
+
+ if(losers.length === 2){
+
+  // simpan final player
+  raceState.finalPlayers = winners
+
+  // buat match 3rd place
+  raceState.matches = [
+   {
+    player1: losers[0],
+    player2: losers[1],
+    winner: null,
+    loser: null
+   }
+  ]
+
+  raceState.currentRound++
+  raceState.thirdPlacePhase = true
+
+  await updateBracketPanel(interaction.client)
+
+  return
  }
 
- // ================= TOURNAMENT FINISHED =================
+}
 
- if(winners.length === 1){
+// ================= TOURNAMENT FINISHED =================
 
- // jika round robin mode jangan kirim reset
+if(winners.length === 1){
+
  if(!raceState.roundRobinMode){
 
   const result = calculateTop3()
@@ -300,9 +365,9 @@ if(raceState.finalPhase){
    embeds:[{
     title:"🏆 TOURNAMENT RESULT",
     description:
-`🥇 ${result?.champion || winners[0].ign}
-🥈 ${result?.runnerUp || "TBD"}
-🥉 ${result?.thirdPlace || "TBD"}`,
+`🥇 ${raceState.p1?.ign || result?.champion || winners[0].ign}
+🥈 ${raceState.p2?.ign || result?.runnerUp || "TBD"}
+🥉 ${raceState.p3?.ign || result?.thirdPlace || "TBD"}`,
     color:0xFFD700
    }]
   })
@@ -311,40 +376,18 @@ if(raceState.finalPhase){
  return
 }
 
- // THIRD PLACE
+// ================= NEXT ROUND =================
 
- if(finished && winners.length === 2 && raceState.currentRound >= 2){
+const nextMatches = generateNextRound(winners)
 
- const losers = raceState.matches
-  .map(m => m.loser)
-  .filter(Boolean)
+raceState.matches = nextMatches
+raceState.currentRound++
 
- if(losers.length === 2){
+raceState.luckyLoserCandidates = []
+raceState.luckyLoserMode = false
+raceState.waitingPlayer = null
 
-  raceState.matches = startThirdPlaceSystem(winners, losers)
-
-  raceState.currentRound++
-  raceState.finalPhase = true
-
-  await updateBracketPanel(interaction.client)
-
-  return
- }
-
- }
-
- // ================= NEXT ROUND =================
-
- const nextMatches = generateNextRound(winners)
-
- raceState.matches = nextMatches
- raceState.currentRound++
-
- raceState.luckyLoserCandidates = []
- raceState.luckyLoserMode = false
- raceState.waitingPlayer = null
-
- await updateBracketPanel(interaction.client)
+await updateBracketPanel(interaction.client)
 
 }
 
