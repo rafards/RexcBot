@@ -148,6 +148,28 @@ async function winnerButton(interaction){
 
  const finished = raceState.matches.every(m=>m.winner)
 
+ const waitingMatch = raceState.matches.find(
+ m => m.player1 && !m.player2
+)
+
+if(
+ waitingMatch &&
+ raceState.currentRound > 1 &&
+ raceState.luckyLoserCandidates.length > 0
+){
+
+ if(!raceState.luckyLoserMode){
+
+  raceState.luckyLoserMode = true
+  raceState.waitingPlayer = waitingMatch.player1
+
+  await updateBracketPanel(interaction.client)
+  return
+
+ }
+
+}
+
  if(!finished){
  
   await updateBracketPanel(interaction.client)
