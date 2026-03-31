@@ -11,40 +11,41 @@ const raceState = {
 
  players:[],
 
+ // ================= MATCH =================
  matches:[],
  oddPlayer:null,
  losers:[],
+
+ // ================= LUCKY LOSER =================
  luckyLoserMode:false,
  waitingPlayer:null,
  luckyLoserCandidates:[],
- luckyLoserMatchIndex:null,
 
- thirdPlaceMode:false,
- thirdPlaceMatch:null,
- thirdPlaceWinner:null,
- semiFinalLosers:[],
+ // ================= PHASE =================
  thirdPlacePhase:false,
  finalPhase:false,
+ finalPlayers:[], // 🔥 WAJIB
+
+ // ================= ROUND =================
  currentRound:1,
- currentMatchIndex: 0,
+ currentMatchIndex:0,
  roundHistory:[],
 
+ // ================= ROUND ROBIN =================
  roundRobinMode:false,
  roundRobinPlayers:[],
- roundRobinResults:[],
+
+ // ================= RESULT =================
  p1:null,
  p2:null,
  p3:null,
 
+ // ================= PANEL =================
  registrationOpen:false,
 
- panelMessageId:null,
- panelChannelId:null,
+ playerPanelChannelId:null,
+ adminListChannelId:null,
 
- playerPanelId:null,
- adminListPanelId:null,
-
- bracketPanelId:null,
  bracketChannelId:null,
  bracketMessageId:null,
 
