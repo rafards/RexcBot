@@ -23,6 +23,7 @@ const raceState = {
  thirdPlaceMatch:null,
  thirdPlaceWinner:null,
  semiFinalLosers:[],
+ thirdPlacePhase:false,
  finalPhase:false,
  currentRound:1,
  currentMatchIndex: 0,
