@@ -293,6 +293,7 @@ async function winnerButton(interaction){
   raceState.matches = startThirdPlaceSystem(winners, losers)
 
   raceState.currentRound++
+  raceState.finalPhase = false
 
   await updateBracketPanel(interaction.client)
 
@@ -300,6 +301,37 @@ async function winnerButton(interaction){
  }
 
  }
+
+ // ================= FINAL PHASE =================
+
+if(raceState.finalPhase){
+
+ const allFinished = raceState.matches.every(m=>m.winner)
+
+ if(allFinished){
+
+  const thirdMatch = raceState.matches[0]
+  const finalMatch = raceState.matches[1]
+
+  const p1 = finalMatch.winner
+  const p2 = finalMatch.player1.id === p1.id
+   ? finalMatch.player2
+   : finalMatch.player1
+
+  const p3 = thirdMatch.winner
+
+  raceState.p1 = p1
+  raceState.p2 = p2
+  raceState.p3 = p3
+
+  raceState.finalPhase = false
+
+  await updateBracketPanel(interaction.client)
+
+  return
+ }
+
+}
 
  // ================= NEXT ROUND =================
 
