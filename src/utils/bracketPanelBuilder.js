@@ -268,7 +268,7 @@ Select Lucky Loser`
     .setTitle("🏆 TOURNAMENT RESULT")
     .setDescription(
 `🥇 ${raceState.p1.ign}
-🥈 ${raceState.p2.ign}s
+🥈 ${raceState.p2.ign}
 🥉 ${raceState.p3.ign}`
     ),
    components:[row]
