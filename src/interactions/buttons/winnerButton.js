@@ -262,9 +262,6 @@ async function winnerButton(interaction){
     color:0xFFD700
    }]
   })
-
-  await sendResetButton(interaction)
-
  }
 
  return
