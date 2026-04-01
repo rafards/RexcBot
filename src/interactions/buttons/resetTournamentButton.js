@@ -93,6 +93,33 @@ async function resetTournamentButton(interaction){
   }
 
   // ==========================
+// DELETE RESULT MESSAGE (PLAYER PANEL)
+// ==========================
+
+if(raceState.resultMessageId){
+
+ try{
+
+  const playerChannel = await client.channels.fetch(
+   raceState.playerPanelChannelId
+  ).catch(()=>null)
+
+  if(playerChannel){
+   const msg = await playerChannel.messages
+    .fetch(raceState.resultMessageId)
+    .catch(()=>null)
+
+   if(msg) await msg.delete().catch(()=>{})
+  }
+
+ }catch(err){
+  console.log("Failed delete result message:", err)
+ }
+
+ raceState.resultMessageId = null
+}
+
+  // ==========================
   // RESET STATE
   // ==========================
 
