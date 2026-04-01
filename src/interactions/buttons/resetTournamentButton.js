@@ -7,7 +7,9 @@ async function resetTournamentButton(interaction){
  const channel = interaction.channel
  const client = interaction.client
 
- await interaction.deferUpdate()
+ if(!interaction.replied && !interaction.deferred){
+ await interaction.deferUpdate().catch(()=>{})
+ }
 
  try{
 
