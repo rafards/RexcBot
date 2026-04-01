@@ -1,5 +1,6 @@
 const { raceState } = require("../data/raceState")
 const { sendBracketPanel } = require("../utils/bracketPanelBuilder")
+const { startRoundRobin } = require("./roundRobinSystem")
 
 function shuffle(array){
 
@@ -48,6 +49,28 @@ async function generateBracket(interaction){
  }else{
   raceState.oddPlayer = null
  }
+
+ 
+// ===============================
+// FORCE ROUND ROBIN (3 PLAYER)
+// ===============================
+
+if(shuffled.length === 3){
+
+ raceState.matches = startRoundRobin(shuffled)
+
+ raceState.roundRobinMode = true
+ raceState.roundRobinPlayers = [...shuffled]
+
+ raceState.oddPlayer = null
+
+ await sendBracketPanel(interaction.client)
+ return
+}
+
+// ===============================
+// NORMAL BRACKET
+// ===============================
 
  raceState.matches = generateMatches(shuffled)
 
