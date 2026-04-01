@@ -6,28 +6,6 @@ const { startRoundRobin } = require("../../systems/roundRobinSystem")
 const { startThirdPlaceSystem } = require("../../systems/thirdPlaceSystem")
 
 // ===============================
-// RESET BUTTON
-// ===============================
-
-async function sendResetButton(interaction){
-
- if(raceState.resetMessageId) return
-
- const resetButton = new ButtonBuilder()
-  .setCustomId("reset_tournament")
-  .setLabel("Reset Tournament")
-  .setStyle(ButtonStyle.Danger)
-
- const row = new ActionRowBuilder().addComponents(resetButton)
-
- const msg = await interaction.channel.send({
-  components:[row]
- })
-
- raceState.resetMessageId = msg.id
-}
-
-// ===============================
 // CALCULATE TOP 3
 // ===============================
 
