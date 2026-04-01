@@ -264,7 +264,7 @@ if(raceState.finalPhase){
    raceState.playerPanelChannelId
   )
 
-  await playerChannel.send({
+  const msg = await playerChannel.send({
    embeds:[{
     title:"🏆 TOURNAMENT RESULT",
     description:
@@ -274,6 +274,8 @@ if(raceState.finalPhase){
     color:0xFFD700
    }]
   })
+
+  raceState.resultMessageId = msg.id
 
   await updateBracketPanel(interaction.client)
 
@@ -377,7 +379,7 @@ if(winners.length === 1 && !raceState.finalPhase && !raceState.thirdPlacePhase){
    raceState.playerPanelChannelId
   )
 
-  await playerChannel.send({
+  const msg = await playerChannel.send({
    embeds:[{
     title:"🏆 TOURNAMENT RESULT",
     description:
@@ -387,6 +389,8 @@ if(winners.length === 1 && !raceState.finalPhase && !raceState.thirdPlacePhase){
     color:0xFFD700
    }]
   })
+
+  raceState.resultMessageId = msg.id
  }
 
  return
