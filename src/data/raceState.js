@@ -49,6 +49,8 @@ const raceState = {
  bracketChannelId:null,
  bracketMessageId:null,
 
+ resultMessageId:null,
+
  adminMatchPanelId:null
 
 }
