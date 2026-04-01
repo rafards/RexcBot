@@ -44,14 +44,7 @@ async function generateBracket(interaction){
  raceState.currentRound = 1
  raceState.currentMatchIndex = 0
 
- if(shuffled.length % 2 !== 0){
-  raceState.oddPlayer = shuffled.pop()
- }else{
-  raceState.oddPlayer = null
- }
-
- 
-// ===============================
+ // ===============================
 // FORCE ROUND ROBIN (3 PLAYER)
 // ===============================
 
@@ -72,7 +65,13 @@ if(shuffled.length === 3){
 // NORMAL BRACKET
 // ===============================
 
- raceState.matches = generateMatches(shuffled)
+if(shuffled.length % 2 !== 0){
+ raceState.oddPlayer = shuffled.pop()
+}else{
+ raceState.oddPlayer = null
+}
+
+raceState.matches = generateMatches(shuffled)
 
  // ===============================
 // ROUND 1 WAITING LOSER MATCH
